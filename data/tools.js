@@ -115,7 +115,7 @@
   ];
 
   /* Wissensseiten in sinnvoller Lesereihenfolge. Die Texte selbst liegen
-   * in /content/*.md und werden von scripts/build.js zu /wissen/*.html.
+   * in /content/*.md und werden von scripts/build.js zu /knowledge/*.html.
    * group: 'notfall' oder 'draussen' (zwei Listen auf der Startseite). */
   window.OA_WISSEN_GROUPS = [
     { id: 'notfall', title: 'Wissen: Im Notfall' },

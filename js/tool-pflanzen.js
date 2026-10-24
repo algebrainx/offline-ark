@@ -1,11 +1,11 @@
 /* Offline-Ark – Pflanzen & Pilze (Oberfläche): Doppelgänger-Paare, giftige Pflanzen, Pilze, Suche, Detailansicht.
  * Daten: data/pflanzen.js (window.OA_PFLANZEN). Alle sichtbaren Texte laufen über OA.t (Schlüssel = deutscher Text).
- * Fotos liegen lokal in bibliothek/bilder/pflanzen/; Urheber und Lizenz stehen unter jedem Foto. */
+ * Fotos liegen lokal in library/images/pflanzen/; Urheber und Lizenz stehen unter jedem Foto. */
 (function () {
   'use strict';
   var OA = window.OA, t = OA.t, esc = OA.esc, $ = OA.$;
   var D = window.OA_PFLANZEN;
-  var IMG = '../bibliothek/bilder/pflanzen/';
+  var IMG = '../library/images/pflanzen/';
   var STATUS = {
     edible: { label: 'essbar', icon: 'check' },
     toxic: { label: 'giftig', icon: 'alert' },
@@ -109,7 +109,7 @@
     $('#src-list').innerHTML = D.sources.map(function (k) {
       return '<li>' + ext(D.refs[k].url, refName(k)) + ' · <span>' + esc(refLic(k)) + '</span></li>';
     }).join('');
-    $('#wissen').setAttribute('href', OA.genUrl('wissen/nahrung.html'));
+    $('#wissen').setAttribute('href', OA.genUrl('knowledge/nahrung.html'));
   }
 
   /* ---------- Detailansicht ---------- */

@@ -28,7 +28,7 @@
   function a(t, to, icon) { var o = { t: t, to: to }; if (icon) o.icon = icon; return o; }
 
   /* Anker (Überschriften-IDs der erzeugten Wissensseiten) je Sprache.
-     scripts/test-assistent.js prüft, dass jede ID in wissen/<sprache>/<seite>.html wirklich existiert. */
+     scripts/test-assistent.js prüft, dass jede ID in knowledge/<sprache>/<seite>.html wirklich existiert. */
   var ANCHORS = {
     'erste-hilfe': {
       title: 'Erste Hilfe',

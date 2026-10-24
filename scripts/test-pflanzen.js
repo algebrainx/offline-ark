@@ -12,21 +12,21 @@ function read(p) { return fs.readFileSync(path.join(root, p), 'utf8'); }
 function norm(s) { return String(s).replace(/\s+/g, ' ').trim(); }
 
 /* ---------- Bilder und Attribution ---------- */
-var md = read('bibliothek/bilder/ATTRIBUTION.md');
+var md = read('library/images/ATTRIBUTION.md');
 var attr = {};
 md.split('\n').forEach(function (l) {
-  var m = l.match(/^\| `bibliothek\/bilder\/pflanzen\/([^`]+)\.jpg` \| (.*?) \| (.*?) \| \[(.*?)\]\((.*?)\) \| \[Link\]\((.*?)\) \|/);
+  var m = l.match(/^\| `library\/images\/pflanzen\/([^`]+)\.jpg` \| (.*?) \| (.*?) \| \[(.*?)\]\((.*?)\) \| \[Link\]\((.*?)\) \|/);
   if (m) attr[m[1]] = { by: m[3], lic: m[4], url: m[6] };
 });
 var FREE = /^(CC0|PD|CC BY(-SA)? \d\.\d( de)?)$/;
-var files = fs.readdirSync(path.join(root, 'bibliothek', 'bilder', 'pflanzen')).filter(function (f) { return /\.jpg$/.test(f); });
+var files = fs.readdirSync(path.join(root, 'library', 'images', 'pflanzen')).filter(function (f) { return /\.jpg$/.test(f); });
 files.forEach(function (f) {
   var id = f.replace(/\.jpg$/, '');
   assert.ok(attr[id], 'Kein Attributionseintrag für ' + f);
   assert.ok(FREE.test(attr[id].lic), 'Keine freie Lizenz für ' + f + ': ' + attr[id].lic);
   assert.ok(!/NC|ND/.test(attr[id].lic), 'NC/ND-Lizenz: ' + f);
   assert.ok(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(attr[id].url), 'Commons-Link fehlt für ' + f);
-  assert.ok(fs.statSync(path.join(root, 'bibliothek', 'bilder', 'pflanzen', f)).size > 5000, 'Bild zu klein: ' + f);
+  assert.ok(fs.statSync(path.join(root, 'library', 'images', 'pflanzen', f)).size > 5000, 'Bild zu klein: ' + f);
 });
 var ids = {};
 D.items.forEach(function (it) {
@@ -126,12 +126,12 @@ body.replace(/<[^>]+>/g, '\u0001').split('\u0001').map(norm).filter(function (s)
 });
 
 /* Seitenregeln */
-assert.ok(/<img[^>]*src="'? ?\+? ?IMG/.test(js) || /IMG = '\.\.\/bibliothek\/bilder\/pflanzen\/'/.test(js), 'Bilder müssen lokal (relativ) geladen werden');
+assert.ok(/<img[^>]*src="'? ?\+? ?IMG/.test(js) || /IMG = '\.\.\/library\/images\/pflanzen\/'/.test(js), 'Bilder müssen lokal (relativ) geladen werden');
 assert.ok(/loading="lazy"/.test(js) && /width="640" height="480"/.test(js), 'img braucht loading=lazy sowie width/height');
 assert.ok(!/https?:\/\/[^'"\s]*\.(jpg|png|js|css)/.test(html + js), 'keine externen Laufzeit-Abhängigkeiten');
 assert.ok(/Nur essen, wenn 100 % sicher bestimmt\. Fotos ersetzen keine Bestimmung durch Fachleute\. Bei Vergiftungsverdacht: 112 \/ Giftinformationszentrum\./.test(html), 'Warnhinweis fehlt');
 assert.strictEqual((html.match(/btn primary/g) || []).length, 1, 'genau ein blauer Hauptknopf');
-assert.ok(/genUrl\('wissen\/nahrung\.html'\)/.test(js), 'Link zur Wissensseite Nahrung fehlt');
+assert.ok(/genUrl\('knowledge\/nahrung\.html'\)/.test(js), 'Link zur Wissensseite Nahrung fehlt');
 assert.ok(/Foto: \{0\} · \{1\}/.test(js) && /ggf\. verkleinert/.test(js), 'Namensnennung unter dem Foto fehlt');
 assert.ok(/Anfänger sammeln keine Pilze/.test(js), 'Pilz-Hinweis fehlt');
 

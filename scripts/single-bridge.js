@@ -73,7 +73,7 @@
     if ((e.ctrlKey || e.metaKey) && !e.altKey && String(e.key).toLowerCase() === 'p') { e.preventDefault(); window.print(); }
   });
 
-  /* Bilder, die erst per Skript entstehen (img.src = OA.root + 'bilder/x.jpg'), nachträglich auf data: umstellen */
+  /* Bilder, die erst per Skript entstehen (img.src = OA.root + 'library/images/x.jpg'), nachträglich auf data: umstellen */
   var ATTR = { IMG: 'src', SOURCE: 'src', VIDEO: 'poster', AUDIO: 'src' };
   function fix(el) {
     var k = ATTR[el.tagName];

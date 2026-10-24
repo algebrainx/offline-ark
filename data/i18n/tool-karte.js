@@ -184,10 +184,10 @@ OA.i18n.add({
   "Eigene Kacheln hinzufügen (Raster-Hintergrund)": { en: "Add your own tiles (raster background)", es: "Añadir teselas propias (fondo ráster)", ar: "إضافة بلاطات خاصة (خلفية نقطية)" },
   "Eigene Kacheln verwenden": { en: "Use own tiles", es: "Usar teselas propias", ar: "استخدام بلاطات خاصة" },
   "Kacheln prüfen": { en: "Check tiles", es: "Comprobar teselas", ar: "فحص البلاطات" },
-  "Lege Kacheln im Ordner <code class=\"ltr\">bibliothek/karten/{z}/{x}/{y}.png</code> ab (auch .jpg oder .webp). Das ist das übliche „Slippy-Map“-Schema mit 256-Pixel-Kacheln.": {
-    en: "Put tiles in the folder <code class=\"ltr\">bibliothek/karten/{z}/{x}/{y}.png</code> (.jpg or .webp also work). This is the usual “slippy map” scheme with 256-pixel tiles.",
-    es: "Coloca las teselas en la carpeta <code class=\"ltr\">bibliothek/karten/{z}/{x}/{y}.png</code> (también valen .jpg o .webp). Es el esquema habitual de «slippy map» con teselas de 256 píxeles.",
-    ar: "ضع البلاطات في المجلد <code class=\"ltr\">bibliothek/karten/{z}/{x}/{y}.png</code> (ويصلح أيضًا .jpg أو .webp). هذا هو النظام المعتاد «slippy map» ببلاطات حجمها 256 بكسل." },
+  "Lege Kacheln im Ordner <code class=\"ltr\">library/maps/{z}/{x}/{y}.png</code> ab (auch .jpg oder .webp). Das ist das übliche „Slippy-Map“-Schema mit 256-Pixel-Kacheln.": {
+    en: "Put tiles in the folder <code class=\"ltr\">library/maps/{z}/{x}/{y}.png</code> (.jpg or .webp also work). This is the usual “slippy map” scheme with 256-pixel tiles.",
+    es: "Coloca las teselas en la carpeta <code class=\"ltr\">library/maps/{z}/{x}/{y}.png</code> (también valen .jpg o .webp). Es el esquema habitual de «slippy map» con teselas de 256 píxeles.",
+    ar: "ضع البلاطات في المجلد <code class=\"ltr\">library/maps/{z}/{x}/{y}.png</code> (ويصلح أيضًا .jpg أو .webp). هذا هو النظام المعتاد «slippy map» ببلاطات حجمها 256 بكسل." },
   "Schalte oben „Eigene Kacheln verwenden“ ein. Zoomstufen und Quellenangabe stehen in <code class=\"ltr\">data/karte-config.js</code>. Fehlen Kacheln, zeigt die Karte leise wieder die Vektorkarte.": {
     en: "Switch on “Use own tiles” above. Zoom levels and the source credit are set in <code class=\"ltr\">data/karte-config.js</code>. If tiles are missing, the map quietly falls back to the vector map.",
     es: "Activa arriba «Usar teselas propias». Los niveles de zoom y la atribución se configuran en <code class=\"ltr\">data/karte-config.js</code>. Si faltan teselas, el mapa vuelve en silencio al mapa vectorial.",

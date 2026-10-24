@@ -8,7 +8,7 @@
  *    Wetterleuchten bei Blitzen über etwa 18 km. (Der DWD-Text nennt keine "10-km-Grenze"; sie steht deshalb nicht in der App.)
  *  - WMO International Cloud Atlas (useful-concepts): Höhenstufen für gemäßigte Breiten: hoch 5-13 km, mittel 2-7 km, tief ab dem Boden bis 2 km.
  *  - Wikipedia (CC BY-SA 4.0): Warmfront (Wolkenfolge, Luftdruck), Cumulus (congestus), Stratus, Stratocumulus, Cirrocumulus, Altocumulus (Fingerbreite).
- * Fotos: Wikimedia Commons, Lizenz und Urheber stehen unter jedem Foto und in bibliothek/bilder/ATTRIBUTION.md. */
+ * Fotos: Wikimedia Commons, Lizenz und Urheber stehen unter jedem Foto und in library/images/ATTRIBUTION.md. */
 (function () {
   'use strict';
 

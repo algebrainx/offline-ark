@@ -6,7 +6,7 @@
  *
  * Was es tut (Node.js ≥ 16, keine Pakete nötig):
  *   1. liest content/*.md (Deutsch) und content/<en|es|ar>/*.md (Übersetzungen)
- *   2. erzeugt wissen/<id>.html und wissen/<sprache>/<id>.html (reines HTML, druckfreundlich)
+ *   2. erzeugt knowledge/<id>.html und knowledge/<sprache>/<id>.html (reines HTML, druckfreundlich)
  *   3. erzeugt die zentrale Seite "Quellen & Lizenzen" (je Sprache)
  *   4. erzeugt data/search-index.js (Volltext je Sprache für die Offline-Suche)
  *   5. erzeugt die Bibliothek-Seiten aus scripts/library.json
@@ -22,7 +22,7 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const CONTENT = path.join(ROOT, 'content');
-const OUT = path.join(ROOT, 'wissen');
+const OUT = path.join(ROOT, 'knowledge');
 
 /* ---------- Register der Wissensseiten (Reihenfolge, Titel) aus data/tools.js ---------- */
 function loadRegistry() {
@@ -316,7 +316,7 @@ function main() {
       const { meta, body } = frontMatter(fs.readFileSync(file, 'utf8'), file);
       const { html, headings } = markdown(fixLinks(body, lang));
       fs.writeFileSync(path.join(outDir(lang), `${w.id}.html`), page({
-        lang, genPath: `wissen/${w.id}.html`, title: meta.title || w.title, lead: meta.lead, bodyHtml: html, toc: headings,
+        lang, genPath: `knowledge/${w.id}.html`, title: meta.title || w.title, lead: meta.lead, bodyHtml: html, toc: headings,
         sourcesHtml: sourcesBlock(meta.sources, lang), plant: meta.plant === 'true', disclaimer: true, translated
       }));
       const plain = body.replace(/[#*`>|:\[\]()_-]/g, ' ').replace(/\s+/g, ' ');
@@ -334,7 +334,7 @@ function main() {
         allSources.set(s.url, e);
       });
     });
-    console.log(`✓ wissen/${lang === 'de' ? '' : lang + '/'}*.html`);
+    console.log(`✓ knowledge/${lang === 'de' ? '' : lang + '/'}*.html`);
   });
 
   fs.writeFileSync(path.join(ROOT, 'data', 'search-index.js'),
@@ -362,22 +362,22 @@ function main() {
       list.map((x) => `<tr><td><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" dir="auto">${esc(x.name)}</a>${x.note ? `<br><span class="small muted">${esc(x.note)}</span>` : ''}</td><td>${esc(x.license)}</td><td>${x.pages.map((p) => `<a href="${p.id}.html">${esc(p.title)}</a>`).join(', ')}</td></tr>`).join('') +
       '</tbody></table></div>';
     fs.writeFileSync(path.join(outDir(lang), 'quellen.html'), page({
-      lang, genPath: 'wissen/quellen.html', title: s.quellenTitle, lead: s.quellenLead,
+      lang, genPath: 'knowledge/quellen.html', title: s.quellenTitle, lead: s.quellenLead,
       bodyHtml: intro + table, toc: introHeadings.concat([{ id: 'verwendete-quellen', text: s.allSourcesToc }]), sourcesHtml: '', disclaimer: false, translated
     }));
   });
-  console.log('✓ wissen/**/quellen.html');
+  console.log('✓ knowledge/**/quellen.html');
 
   /* Bibliothek aus scripts/library.json (je Sprache; title/desc dürfen Texte oder {de,en,es,ar} sein) */
   const libFile = path.join(__dirname, 'library.json');
   const lib = fs.existsSync(libFile) ? JSON.parse(fs.readFileSync(libFile, 'utf8')) : [];
-  const present = lib.filter((l) => fs.existsSync(path.join(ROOT, 'bibliothek', l.file)));
+  const present = lib.filter((l) => fs.existsSync(path.join(ROOT, 'library', l.file)));
   const pick = (v, lang) => (v && typeof v === 'object') ? (v[lang] || v.de) : v;
   LANGS.forEach((lang) => {
     const s = STR[lang];
     const libHtml = present.length
       ? '<div class="list">' + present.map((l) => {
-          const bytes = fs.statSync(path.join(ROOT, 'bibliothek', l.file)).size;
+          const bytes = fs.statSync(path.join(ROOT, 'library', l.file)).size;
           const size = bytes > 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB';
           const href = (lang === 'de' ? '' : '../') + esc(l.file);
           return `<a href="${href}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg><span class="name">${esc(pick(l.title, lang))}<span class="sub">${esc(pick(l.desc, lang))} · ${s.libLang} · <span class="ltr">${size}</span> · ${s.license}: ${esc(pick(l.license, lang))}</span></span></a>`;
@@ -386,15 +386,15 @@ function main() {
     const pdfCard = present.length
       ? `<div class="card no-print" id="oa-pdf-offline" hidden style="margin-top:16px"><p class="small muted" style="margin-top:0">${s.pdfLead}</p><button class="btn" type="button" id="oa-pdf-btn" data-busy="${esc(s.pdfBusy)}" data-done="${esc(s.pdfDone)}" data-fail="${esc(s.pdfFail)}">${s.pdfBtn}</button><p class="small" id="oa-pdf-status" role="status" style="margin-bottom:0"></p></div>`
       : '';
-    const dir = lang === 'de' ? path.join(ROOT, 'bibliothek') : path.join(ROOT, 'bibliothek', lang);
+    const dir = lang === 'de' ? path.join(ROOT, 'library') : path.join(ROOT, 'library', lang);
     fs.mkdirSync(dir, { recursive: true });
-    const foot = s.libFoot.replace('href="quellen.html"', `href="${lang === 'de' ? '../wissen/quellen.html' : '../../wissen/' + lang + '/quellen.html'}"`);
+    const foot = s.libFoot.replace('href="quellen.html"', `href="${lang === 'de' ? '../knowledge/quellen.html' : '../../knowledge/' + lang + '/quellen.html'}"`);
     fs.writeFileSync(path.join(dir, 'index.html'), page({
-      lang, genPath: 'bibliothek/index.html', title: s.libTitle, lead: s.libLead,
+      lang, genPath: 'library/index.html', title: s.libTitle, lead: s.libLead,
       bodyHtml: libHtml + pdfCard + `<p class="small muted" style="margin-top:16px">${foot}</p>`, toc: [], sourcesHtml: '', disclaimer: false
     }));
   });
-  console.log('✓ bibliothek/**/index.html (' + present.length + ' PDFs)');
+  console.log('✓ library/**/index.html (' + present.length + ' PDFs)');
 
   /* App-Installation: Dateiliste und Version für sw.js (nach allen erzeugten Dateien) */
   require('./build-pwa.js').run();

@@ -16,7 +16,7 @@
     el.clouds.innerHTML = D.genera.filter(function (g) { return f === 'all' || g.level === f; }).map(function (g) {
       var credit = t('Foto: {0} · {1}', ['<bdi>' + esc(g.photo.author) + '</bdi>', '<bdi>' + esc(g.photo.license) + '</bdi>']);
       return '<article class="card cloud">' +
-        '<img src="../bibliothek/bilder/wolken/' + g.img + '" width="640" height="480" loading="lazy" alt="' + esc(t(g.alt)) + '">' +
+        '<img src="../library/images/wolken/' + g.img + '" width="640" height="480" loading="lazy" alt="' + esc(t(g.alt)) + '">' +
         '<div class="credit"><a href="' + esc(g.photo.url) + '" target="_blank" rel="noopener noreferrer">' + credit + '</a></div>' +
         '<div class="body"><h3>' + esc(t(g.name)) + '</h3><p class="la ltr">' + esc(g.la) + '</p>' +
         '<div class="chips"><span class="chip">' + esc(t(levelOf(g.level).height)) + '</span></div>' +

@@ -2,8 +2,8 @@
 # Offline-Ark – Inhalte aktualisieren (nur nötig, wenn Internet verfügbar ist).
 #
 # Was passiert:
-#   1. Gemeinfreie PDFs aus scripts/library.json nach /bibliothek laden
-#   2. Seiten neu erzeugen: content/*.md -> wissen/*.html, Suchindex, Quellenseite, Bibliothek
+#   1. Gemeinfreie PDFs aus scripts/library.json nach /library laden
+#   2. Seiten neu erzeugen: content/*.md -> knowledge/*.html, Suchindex, Quellenseite, Bibliothek
 #   3. Quellen-Links prüfen (nur Warnungen)
 #
 # Voraussetzung: Node.js (https://nodejs.org). Windows: in Git Bash oder WSL ausführen,

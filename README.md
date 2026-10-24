@@ -2,203 +2,204 @@
 
 # 🛟 Offline-Ark
 
-**Wissen und Werkzeuge für den Ernstfall. Komplett ohne Internet.**
+**Emergency knowledge and tools. Completely offline.**
 
-Stromausfall · Netzausfall · Katastrophe – einfach `index.html` öffnen.
+Power outage · network outage · disaster – just open `index.html`.
 
-![Läuft offline](https://img.shields.io/badge/l%C3%A4uft-100%25%20offline-0071e3?style=flat-square)
-![Kein Build](https://img.shields.io/badge/build-keiner-1d1d1f?style=flat-square)
-![Keine Abhängigkeiten](https://img.shields.io/badge/abh%C3%A4ngigkeiten-0-1d1d1f?style=flat-square)
-![Lizenz MIT](https://img.shields.io/badge/code-MIT-1d1d1f?style=flat-square)
-![Deutsch](https://img.shields.io/badge/sprache-deutsch-1d1d1f?style=flat-square)
+🇬🇧 English · [🇩🇪 Deutsch](README.de.md)
 
-<img src="docs/screenshots/home-hell.png" alt="Startseite hell, Deutsch" width="23%"> <img src="docs/screenshots/home-nacht.png" alt="Startseite im Nachtmodus: rot auf schwarz" width="23%"> <img src="docs/screenshots/home-espanol.png" alt="Startseite dunkel, Spanisch" width="23%"> <img src="docs/screenshots/home-arabisch.png" alt="Startseite Arabisch, rechts nach links" width="23%">
+![Works offline](https://img.shields.io/badge/works-100%25%20offline-0071e3?style=flat-square)
+![No build](https://img.shields.io/badge/build-none-1d1d1f?style=flat-square)
+![No dependencies](https://img.shields.io/badge/dependencies-0-1d1d1f?style=flat-square)
+![MIT code](https://img.shields.io/badge/code-MIT-1d1d1f?style=flat-square)
+![4 languages](https://img.shields.io/badge/languages-de%20%C2%B7%20en%20%C2%B7%20es%20%C2%B7%20ar-1d1d1f?style=flat-square)
 
-<sub>Hell · Nacht (rot auf schwarz, schont Augen und Akku) · Español · العربية (rechts-nach-links)</sub>
+<img src="docs/screenshots/home-hell.png" alt="Home page, light mode, German" width="23%"> <img src="docs/screenshots/home-nacht.png" alt="Home page in night mode: red on black" width="23%"> <img src="docs/screenshots/home-espanol.png" alt="Home page, dark mode, Spanish" width="23%"> <img src="docs/screenshots/home-arabisch.png" alt="Home page in Arabic, right to left" width="23%">
+
+<sub>Light · Night (red on black, easy on eyes and battery) · Español · العربية (right to left)</sub>
 
 </div>
 
 ---
 
-## Was ist das?
+## What is this?
 
-**Offline-Ark** ist eine Notfall-Website in **reinem HTML, CSS und JavaScript**. Sie braucht weder Server noch Internet noch Installation. Man kopiert den Ordner auf einen USB-Stick, eine Festplatte oder ein Handy und öffnet `index.html` per Doppelklick.
+**Offline-Ark** is an emergency website in **plain HTML, CSS and JavaScript**. It needs no server, no internet and no installation. Copy the folder to a USB stick, a hard drive or a phone and open `index.html` with a double click.
 
-Gedacht für **ganz normale Menschen in Deutschland**, die unter Stress schnell Antworten brauchen. Große Bedienelemente, einfache Sprache, kein Fachchinesisch.
+It is made for **ordinary people in Germany** who need quick answers under stress: large controls, simple language, no jargon.
 
-### 🌍 Vier Sprachen: Deutsch · English · Español · العربية
+### 🌍 Four languages: Deutsch · English · Español · العربية
 
-Alles gibt es in allen vier Sprachen: alle Werkzeuge, alle Wissensseiten, Suche, Hinweise und Quellenseite. Arabisch wird **von rechts nach links** angezeigt.
+Everything is available in all four languages: all tools, all knowledge pages, search, notes and the sources page. Arabic is displayed **right to left**.
 
-- Die Sprache wird beim ersten Start aus dem Browser übernommen.
-- Wechseln: Weltkugel-Symbol oben rechts. Die Sprachnamen stehen immer in ihrer eigenen Sprache.
-- Die Texte beziehen sich auf **Deutschland** (Notruf 112, deutsche Behörden, deutsche Funkregeln). Die Übersetzungen folgen der deutschen Fassung. Bei Abweichungen gilt der deutsche Text.
-- Die Übersetzungen sind KI-gestützt entstanden und noch nicht von Muttersprachlern geprüft, vor allem Fachbegriffe (Erste Hilfe, Pflanzen, Funk) auf Arabisch. Korrekturen sind sehr willkommen.
+- The language is taken from your browser on first start.
+- Switch it with the globe icon at the top right. Language names are always shown in their own language.
+- The content refers to **Germany** (emergency number 112, German authorities, German radio rules). The translations follow the German version; if they differ, the German text applies.
+- The translations were created with AI assistance and have not yet been checked by native speakers, especially technical terms (first aid, plants, radio) in Arabic. Corrections are very welcome.
 
-## Was steckt drin?
+> The source texts of the knowledge pages live in `content/` (German) and `content/{en,es,ar}/`. The German README is [README.de.md](README.de.md).
 
-### 🆘 Notfall – ein Klick von der Startseite
-**Erste Hilfe** · **Stromausfall** · **Wasser**
+## What is inside?
 
-### 🧰 37 Werkzeuge
+### 🆘 Emergency – one tap from the home page
+**First aid** · **Power outage** · **Water**
 
-| Bereich | Werkzeuge |
+### 🧰 37 tools
+
+| Area | Tools |
 |---|---|
-| **Im Ernstfall** | Notfall-Assistent (Entscheidungsbaum „Was ist passiert?“) · Wiederbelebungs-Takt (100–120/min, mit Ton) · Stromausfall-Plan (Stunde 1 bis Woche 1) |
-| **Versorgung** | Wasserbedarf · Notvorrat (nach BBK) · Wasser entkeimen · Strom & Akku |
-| **Rechnen & Zeit** | Einheiten · Taschenrechner · Stoppuhr, Timer, Countdown |
-| **Orientierung** | Kompass · Sonne & Tageslicht · Koordinaten & GPS (UTM) · **Offline-Karte** (Baden-Württemberg: Krankenhäuser, Apotheken, Defibrillatoren, Feuerwehr, Wasserstellen, eigene Punkte) |
-| **Signal & Funk** | Morse-Code · SOS-Licht · Funk-Spickzettel (PMR446, Freenet, CB, Meshtastic) |
-| **Mitteilen** | Aushänge zum Ausdrucken · QR-Code-Generator (offline) · Chat im lokalen Netz (Mini-Server) · Ausdruck-Paket |
-| **Natur & Bestimmen** | Pflanzen & Pilze mit gefährlichen Doppelgängern (Fotos) · Wolken & Wetter · Sternbilder · Tierspuren |
-| **Selbstversorgung** | Gartenkalender · Haltbar machen (Einkochen, Fermentieren, Trocknen) · Brennholz-Rechner |
-| **Lernen & Üben** | Quiz · Knoten · Morse-Trainer |
-| **Organisation** | Vorratsliste mit Ablaufwarnung · Notizen & Tagebuch · Kontakte & Treffpunkte · Checklisten (inkl. Dokumente) · Notfallpass · Kinderbereich mit Spielen |
+| **In an emergency** | Emergency assistant (decision tree "What happened?") · Resuscitation rhythm (100–120/min, with sound) · Power outage plan (hour 1 to week 1) |
+| **Supplies** | Water needs · Emergency supplies (based on BBK) · Purify water · Power & battery |
+| **Calculate & time** | Units · Calculator · Stopwatch, timer, countdown |
+| **Navigation** | Compass · Sun & daylight · Coordinates & GPS (UTM) · **Offline map** (Baden-Württemberg: hospitals, pharmacies, defibrillators, fire stations, water points, your own points) |
+| **Signals & radio** | Morse code · SOS light · Radio cheat sheet (PMR446, Freenet, CB, Meshtastic) |
+| **Communicate** | Printable notices · QR code generator (offline) · Chat on the local network (mini server) · Print pack |
+| **Nature & identification** | Plants & mushrooms with dangerous look-alikes (photos) · Clouds & weather · Constellations · Animal tracks |
+| **Self-sufficiency** | Garden calendar · Preserving food (canning, fermenting, drying) · Firewood calculator |
+| **Learn & practise** | Quiz (also with photos) · Knots · Morse trainer |
+| **Organisation** | Supply list with expiry warning · Notes & diary · Contacts & meeting points · Checklists (incl. documents) · Emergency passport · Kids' corner with games |
 
-### 📖 10 Wissensseiten
-Erste Hilfe · Stromausfall-Leitfaden · Wasser finden & aufbereiten · Hygiene & Sanitär · Feuer, Wärme & Unterschlupf · Nahrung · Navigation ohne GPS · Kommunikation & Funk · Strom & Energie off-grid · Reparatur-Basics
+### 📖 10 knowledge pages
+First aid · Power outage guide · Finding & purifying water · Hygiene & sanitation · Fire, warmth & shelter · Food · Navigation without GPS · Communication & radio · Power & energy off-grid · Repair basics
 
-Dazu eine **Offline-Suche** über alles, eine **Bibliothek** mit gemeinfreien PDFs und eine Seite **Quellen & Lizenzen**.
+Plus an **offline search** across everything, a **library** of public-domain PDFs and a **Sources & Licenses** page.
 
-## So öffnest du es
+## How to open it
 
-1. Ordner herunterladen: grüner Button **Code → Download ZIP** auf GitHub, danach entpacken.
-2. Die Datei **`index.html`** doppelklicken. Sie öffnet sich im Browser.
-3. Fertig. Es wird nichts nachgeladen.
+1. Download the folder: green **Code → Download ZIP** button on GitHub, then unzip.
+2. Double-click **`index.html`**. It opens in your browser.
+3. Done. Nothing is loaded from the internet.
 
-> 💡 Tipp: Lege ein Lesezeichen an, solange du Internet hast. Und probiere es **einmal vorher** aus, nicht erst im Ernstfall.
+> 💡 Tip: bookmark it while you still have internet, and try it **once beforehand**, not only in an emergency.
 
-## Auf USB-Stick, Festplatte oder Handy kopieren
+## Copy it to a USB stick, hard drive or phone
 
-| Gerät | So geht's |
+| Device | How |
 |---|---|
-| **USB-Stick / Festplatte** | Den ganzen Ordner `offline-ark` hineinkopieren. Auf dem PC `index.html` öffnen. Ordnerstruktur nicht ändern. |
-| **Android-Handy** | Ordner per USB-Kabel in den Speicher kopieren. Mit einer Datei-App `index.html` öffnen (Chrome oder Firefox). Alternativ die ZIP-Datei entpacken. |
-| **iPhone / iPad** | Hier ist der Zugriff auf lokale Dateien eingeschränkt. Einfacher ist ein Laptop oder ein Android-Gerät. Vorher ausprobieren. |
-| **Laptop** | Ordner irgendwo speichern, `index.html` doppelklicken. Fertig. |
+| **USB stick / hard drive** | Copy the whole `offline-ark` folder. On a PC open `index.html`. Do not change the folder structure. |
+| **Android phone** | Copy the folder to storage via USB cable. Open `index.html` with a file app (Chrome or Firefox). Alternatively unzip the ZIP file. |
+| **iPhone / iPad** | Access to local files is restricted. A laptop or an Android device is easier. Try it beforehand. |
+| **Laptop** | Save the folder anywhere and double-click `index.html`. |
 
-Hinweise:
-- Der **Kompass**, die **GPS-Position** und das **Wachhalten des Bildschirms** brauchen die Sensoren des Geräts. Sie gehen am besten am Handy. Manche Browser erlauben sie nur über `https`. Dann ist die Funktion nicht verfügbar, und die Seite sagt das auch.
-- Daten werden im Browser (`localStorage`) gespeichert. Wenn du den Browser-Speicher löschst, sind sie weg. Sichere sie vorher (siehe unten).
+Notes:
+- The **compass**, **GPS position** and **keeping the screen on** need the device's sensors. They work best on a phone. Some browsers only allow them over `https`; then the feature is unavailable and the page says so.
+- Data is stored in the browser (`localStorage`). If you clear browser storage, it is gone. Back it up first (see below).
 
-## Eigene Daten sichern (Export)
+## Back up your own data (export)
 
-Vorratsliste, Notizen, Kontakte, Wegpunkte, Checklisten und Einstellungen liegen **nur auf dem Gerät**, nirgends sonst.
+Supply list, notes, contacts, waypoints, checklists and settings are stored **only on the device**, nowhere else.
 
-- **Alles auf einmal:** Oben rechts auf das Einstellungssymbol tippen → **Alle Daten sichern**. Es wird eine Datei `offline-ark-daten-JJJJ-MM-TT.json` erzeugt.
-- **Wiederherstellen:** Dort **Daten wiederherstellen** wählen und die Datei auswählen.
-- Die Vorratsliste, Notizen, Kontakte und Wegpunkte lassen sich außerdem direkt auf ihrer Seite exportieren.
-- Bewahre die Sicherung **außerhalb** des Geräts auf (USB-Stick, Papier). Jede Seite hat eine **Druckansicht**.
+- **Everything at once:** tap the settings icon at the top right → **Back up all data**. A file `offline-ark-daten-YYYY-MM-DD.json` is created.
+- **Restore:** choose **Restore data** there and select the file.
+- The supply list, notes, contacts and waypoints can also be exported directly on their own page.
+- Keep the backup **outside** the device (USB stick, paper). Every page has a **print view**.
 
-## Bedienung
+## Usage
 
-- **Suche:** auf der Startseite oben, findet Werkzeuge und Wissensseiten.
-- **Einstellungen** (Symbol oben rechts): Hell, Dunkel, **Nacht**, Schriftgröße, Bildschirm anlassen, Drucken, Daten sichern.
-- **Drucken:** jede Seite hat eine saubere Druckansicht ohne Bedienelemente.
+- **Search:** at the top of the home page, finds tools and knowledge pages.
+- **Settings** (icon at the top right): light, dark, **night**, text size, keep screen on, print, back up data.
+- **Printing:** every page has a clean print view without controls.
 
-## Ausdruck-Paket: das Wichtigste auf Papier
+## Print pack: the essentials on paper
 
-Werkzeug **Ausdruck-Paket** (Startseite → Mitteilen): Teile ankreuzen – Notruf-Karte mit Funkalphabet, Notfallpass, Kontakte & Treffpunkte, Morse-Tabelle, Wissensseiten, Checklisten zum Abhaken, Notvorrat-Tabelle – und **Ausdruck-Paket erstellen** tippen. Das Paket hat ein Inhaltsverzeichnis, A4-Seiten mit Kopf- und Fußzeile (Stand, Notruf 112), schwarz auf weiß, Schrift 10,5 pt, Links ausgeschrieben, in der gewählten Sprache (auch rechts-nach-links) und auf Wunsch zusätzlich auf Deutsch. Die Seitenzahl wird vorab geschätzt. Mit **Nur Druckvorschau anzeigen** öffnet sich kein Druckdialog; im Druckdialog lässt sich „Als PDF speichern“ wählen. Die Wissensseiten dafür stehen in `data/print-pages.js` (erzeugt von `node scripts/build.js`).
+Tool **Print pack** (home → Communicate): tick the parts – emergency card with spelling alphabet, emergency passport, contacts & meeting points, Morse table, knowledge pages, checklists to tick off, supplies table – and tap **Create print pack**. The pack has a table of contents, A4 pages with header and footer (date, emergency number 112), black on white, 10.5 pt, links written out, in the chosen language (also right to left) and, if you like, additionally in German. The page count is estimated in advance. **Preview only** opens no print dialog; in the print dialog you can choose "Save as PDF". The knowledge pages for this come from `data/print-pages.js` (generated by `node scripts/build.js`).
 
-## Als App installieren (optional)
+## Install as an app (optional)
 
-Offline-Ark läuft **ohne Installation** per Doppelklick (`file://`). Wer es zusätzlich als **App** auf dem Startbildschirm haben möchte (eigenes Symbol, ohne Browserleiste, startet auch ohne Netz), kann das tun – aber nur über eine Adresse mit **`https://`** oder **`http://localhost`**:
+Offline-Ark runs **without installation** with a double click (`file://`). If you also want it as an **app** on your home screen (own icon, no browser bar, starts without network), that works – but only from an address with **`https://`** or **`http://localhost`**:
 
-- **Reines `file://` kann das nicht.** Browser erlauben den dafür nötigen „Service Worker“ nur auf sicheren Adressen. Das ist keine Einschränkung von Offline-Ark.
-- **GitHub Pages (https):** Repository veröffentlichen (Settings → Pages), die Seite einmal mit Internet öffnen, dann im Browser **Installieren / Zum Startbildschirm hinzufügen**. Danach funktioniert alles auch ohne Netz.
-- **Lokaler Server:** im Projektordner z. B. `python -m http.server 8099` oder `npx serve` starten und `http://localhost:8099/` öffnen. Auf Windows liefert Python manchmal `.js`-Dateien mit falschem Typ (`text/plain`) aus, dann meldet sich der Service Worker nicht an – in dem Fall `npx serve` nehmen.
-- **Im WLAN (`http://192.168.…`) geht es nicht:** ohne HTTPS und ohne `localhost` erlaubt der Browser keinen Service Worker. Die Seiten selbst laufen dort trotzdem, sie lassen sich nur nicht als App installieren.
-- Beim ersten Öffnen werden alle Seiten, Skripte und Daten (ca. 5 MB) gespeichert; danach kommt alles aus dem Speicher. **Updates** gelten ab dem **nächsten Start** der App (kein Neuladen mitten in der Benutzung). Die **PDFs** der Bibliothek werden nur auf Knopfdruck zusätzlich gespeichert (Bibliothek → **PDFs auch offline speichern**), weil sie viel Platz brauchen.
-- Technik: `manifest.webmanifest`, `sw.js` (Dateiliste und Version erzeugt `scripts/build-pwa.js`, läuft bei jedem `node scripts/build.js`), `js/pwa.js` (meldet den Service Worker nur bei `http(s)` an), Symbole in `icons/` (neu erzeugen mit `node scripts/make-icons.js`, braucht Edge oder Chrome).
+- **Plain `file://` cannot do this.** Browsers only allow the required "service worker" on secure addresses. This is not a limitation of Offline-Ark.
+- **GitHub Pages (https):** publish the repository (Settings → Pages), open the page once with internet, then choose **Install / Add to home screen** in the browser. After that everything also works without a network.
+- **Local server:** in the project folder start e.g. `python -m http.server 8099` or `npx serve` and open `http://localhost:8099/`. On Windows, Python sometimes serves `.js` files with the wrong type (`text/plain`); then the service worker does not register – use `npx serve` instead.
+- **On Wi-Fi (`http://192.168.…`) it does not work:** without HTTPS and without `localhost` the browser does not allow a service worker. The pages themselves still run there, they just cannot be installed as an app.
+- On first open, all pages, scripts and data (about 5 MB) are stored; afterwards everything comes from storage. **Updates** apply from the **next start** of the app. The library **PDFs** are only stored on request (Library → **Save PDFs for offline use**) because they need a lot of space.
+- Technical: `manifest.webmanifest`, `sw.js` (file list and version generated by `scripts/build-pwa.js`, runs with every `node scripts/build.js`), `js/pwa.js` (registers the service worker only on `http(s)`), icons in `icons/` (regenerate with `node scripts/make-icons.js`, needs Edge or Chrome).
 
-## Alles in einer Datei
+## Everything in one file
 
-Für Weitergabe per **Messenger, Bluetooth, E-Mail oder USB-Stick** gibt es einen Export als **eine einzige HTML-Datei**, ohne Ordner und ohne Server:
+For sharing via **messenger, Bluetooth, e-mail or USB stick** there is an export as **one single HTML file**, without folders and without a server:
 
 ```bash
-node scripts/build.js          # Seiten erzeugen (einmal vorher)
+node scripts/build.js          # generate pages (once beforehand)
 node scripts/build-single.js   # -> dist/offline-ark.html
-node scripts/build-single.js --no-pdf             # ohne PDFs (kleiner)
-node scripts/build-single.js --lang de,en         # nur diese Sprachen (kleiner)
+node scripts/build-single.js --no-pdf             # without PDFs (smaller)
+node scripts/build-single.js --lang de,en         # only these languages (smaller)
 ```
 
-Die Datei enthält alle Seiten (Start, Werkzeuge, Wissen und Bibliothek in allen Sprachen) samt Stilen, Skripten, Wörterbüchern, Daten, Bildern und PDFs (als Base64) und einen kleinen Router. Sie wird per Doppelklick im Browser geöffnet; Sprachwechsel, Links, Suche, Drucken und gespeicherte Eingaben (`localStorage`) funktionieren wie im Ordner. Größe: ca. 8 MB ohne PDFs (alle Sprachen, Karten, Bilder), mit allen PDFs der Bibliothek rund 60 MB. Mit `--no-pdf` bleibt sie klein, mit `--lang de` ist sie am kleinsten.
+The file contains all pages (home, tools, knowledge and library in all languages) with styles, scripts, dictionaries, data, images and PDFs (as Base64) and a small router. It is opened with a double click in the browser; language switching, links, search, printing and saved input (`localStorage`) work as in the folder. Size: about 8 MB without PDFs (all languages, maps, images), about 60 MB with all library PDFs. With `--no-pdf` it stays small, with `--lang de` it is smallest.
 
-- Aufbau: jede Seite steht als Text in der Datei und wird beim Öffnen mit ihren Skripten zusammengesetzt und in einem eingebetteten Rahmen (`iframe srcdoc`) angezeigt. Die Adresse lautet z. B. `offline-ark.html#/tools/zeit.html`; der Zurück-Knopf des Browsers funktioniert.
-- Die Datei lässt sich nicht von Hand bearbeiten. Nach Änderungen im Projekt einfach neu erzeugen. Die Seitenskripte werden nur im Export angepasst (`location.*` → `scripts/single-bridge.js`), im Projekt bleibt alles unverändert.
-- Grenzen: Ist eine Seite oder ein PDF nicht enthalten (z. B. `--no-pdf`), erscheint eine Hinweisseite. Der **Chat im lokalen Netz** braucht einen Server und geht daher nur im Ordner. Als Kopie auf manchen Handys (z. B. iPhone, Datei in Messenger-Vorschau) lässt sich eine HTML-Datei nicht vollständig öffnen: dort die Datei im Browser öffnen oder einen Laptop nehmen.
+- Structure: every page is stored as text in the file and assembled with its scripts on opening, shown in an embedded frame (`iframe srcdoc`). The address looks like `offline-ark.html#/tools/zeit.html`; the browser's back button works.
+- The file cannot be edited by hand. After changes in the project, simply generate it again.
+- Limits: if a page or PDF is not included (e.g. `--no-pdf`), a notice page appears. The **chat on the local network** needs a server and therefore only works from the folder. On some phones (e.g. iPhone, file in messenger preview) an HTML file cannot be opened completely: open the file in the browser or use a laptop.
 
-## Für Entwickler und Ergänzer
+## For developers and contributors
 
 ```
 offline-ark/
-├── index.html          Startseite
-├── tools/*.html        die 37 Werkzeuge
-├── wissen/*.html       Wissensseiten Deutsch (erzeugt aus content/*.md)
-├── wissen/{en,es,ar}/  dieselben Seiten in den anderen Sprachen
-├── css/style.css       gesamtes Design (hell, dunkel, nacht, Druck, rechts-nach-links)
-├── js/                 gemeinsamer Code + ein Skript je Werkzeug, i18n.js = Sprachen
-├── data/*.js           Daten als JS (statt fetch, damit file:// geht)
-├── data/i18n/*.js      Übersetzungen der Werkzeuge und der Oberfläche
-├── content/*.md        Quelltexte der Wissensseiten (Deutsch) inkl. Quellenangaben
-├── content/{en,es,ar}/ Übersetzungen der Wissensseiten
-├── bibliothek/         PDFs, Bilder
-├── scripts/            Generator und Hilfsskripte (Node.js): build.js, build-pwa.js, build-single.js
-├── manifest.webmanifest, sw.js, icons/   App-Installation (optional, nur über https/localhost)
-├── dist/               (nur nach build-single.js) offline-ark.html = alles in einer Datei
-└── update-content.sh   Inhalte neu laden und Seiten neu erzeugen
+├── index.html          Home page
+├── tools/*.html        the 37 tools
+├── knowledge/*.html    knowledge pages, German (generated from content/*.md)
+├── knowledge/{en,es,ar}/  the same pages in the other languages
+├── css/style.css       entire design (light, dark, night, print, right-to-left)
+├── js/                 shared code + one script per tool, i18n.js = languages
+├── data/*.js           data as JS (instead of fetch, so file:// works)
+├── data/i18n/*.js      translations of the tools and the interface
+├── content/*.md        source texts of the knowledge pages (German) incl. sources
+├── content/{en,es,ar}/ translations of the knowledge pages
+├── library/            PDFs, images (library/images)
+├── scripts/            generator and helper scripts (Node.js): build.js, build-pwa.js, build-single.js
+├── server/             mini server with local chat (Node.js, no packages)
+├── manifest.webmanifest, sw.js, icons/   app installation (optional, only over https/localhost)
+├── dist/               (only after build-single.js) offline-ark.html = everything in one file
+└── update-content.sh   reload content and regenerate pages
 ```
 
-Regeln: kein Framework, kein CDN, keine Schriftarten oder Dienste von außen, kein `fetch()` auf lokale Dateien, Speicherung nur über `localStorage` mit `try/catch`.
+Rules: no framework, no CDN, no fonts or services from outside, no `fetch()` on local files, storage only via `localStorage` with `try/catch`.
 
-### Übersetzen
-Der **deutsche Text ist der Schlüssel**: `OA.t('Personen')` liefert die Übersetzung, fehlt sie, bleibt der deutsche Text stehen. Statische Seitentexte werden automatisch übersetzt. Wörterbücher: `data/i18n/core.js` (Oberfläche, Startseite) und `data/i18n/tool-<name>.js` (je Werkzeug), Format:
+### Translating
+The **German text is the key**: `OA.t('Personen')` returns the translation; if it is missing, the German text stays. Static page texts are translated automatically. Dictionaries: `data/i18n/core.js` (interface, home page) and `data/i18n/tool-<name>.js` (per tool), format:
 
 ```js
 OA.i18n.add({ "Personen": { en: "People", es: "Personas", ar: "الأشخاص" } });
 ```
 
-Wissensseiten: Übersetzung als Markdown in `content/<sprache>/<seite>.md`, dann `node scripts/build.js`. Eine neue Sprache braucht außerdem einen Eintrag in `js/i18n.js` und `scripts/build.js`.
+Knowledge pages: translation as Markdown in `content/<language>/<page>.md`, then `node scripts/build.js`. A new language also needs an entry in `js/i18n.js` and `scripts/build.js`.
 
-### Inhalte aktualisieren
-Texte stehen in `content/*.md`. Danach (mit [Node.js](https://nodejs.org)):
+### Updating content
+Texts live in `content/*.md`. Afterwards (with [Node.js](https://nodejs.org)):
 
 ```bash
-./update-content.sh            # PDFs laden, Seiten neu erzeugen, Links prüfen
-./update-content.sh --offline  # nur Seiten neu erzeugen
-node scripts/build.js          # dasselbe ohne Bash
+./update-content.sh            # download PDFs, regenerate pages, check links
+./update-content.sh --offline  # only regenerate pages
+node scripts/build.js          # the same without Bash
 ```
 
-Das Skript lädt die gemeinfreien PDFs aus `scripts/library.json`, erzeugt `wissen/*.html`, den Suchindex und die Quellenseite und prüft die Quellenlinks. Wer nur benutzt, braucht das alles nicht.
+The script downloads the public-domain PDFs listed in `scripts/library.json`, generates `knowledge/*.html`, the search index and the sources page, and checks the source links. If you only use the site, you do not need any of this.
 
 ### Tests
+There is one test script per tool plus `scripts/test-i18n.js`. Run them all:
+
 ```bash
-node scripts/test-einheiten.js
-node scripts/test-inventar.js
-node scripts/test-notizen.js
-node scripts/test-kontakte.js
-node scripts/test-checklisten.js
-node scripts/test-i18n.js
-node scripts/test-ausdruck.js
-node scripts/test-wolken.js
-node scripts/test-sternbilder.js
-node scripts/test-tierspuren.js
+for f in scripts/test-*.js; do node "$f" || echo "FAILED: $f"; done
 ```
 
-## ⚠️ Wichtiger Hinweis
+On Windows PowerShell: `Get-ChildItem scripts\test-*.js | ForEach-Object { node $_.FullName }`.
 
-Offline-Ark **ersetzt keine Ausbildung**. Besuche einen Erste-Hilfe-Kurs. Im Notfall zuerst **112** wählen bzw. immer wieder versuchen. Die Seiten nennen bewusst **keine Medikamenten-Dosierungen**. Bei Pflanzen gilt: nur essen, wenn 100 % sicher bestimmt. Alle Angaben sind mit Sorgfalt aus seriösen Quellen zusammengefasst, aber ohne Gewähr.
+## ⚠️ Important notice
 
-## Quellen und Lizenzen
+Offline-Ark **does not replace training**. Take a first-aid course. In an emergency call **112** first, or keep trying. The pages deliberately give **no medication doses**. For plants: only eat if you are 100 % certain of the identification. All information is carefully summarised from reputable sources, but provided without warranty.
 
-- **Eigener Code und eigene Texte:** [MIT-Lizenz](LICENSE).
-- **Fremde Inhalte** behalten ihre Lizenz. Jede Wissensseite nennt unten ihre Quellen mit Link und Lizenz, zentral gesammelt auf der Seite *Quellen & Lizenzen* (`wissen/quellen.html`).
-- Genutzt werden u. a. Empfehlungen von BBK, DRK, Umweltbundesamt, Deutschem Rat für Wiederbelebung, WHO, CDC, FEMA/ready.gov, Bundesnetzagentur und Wikipedia (CC BY-SA). Offizielle Texte sind **nicht kopiert**, sondern in eigenen Worten zusammengefasst.
-- Gemeinfreie PDFs in der Bibliothek (US-Regierungswerke, unverändert): *FM 4-25.11 First Aid*, *FM 21-10 Field Hygiene and Sanitation*, *ATP 3-50.21 Survival* und *FM 24-18 Tactical Single-Channel Radio Communications Techniques* (alle US-Armee, Vermerk „Approved for public release“) sowie *Are You Ready?* und *Be Prepared for Any Hazard* (FEMA/ready.gov, unverändert weitergeben erlaubt). Einzelheiten stehen auf der Seite *Quellen & Lizenzen*.
-- Die Startquellen [ligi/SurvivalManual](https://github.com/ligi/SurvivalManual) (GPL-3.0) und [PR0M3TH3AN/Survival-Data](https://github.com/PR0M3TH3AN/Survival-Data) (ohne Lizenzdatei) wurden als Themenanregung gelesen, aber **nicht kopiert**.
+## Sources and licenses
 
-## Mithelfen
+- **Own code and own texts:** [MIT License](LICENSE).
+- **Third-party content** keeps its license. Every knowledge page lists its sources with link and license at the bottom, collected centrally on the *Sources & Licenses* page (`knowledge/en/quellen.html`; the file name is the same in all languages).
+- Used, among others: recommendations from BBK, DRK, Federal Environment Agency, German Resuscitation Council, WHO, CDC, FEMA/ready.gov, Federal Network Agency and Wikipedia (CC BY-SA). Official texts are **not copied**, but summarised in our own words.
+- Public-domain PDFs in the library (US government works, unchanged): *FM 4-25.11 First Aid*, *FM 21-10 Field Hygiene and Sanitation*, *ATP 3-50.21 Survival* and *FM 24-18 Tactical Single-Channel Radio Communications Techniques* (all US Army, marked "Approved for public release") as well as *Are You Ready?* and *Be Prepared for Any Hazard* (FEMA/ready.gov, passing on unchanged is allowed). Details are on the *Sources & Licenses* page.
+- Maps and points of interest: © OpenStreetMap contributors (ODbL), outlines from Natural Earth (public domain). Photos: Wikimedia Commons (CC0, public domain, CC BY, CC BY-SA), credits under each photo and in `library/images/ATTRIBUTION.md`.
+- The starting sources [ligi/SurvivalManual](https://github.com/ligi/SurvivalManual) (GPL-3.0) and [PR0M3TH3AN/Survival-Data](https://github.com/PR0M3TH3AN/Survival-Data) (no license file) were read as inspiration for topics, but **not copied**.
 
-Fehler gefunden? Quelle veraltet? Issues und Pull Requests sind willkommen. Bitte keine Inhalte ohne klare, freie Lizenz einreichen und keine Quellen ohne Link und Lizenz.
+## Contributing
 
-<div align="center"><sub>Gebaut, damit man im Ernstfall nicht suchen muss.</sub></div>
+Found a mistake? A source out of date? Issues and pull requests are welcome. Please do not submit content without a clear, free license or sources without a link and license.
+
+<div align="center"><sub>Built so that nobody has to search in an emergency.</sub></div>

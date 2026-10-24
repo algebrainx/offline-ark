@@ -10,7 +10,7 @@ title: Fuentes y licencias
 
 ## Biblioteca (PDF)
 
-Los PDF de la [Biblioteca](../bibliothek/index.html) son obras del gobierno de EE. UU. de dominio público o marcadas como de dominio público. Están sin modificar y en inglés.
+Los PDF de la [Biblioteca](../library/index.html) son obras del gobierno de EE. UU. de dominio público o marcadas como de dominio público. Están sin modificar y en inglés.
 
 - **FM 4-25.11 First Aid** (Ejército de EE. UU., 2002, con el cambio C1 de 2004): [página de origen](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). Dominio público, obra del gobierno de EE. UU., aviso «Approved for public release».
 - **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA, P-2064, septiembre de 2020): [página de origen](https://www.ready.gov/publications). Dominio público, obra del gobierno de EE. UU. ready.gov permite la reproducción siempre que no se alteren el contenido, las fotos ni los gráficos y no se sugiera un respaldo oficial.
@@ -32,7 +32,7 @@ Los contenidos suelen estar bajo CC BY-SA. No reproducimos textos literalmente, 
 
 - **OpenStreetMap** (hospitales, farmacias, desfibriladores, bomberos, puntos de agua, límites en el mapa sin conexión): © Colaboradores de OpenStreetMap, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Más información: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). Los datos corresponden a la fecha de descarga y pueden estar desactualizados o incompletos.
 - **Natural Earth** (contornos y fronteras aproximados): [dominio público](https://www.naturalearthdata.com/about/terms-of-use/).
-- **Fotos** (plantas, setas, nubes, nudos): [Wikimedia Commons](https://commons.wikimedia.org/), cada una con licencia CC0, dominio público, CC BY o CC BY-SA. El autor y la licencia figuran bajo cada foto y en el archivo `bibliothek/bilder/ATTRIBUTION.md`. Las imágenes se han reducido de tamaño.
+- **Fotos** (plantas, setas, nubes, nudos): [Wikimedia Commons](https://commons.wikimedia.org/), cada una con licencia CC0, dominio público, CC BY o CC BY-SA. El autor y la licencia figuran bajo cada foto y en el archivo `library/images/ATTRIBUTION.md`. Las imágenes se han reducido de tamaño.
 - **Códigos QR:** codificador propio según ISO/IEC 18004. «QR Code» es una marca registrada de DENSO WAVE.
 - Otras fuentes (p. ej. catálogo de estrellas, fechas de huerto, poder calorífico) se indican al final de la página de cada herramienta.
 

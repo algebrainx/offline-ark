@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Offline-Ark – lädt die PDFs aus scripts/library.json nach /bibliothek.
+/* Offline-Ark – lädt die PDFs aus scripts/library.json nach /library.
  * Nur gemeinfreie bzw. frei lizenzierte Dokumente gehören in library.json.
  * Bereits vorhandene Dateien werden übersprungen (mit --force neu laden).
  * Benötigt Internet und Node.js ≥ 16, keine Pakete. */
@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const DIR = path.resolve(__dirname, '..', 'bibliothek');
+const DIR = path.resolve(__dirname, '..', 'library');
 const force = process.argv.includes('--force');
 
 const RETRY_STATUS = [408, 425, 429, 500, 502, 503, 504];

@@ -10,7 +10,7 @@ title: Sources & licenses
 
 ## Library (PDFs)
 
-The PDFs in the [library](../bibliothek/index.html) are public-domain US government works or marked as public domain. They are unchanged and in English.
+The PDFs in the [library](../library/index.html) are public-domain US government works or marked as public domain. They are unchanged and in English.
 
 - **FM 4-25.11 First Aid** (US Army, 2002, with change C1 of 2004): [source page](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). Public domain, US government work, notice "Approved for public release".
 - **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA, P-2064, September 2020): [source page](https://www.ready.gov/publications). Public domain, US government work. ready.gov allows reproduction as long as content, photos and graphics are not altered and no endorsement is implied.
@@ -32,7 +32,7 @@ Content is mostly under CC BY-SA. We do not copy texts word for word; we only na
 
 - **OpenStreetMap** (hospitals, pharmacies, defibrillators, fire stations, water points, boundaries in the offline map): © OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). More details: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). The data reflects the retrieval date and may be outdated or incomplete.
 - **Natural Earth** (rough outlines and borders): [public domain](https://www.naturalearthdata.com/about/terms-of-use/).
-- **Photos** (plants, mushrooms, clouds, knots): [Wikimedia Commons](https://commons.wikimedia.org/), each under CC0, public domain, CC BY or CC BY-SA. Author and license are shown under each photo and in the file `bibliothek/bilder/ATTRIBUTION.md`. The images were scaled down.
+- **Photos** (plants, mushrooms, clouds, knots): [Wikimedia Commons](https://commons.wikimedia.org/), each under CC0, public domain, CC BY or CC BY-SA. Author and license are shown under each photo and in the file `library/images/ATTRIBUTION.md`. The images were scaled down.
 - **QR codes:** our own encoder following ISO/IEC 18004. "QR Code" is a registered trademark of DENSO WAVE.
 - Other sources (e.g. star catalogue, gardening dates, heating values) are listed at the bottom of the respective tool page.
 

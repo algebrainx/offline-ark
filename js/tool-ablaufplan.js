@@ -55,7 +55,7 @@
     return d.getFullYear() + '-' + OA.pad(d.getMonth() + 1) + '-' + OA.pad(d.getDate()) + 'T' + OA.pad(d.getHours()) + ':' + OA.pad(d.getMinutes());
   }
   function linkHtml(l) {
-    var href = l.tool ? l.tool + '.html' : OA.genUrl('wissen/' + l.wissen + '.html');
+    var href = l.tool ? l.tool + '.html' : OA.genUrl('knowledge/' + l.wissen + '.html');
     return '<a class="lnk" href="' + esc(href) + '">' + esc(OA.t(l.t)) + '</a>';
   }
 

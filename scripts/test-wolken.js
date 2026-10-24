@@ -54,7 +54,7 @@ function jpegSize(buf) {
 }
 var total = 0;
 W.genera.forEach(function (g) {
-  var p = path.join(root, 'bibliothek', 'bilder', 'wolken', g.img), b = fs.readFileSync(p);
+  var p = path.join(root, 'library', 'images', 'wolken', g.img), b = fs.readFileSync(p);
   assert.ok(b[0] === 0xFF && b[1] === 0xD8, g.img + ': JPEG');
   assert.ok(b.length <= 120 * 1024, g.img + ': höchstens 120 KB (' + b.length + ')');
   var s = jpegSize(b); assert.ok(s && s.w <= 800 && s.w === 640 && s.h === 480, g.img + ': 640x480 (Breite höchstens 800)');
@@ -63,10 +63,10 @@ W.genera.forEach(function (g) {
 assert.ok(total <= 3 * 1024 * 1024, 'Bilder zusammen höchstens 3 MB: ' + total);
 
 // Bildnachweis: jede Datei, jeder Urheber und jede Lizenz stehen in ATTRIBUTION.md
-var attr = fs.readFileSync(path.join(root, 'bibliothek', 'bilder', 'ATTRIBUTION.md'), 'utf8');
+var attr = fs.readFileSync(path.join(root, 'library', 'images', 'ATTRIBUTION.md'), 'utf8');
 W.genera.forEach(function (g) {
-  assert.ok(attr.indexOf('bibliothek/bilder/wolken/' + g.img) >= 0, g.img + ' fehlt in ATTRIBUTION.md');
-  var row = attr.split('\n').filter(function (l) { return l.indexOf('bibliothek/bilder/wolken/' + g.img) >= 0; })[0];
+  assert.ok(attr.indexOf('library/images/wolken/' + g.img) >= 0, g.img + ' fehlt in ATTRIBUTION.md');
+  var row = attr.split('\n').filter(function (l) { return l.indexOf('library/images/wolken/' + g.img) >= 0; })[0];
   assert.ok(row.indexOf(g.photo.author) >= 0, g.img + ': Urheber im Bildnachweis');
   assert.ok(row.indexOf(g.photo.license.replace('CC BY-SA ', 'CC BY-SA ')) >= 0, g.img + ': Lizenz im Bildnachweis');
   assert.ok(row.indexOf(g.photo.url) >= 0, g.img + ': Commons-Link im Bildnachweis');

@@ -253,7 +253,7 @@
 
   /* ---------- Start ---------- */
   el.heart.innerHTML = OA.icon('heart');
-  el.link.setAttribute('href', OA.genUrl('wissen/erste-hilfe.html'));
+  el.link.setAttribute('href', OA.genUrl('knowledge/erste-hilfe.html'));
   el.sound.checked = S.sound; el.vib.checked = S.vib; el.vol.value = S.vol; el.volVal.textContent = OA.t('{0} %', [S.vol]);
   if (!navigator.vibrate) { el.vib.closest('.switch-row').hidden = true; }
   setBpm(S.bpm);

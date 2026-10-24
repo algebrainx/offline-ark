@@ -3,7 +3,7 @@
  * Fakten: Wikipedia (CC BY-SA, in eigenen Worten zusammengefasst), DGfM, GIZ-Nord. Keine Dosierungen, keine Heilwirkungen.
  * st (Status): edible = essbar, toxic = giftig, inedible = ungenießbar, avoid = nicht empfohlen.
  * kw: Suchwörter in allen vier Sprachen und lateinisch (werden nicht angezeigt).
- * Bilder: bibliothek/bilder/pflanzen/<id>.jpg (640 x 480, verkleinert und zugeschnitten); Urheber und Lizenz in credits. */
+ * Bilder: library/images/pflanzen/<id>.jpg (640 x 480, verkleinert und zugeschnitten); Urheber und Lizenz in credits. */
 (function (root, data) {
   'use strict';
   if (typeof module === 'object' && module.exports) module.exports = data; else root.OA_PFLANZEN = data;

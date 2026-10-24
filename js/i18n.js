@@ -77,7 +77,7 @@
   }
 
   /* ---------- Erzeugte Seiten (Wissen, Quellen, Bibliothek) in der Sprache öffnen ---------- */
-  /** 'wissen/x.html' -> 'wissen/en/x.html' (Deutsch bleibt ohne Unterordner) */
+  /** 'knowledge/x.html' -> 'knowledge/en/x.html' (Deutsch bleibt ohne Unterordner) */
   OA.genPath = function (path, l) {
     l = l || lang;
     if (l === 'de') return path;

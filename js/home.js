@@ -11,8 +11,8 @@
   OA.$('#ic-water').innerHTML = OA.icon('drop');
   // Notfall-Kacheln zeigen auf die Wissensseite in der gewählten Sprache
   OA.$$('#emergency a').forEach(function (a) {
-    var id = a.getAttribute('href').replace(/^wissen\//, '');
-    a.setAttribute('href', OA.genUrl('wissen/' + id));
+    var id = a.getAttribute('href').replace(/^knowledge\//, '');
+    a.setAttribute('href', OA.genUrl('knowledge/' + id));
   });
 
   /* ---------- Kacheln: Werkzeuge nach Gruppen ---------- */
@@ -33,7 +33,7 @@
     var items = wissen.filter(function (w) { return !g.id || w.group === g.id; });
     if (!items.length) return;
     wissenHtml += '<h2 class="section-title">' + OA.esc(OA.t(g.title)) + '</h2><nav class="list" aria-label="' + OA.esc(OA.t(g.title)) + '">' + items.map(function (w) {
-      return '<a href="' + OA.genUrl('wissen/' + w.id + '.html') + '">' + OA.icon(w.icon) +
+      return '<a href="' + OA.genUrl('knowledge/' + w.id + '.html') + '">' + OA.icon(w.icon) +
         '<span class="name">' + OA.esc(OA.t(w.title)) + '<span class="sub">' + OA.esc(OA.t(w.sub)) + '</span></span>' + OA.icon('chev', 'chev') + '</a>';
     }).join('') + '</nav>';
   });
@@ -75,7 +75,7 @@
   wissen.forEach(function (w) {
     var s = search.filter(function (x) { return x.id === w.id; })[0] || {};
     var title = s.title || OA.t(w.title);
-    docs.push({ kind: OA.t('Wissen'), url: OA.genUrl('wissen/' + w.id + '.html'), icon: w.icon, title: title, desc: OA.t(w.sub),
+    docs.push({ kind: OA.t('Wissen'), url: OA.genUrl('knowledge/' + w.id + '.html'), icon: w.icon, title: title, desc: OA.t(w.sub),
       title_f: fold(title) + ' ' + fold(w.title), kw_f: fold((s.headings || '') + ' ' + OA.t(w.sub)), body_f: fold(s.text || '') });
   });
 

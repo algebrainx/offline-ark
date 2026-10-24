@@ -198,8 +198,8 @@
       '<button class="sheet-link" type="button" id="oa-export">' + OA.icon('download') + 'Alle Daten sichern</button>' +
       '<button class="sheet-link" type="button" id="oa-import">' + OA.icon('upload') + 'Daten wiederherstellen</button></section>' +
       '<section><h3>Mehr</h3>' +
-      '<a class="sheet-link" href="' + OA.genUrl('bibliothek/index.html') + '">' + OA.icon('book') + 'Bibliothek (PDFs)</a>' +
-      '<a class="sheet-link" href="' + OA.genUrl('wissen/quellen.html') + '">' + OA.icon('info') + 'Quellen &amp; Lizenzen</a></section>';
+      '<a class="sheet-link" href="' + OA.genUrl('library/index.html') + '">' + OA.icon('book') + 'Bibliothek (PDFs)</a>' +
+      '<a class="sheet-link" href="' + OA.genUrl('knowledge/quellen.html') + '">' + OA.icon('info') + 'Quellen &amp; Lizenzen</a></section>';
 
     // Sprachwahl: eigenes kleines Menü, Namen immer in der jeweiligen Sprache (auch ohne Deutsch lesbar)
     var langSheet = document.createElement('div'); langSheet.className = 'sheet langsheet no-print';
@@ -256,7 +256,7 @@
     foot.className = 'footer no-print';
     foot.innerHTML =
       '<div class="container"><span>Offline-Ark · läuft komplett ohne Internet</span>' +
-      '<nav><a href="' + OA.genUrl('wissen/quellen.html') + '">Quellen &amp; Lizenzen</a><a href="' + OA.genUrl('bibliothek/index.html') + '">Bibliothek</a></nav></div>';
+      '<nav><a href="' + OA.genUrl('knowledge/quellen.html') + '">Quellen &amp; Lizenzen</a><a href="' + OA.genUrl('library/index.html') + '">Bibliothek</a></nav></div>';
     document.body.appendChild(foot);
 
     // Druckfuß: zeigt auf Papier, woher die Seite stammt

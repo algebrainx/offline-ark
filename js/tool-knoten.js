@@ -101,7 +101,7 @@
       html += '<p class="kn-now" id="kn-now"></p>';
     } else if (k.photos) {
       html += '<div class="kn-photos">' + k.photos.map(function (p) {
-        return '<figure><img src="' + esc(OA.root + 'bibliothek/bilder/knoten/' + p.f) + '" alt="' + esc(t(p.c)) + '" loading="lazy" width="720" height="540"><figcaption>' + esc(t(p.c)) +
+        return '<figure><img src="' + esc(OA.root + 'library/images/knoten/' + p.f) + '" alt="' + esc(t(p.c)) + '" loading="lazy" width="720" height="540"><figcaption>' + esc(t(p.c)) +
           ' · <span data-notranslate>' + esc(t('Foto: {0}, {1}', [p.by, p.lic])) + ' · <a href="' + esc(p.u) + '" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a></span></figcaption></figure>';
       }).join('') + '</div>';
     }

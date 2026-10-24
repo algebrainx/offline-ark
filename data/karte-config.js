@@ -1,6 +1,6 @@
 /* Offline-Ark – Einstellungen der Offline-Karte (kann von Hand angepasst werden).
  *
- * tiles: Optionale Raster-Kacheln, die du selbst in bibliothek/karten/{z}/{x}/{y}.png (oder .jpg/.webp) ablegst.
+ * tiles: Optionale Raster-Kacheln, die du selbst in library/maps/{z}/{x}/{y}.png (oder .jpg/.webp) ablegst.
  *   path        Muster relativ zur Seite tools/karte.html; {z}/{x}/{y} werden ersetzt (Dateiendung kommt von exts)
  *   exts        Dateiendungen, die der Reihe nach probiert werden
  *   minZoom/maxZoom  Zoomstufen, für die Kacheln vorhanden sind
@@ -13,7 +13,7 @@ window.OA_KARTE_CONFIG = {
   maxZoom: 19,
   tiles: {
     enabled: false,
-    path: '../bibliothek/karten/{z}/{x}/{y}',
+    path: '../library/maps/{z}/{x}/{y}',
     exts: ['png', 'jpg', 'webp'],
     minZoom: 0,
     maxZoom: 17,

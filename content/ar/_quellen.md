@@ -10,7 +10,7 @@ title: المصادر والتراخيص
 
 ## المكتبة (ملفات PDF)
 
-ملفات PDF في [المكتبة](../bibliothek/index.html) هي أعمال حكومية أمريكية في الملك العام أو معلَّمة على أنها في الملك العام. وهي غير معدَّلة وباللغة الإنجليزية.
+ملفات PDF في [المكتبة](../library/index.html) هي أعمال حكومية أمريكية في الملك العام أو معلَّمة على أنها في الملك العام. وهي غير معدَّلة وباللغة الإنجليزية.
 
 - **FM 4-25.11 First Aid** (الجيش الأمريكي، 2002، مع التعديل C1 لعام 2004): [صفحة المصدر](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). ملك عام، عمل حكومي أمريكي، ملاحظة «Approved for public release».
 - **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA، P-2064، سبتمبر 2020): [صفحة المصدر](https://www.ready.gov/publications). ملك عام، عمل حكومي أمريكي. يسمح موقع ready.gov بإعادة النسخ ما دام المحتوى والصور والرسوم غير معدَّلة ولا يُوحى بتأييد رسمي.
@@ -32,7 +32,7 @@ title: المصادر والتراخيص
 
 - **OpenStreetMap** (المستشفيات والصيدليات وأجهزة إزالة الرجفان والإطفاء ونقاط المياه والحدود في الخريطة دون إنترنت): © مساهمو OpenStreetMap، [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). مزيد من التفاصيل: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). البيانات تعكس تاريخ التنزيل وقد تكون قديمة أو ناقصة.
 - **Natural Earth** (الخطوط العامة والحدود التقريبية): [ملك عام](https://www.naturalearthdata.com/about/terms-of-use/).
-- **الصور** (النباتات والفطر والسحب والعقد): [Wikimedia Commons](https://commons.wikimedia.org/)، كلٌّ منها بترخيص CC0 أو ملك عام أو CC BY أو CC BY-SA. يظهر اسم المصوّر والترخيص تحت كل صورة وفي الملف `bibliothek/bilder/ATTRIBUTION.md`. تم تصغير الصور.
+- **الصور** (النباتات والفطر والسحب والعقد): [Wikimedia Commons](https://commons.wikimedia.org/)، كلٌّ منها بترخيص CC0 أو ملك عام أو CC BY أو CC BY-SA. يظهر اسم المصوّر والترخيص تحت كل صورة وفي الملف `library/images/ATTRIBUTION.md`. تم تصغير الصور.
 - **رموز QR:** مشفّر خاص بنا وفق معيار ISO/IEC 18004. «QR Code» علامة تجارية مسجّلة لشركة DENSO WAVE.
 - المصادر الأخرى (مثل فهرس النجوم ومواعيد الزراعة وقيم التدفئة) مذكورة أسفل صفحة كل أداة.
 

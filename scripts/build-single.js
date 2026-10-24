@@ -5,10 +5,10 @@
  * Skripten, Wörterbüchern, Daten und Bildern (als data:-Adressen) und einen kleinen Router. Sie läuft per
  * Doppelklick – auch als Kopie über Messenger, Bluetooth oder USB-Stick, ohne Server und ohne weitere Dateien.
  *
- * Voraussetzung: erst  node scripts/build.js  (erzeugt wissen/, data/print-pages.js …).
+ * Voraussetzung: erst  node scripts/build.js  (erzeugt knowledge/, data/print-pages.js …).
  * Aufruf:  node scripts/build-single.js [--lang de,en,es,ar] [--no-pdf] [--out dist/offline-ark.html]
  *   --lang    nur diese Sprachen einbetten (kleinere Datei; "de" allein spart am meisten)
- *   --no-pdf  PDFs aus bibliothek/ weglassen (sonst werden sie mit eingebettet)
+ *   --no-pdf  PDFs aus library/ weglassen (sonst werden sie mit eingebettet)
  * Aufbau und Grenzen: siehe README, Abschnitt "Alles in einer Datei". Die Seitenskripte werden dafür nur im
  * Export (nicht im Projekt) angepasst: location.* -> OA_LOC (scripts/single-bridge.js). */
 'use strict';
@@ -118,14 +118,14 @@ function listPages() {
     });
   };
   add('tools', false);
-  add('wissen', true);
-  if (exists('bibliothek/index.html')) out.push('bibliothek/index.html');
-  ALL_LANGS.filter((l) => l !== 'de').forEach((l) => { if (exists(`bibliothek/${l}/index.html`)) out.push(`bibliothek/${l}/index.html`); });
+  add('knowledge', true);
+  if (exists('library/index.html')) out.push('library/index.html');
+  ALL_LANGS.filter((l) => l !== 'de').forEach((l) => { if (exists(`library/${l}/index.html`)) out.push(`library/${l}/index.html`); });
   return out;
 }
-/** Sprache einer Seite: wissen/en/x.html -> en, sonst de */
-function pageLang(rel) { const m = /^(?:wissen|bibliothek)\/(en|es|ar)\//.exec(rel); return m ? m[1] : 'de'; }
-const isGen = (rel) => /^(wissen|bibliothek)\//.test(rel);
+/** Sprache einer Seite: knowledge/en/x.html -> en, sonst de */
+function pageLang(rel) { const m = /^(?:knowledge|library)\/(en|es|ar)\//.exec(rel); return m ? m[1] : 'de'; }
+const isGen = (rel) => /^(knowledge|library)\//.test(rel);
 
 function tokenize(rel, html) {
   const dicts = [];
@@ -190,7 +190,7 @@ function collectAssets() {
 
 /* ---------- Zusammenbau ---------- */
 function main() {
-  if (!exists('wissen/erste-hilfe.html')) { console.error('Bitte zuerst  node scripts/build.js  ausführen.'); process.exit(1); }
+  if (!exists('knowledge/erste-hilfe.html')) { console.error('Bitte zuerst  node scripts/build.js  ausführen.'); process.exit(1); }
   const pages = {};
   listPages().forEach((rel) => {
     if (isGen(rel) && !LANGS.includes(pageLang(rel))) return;

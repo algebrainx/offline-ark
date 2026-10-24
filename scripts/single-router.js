@@ -33,9 +33,9 @@
     if (!p || p.charAt(p.length - 1) === '/') p += 'index.html';
     return { path: p, hash: u.hash };
   }
-  /** Erzeugte Seiten (wissen/, bibliothek/) gibt es je Sprache: wissen/x.html -> wissen/en/x.html */
+  /** Erzeugte Seiten (knowledge/, library/) gibt es je Sprache: knowledge/x.html -> knowledge/en/x.html */
   function localize(path, l) {
-    var m = /^(wissen|bibliothek)\/(?:(?:en|es|ar)\/)?([^\/]+\.html)$/.exec(path);
+    var m = /^(knowledge|library)\/(?:(?:en|es|ar)\/)?([^\/]+\.html)$/.exec(path);
     if (!m) return path;
     return l === 'de' ? m[1] + '/' + m[2] : m[1] + '/' + l + '/' + m[2];
   }

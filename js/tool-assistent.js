@@ -66,7 +66,7 @@
   }
   function toolUrl(id) { return id + '.html'; }
   function anchorUrl(page, key) {
-    var base = OA.genUrl('wissen/' + page + '.html');
+    var base = OA.genUrl('knowledge/' + page + '.html');
     var an = D.anchors[page] && D.anchors[page][key];
     return base + (an && an[OA.lang] ? '#' + an[OA.lang] : '');
   }

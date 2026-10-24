@@ -10,7 +10,7 @@ title: Quellen & Lizenzen
 
 ## Bibliothek (PDFs)
 
-Die PDFs in der [Bibliothek](../bibliothek/index.html) sind gemeinfreie US-Regierungswerke bzw. als gemeinfrei markiert. Sie sind unverändert und englisch.
+Die PDFs in der [Bibliothek](../library/index.html) sind gemeinfreie US-Regierungswerke bzw. als gemeinfrei markiert. Sie sind unverändert und englisch.
 
 - **FM 4-25.11 First Aid** (US-Armee, 2002, mit Änderung C1 von 2004): [Quellseite](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). Gemeinfrei, US-Regierungswerk, Vermerk „Approved for public release“.
 - **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA, P-2064, September 2020): [Quellseite](https://www.ready.gov/publications). Gemeinfrei, US-Regierungswerk. ready.gov erlaubt das Vervielfältigen, solange Inhalt, Fotos und Grafiken nicht verändert werden und kein Eindruck einer Billigung entsteht.
@@ -32,7 +32,7 @@ Inhalte stehen meist unter CC BY-SA. Wir übernehmen keine Texte wörtlich, sond
 
 - **OpenStreetMap** (Krankenhäuser, Apotheken, Defibrillatoren, Feuerwehr, Wasserstellen, Grenzen in der Offline-Karte): © OpenStreetMap-Mitwirkende, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Nähere Angaben: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). Die Daten sind ein Stand vom Abrufdatum und können veraltet oder unvollständig sein.
 - **Natural Earth** (grobe Umrisse und Grenzen): [gemeinfrei](https://www.naturalearthdata.com/about/terms-of-use/).
-- **Fotos** (Pflanzen, Pilze, Wolken, Knoten): [Wikimedia Commons](https://commons.wikimedia.org/), jeweils unter CC0, gemeinfrei, CC BY oder CC BY-SA. Urheber und Lizenz stehen unter jedem Foto und in der Datei `bibliothek/bilder/ATTRIBUTION.md`. Die Bilder wurden verkleinert.
+- **Fotos** (Pflanzen, Pilze, Wolken, Knoten): [Wikimedia Commons](https://commons.wikimedia.org/), jeweils unter CC0, gemeinfrei, CC BY oder CC BY-SA. Urheber und Lizenz stehen unter jedem Foto und in der Datei `library/images/ATTRIBUTION.md`. Die Bilder wurden verkleinert.
 - **QR-Codes:** eigener Encoder nach ISO/IEC 18004. „QR Code“ ist eine eingetragene Marke von DENSO WAVE.
 - Weitere Quellen (z. B. Sternkatalog, Gartentermine, Heizwerte) stehen unten auf der jeweiligen Werkzeugseite.
 

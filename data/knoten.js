@@ -1,7 +1,7 @@
 /* Offline-Ark – Knoten: Inhalte. Alle Texte sind deutsche Schlüssel für data/i18n/tool-knoten.js.
  * scene: Name einer Zeichnung aus data/knoten-szenen.js (animierte Schritte) – sonst Fotos + Textschritte.
  * Fachangaben: Wikipedia (de) zu den jeweiligen Knoten, frei zusammengefasst; Quellenlinks stehen je Knoten.
- * Fotos: Wikimedia Commons (gemeinfrei bzw. CC0), lokal in bibliothek/bilder/knoten/, Nachweis in bibliothek/bilder/ATTRIBUTION.md.
+ * Fotos: Wikimedia Commons (gemeinfrei bzw. CC0), lokal in library/images/knoten/, Nachweis in library/images/ATTRIBUTION.md.
  * Das Foto „Schotstek links.jpg“ fehlt mit Absicht: Die Commons-Beschreibung nennt es „falscher Schotstek“ (Enden auf verschiedenen Seiten). */
 (function () {
   'use strict';

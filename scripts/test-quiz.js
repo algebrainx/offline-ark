@@ -101,7 +101,7 @@ html.replace(/<(?:button|p|h1|h2|span|a|div|strong)[^>]*>([^<]{3,})</g, function
 var PD = require('../data/pflanzen.js');
 var ITEM = {}; PD.items.forEach(function (it) { ITEM[it.id] = it; });
 PD.items.forEach(function (it) {
-  assert.ok(fs.existsSync(path.join(root, 'bibliothek', 'bilder', 'pflanzen', it.id + '.jpg')), it.id + ': Bild fehlt');
+  assert.ok(fs.existsSync(path.join(root, 'library', 'images', 'pflanzen', it.id + '.jpg')), it.id + ': Bild fehlt');
   var c = PD.credits[it.id];
   assert.ok(c && c.by && c.lic && /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/.test(c.url), it.id + ': Namensnennung unvollständig');
 });

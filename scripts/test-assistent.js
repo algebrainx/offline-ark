@@ -76,7 +76,7 @@ Object.keys(D.anchors).forEach(function (page) {
   Object.keys(D.anchors[page]).forEach(function (key) {
     if (key === 'title') return;
     ['de', 'en', 'es', 'ar'].forEach(function (l) {
-      var f = path.join(root, 'wissen', l === 'de' ? '' : l, page + '.html');
+      var f = path.join(root, 'knowledge', l === 'de' ? '' : l, page + '.html');
       var html = fs.readFileSync(f, 'utf8'), id = D.anchors[page][key][l];
       assert.ok(id, page + '/' + key + ': Anker für ' + l + ' fehlt');
       assert.ok(html.indexOf('id="' + id + '"') !== -1, 'Anker ' + id + ' fehlt in ' + path.relative(root, f));

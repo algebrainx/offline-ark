@@ -23,13 +23,13 @@ D.phases.forEach(function (p, i) {
     assert.ok(!/\b\d+\s?(mg|µg|ml|tabletten|tropfen)\b/i.test(it.text), 'Dosierung? ' + it.text);
     (it.links || []).forEach(function (l) {
       assert.ok(l.t && (l.tool || l.wissen), it.id + ': Link');
-      var f = l.tool ? path.join(root, 'tools', l.tool + '.html') : path.join(root, 'wissen', l.wissen + '.html');
+      var f = l.tool ? path.join(root, 'tools', l.tool + '.html') : path.join(root, 'knowledge', l.wissen + '.html');
       if (!fs.existsSync(f)) warnings.push(path.relative(root, f) + ' fehlt (verlinkt von ' + it.id + ')');
     });
     total++;
   });
 });
-assert.ok(fs.existsSync(path.join(root, 'wissen', D.page + '.html')), 'Wissensseite fehlt');
+assert.ok(fs.existsSync(path.join(root, 'knowledge', D.page + '.html')), 'Wissensseite fehlt');
 console.log('Phasen:', D.phases.length, '· Punkte:', total, '· je Phase:', D.phases.map(function (p) { return p.items.length; }).join('/'));
 
 /* ---------- Übersetzungen ---------- */

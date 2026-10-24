@@ -68,7 +68,7 @@
   var PD = node ? require('../data/pflanzen.js') : window.OA_PFLANZEN;
   var ITEM = {};
   PD.items.forEach(function (it) { ITEM[it.id] = it; });
-  var IMG_DIR = 'bibliothek/bilder/pflanzen/';
+  var IMG_DIR = 'library/images/pflanzen/';
   // Status-Texte: genau die Begriffe aus tool-pflanzen (essbar, giftig, ungenießbar, nicht empfohlen, nur gekocht)
   var LAB = { edible: 'essbar', toxic: 'giftig', inedible: 'ungenießbar', avoid: 'nicht empfohlen', cooked: 'essbar, aber nur gekocht', raw: 'essbar, auch roh' };
   // Stichwort je giftigem Doppelgänger: eine Aussage gilt nur für ihn, wenn sie sein Stichwort enthält (oder keinen der Doppelgänger nennt)
@@ -260,7 +260,7 @@
 
   function save() { OA.store.set('quiz', S); }
   function catName(id) { return OA.t(id === 'mix' ? MIX.name : QD.CATS.filter(function (c) { return c.id === id; })[0].name); }
-  function linkUrl(path) { return /^wissen\//.test(path) ? OA.genUrl(path) : (OA.root || '') + path; }
+  function linkUrl(path) { return /^knowledge\//.test(path) ? OA.genUrl(path) : (OA.root || '') + path; }
 
   function show(v) {
     el.home.hidden = v !== 'home'; el.q.hidden = v !== 'q'; el.res.hidden = v !== 'res';

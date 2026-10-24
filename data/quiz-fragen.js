@@ -6,30 +6,30 @@
   'use strict';
 
   var CATS = [
-    { id: 'ersthilfe', name: 'Erste Hilfe', link: 'wissen/erste-hilfe.html', more: 'Mehr dazu: Erste Hilfe' },
+    { id: 'ersthilfe', name: 'Erste Hilfe', link: 'knowledge/erste-hilfe.html', more: 'Mehr dazu: Erste Hilfe' },
     { id: 'morse', name: 'Morse', link: 'tools/morse.html', more: 'Mehr dazu: Morse-Code' },
     { id: 'funk', name: 'Funkalphabet', link: 'tools/funk.html', more: 'Mehr dazu: Funk-Spickzettel' },
-    { id: 'pflanzen', name: 'Pflanzen & Doppelgänger', link: 'wissen/nahrung.html', more: 'Mehr dazu: Nahrung' },
+    { id: 'pflanzen', name: 'Pflanzen & Doppelgänger', link: 'knowledge/nahrung.html', more: 'Mehr dazu: Nahrung' },
     { id: 'bilder', name: 'Pflanzen & Pilze erkennen', link: 'tools/pflanzen.html', more: 'Mehr dazu: Pflanzen & Pilze' },
-    { id: 'wasser', name: 'Wasser & Vorrat', link: 'wissen/wasser.html', more: 'Mehr dazu: Wasser finden & aufbereiten' },
-    { id: 'strom', name: 'Stromausfall', link: 'wissen/stromausfall.html', more: 'Mehr dazu: Stromausfall-Leitfaden' }
+    { id: 'wasser', name: 'Wasser & Vorrat', link: 'knowledge/wasser.html', more: 'Mehr dazu: Wasser finden & aufbereiten' },
+    { id: 'strom', name: 'Stromausfall', link: 'knowledge/stromausfall.html', more: 'Mehr dazu: Stromausfall-Leitfaden' }
   ];
 
   // Namen der Wissensseiten für die Links (Schlüssel für die Übersetzung)
   var LINKS = {
-    'wissen/erste-hilfe.html': 'Mehr dazu: Erste Hilfe',
-    'wissen/wasser.html': 'Mehr dazu: Wasser finden & aufbereiten',
-    'wissen/nahrung.html': 'Mehr dazu: Nahrung',
-    'wissen/stromausfall.html': 'Mehr dazu: Stromausfall-Leitfaden',
-    'wissen/strom-energie.html': 'Mehr dazu: Strom & Energie off-grid',
-    'wissen/kommunikation.html': 'Mehr dazu: Kommunikation & Funk',
+    'knowledge/erste-hilfe.html': 'Mehr dazu: Erste Hilfe',
+    'knowledge/wasser.html': 'Mehr dazu: Wasser finden & aufbereiten',
+    'knowledge/nahrung.html': 'Mehr dazu: Nahrung',
+    'knowledge/stromausfall.html': 'Mehr dazu: Stromausfall-Leitfaden',
+    'knowledge/strom-energie.html': 'Mehr dazu: Strom & Energie off-grid',
+    'knowledge/kommunikation.html': 'Mehr dazu: Kommunikation & Funk',
     'tools/morse.html': 'Mehr dazu: Morse-Code',
     'tools/funk.html': 'Mehr dazu: Funk-Spickzettel',
     'tools/pflanzen.html': 'Mehr dazu: Pflanzen & Pilze'
   };
 
-  var EH = 'wissen/erste-hilfe.html', WA = 'wissen/wasser.html', NA = 'wissen/nahrung.html', ST = 'wissen/stromausfall.html',
-    SE = 'wissen/strom-energie.html', KO = 'wissen/kommunikation.html';
+  var EH = 'knowledge/erste-hilfe.html', WA = 'knowledge/wasser.html', NA = 'knowledge/nahrung.html', ST = 'knowledge/stromausfall.html',
+    SE = 'knowledge/strom-energie.html', KO = 'knowledge/kommunikation.html';
 
   var Q = [
     /* ---------- Erste Hilfe (content/erste-hilfe.md) ---------- */
