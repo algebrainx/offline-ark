@@ -122,7 +122,7 @@ node scripts/build-single.js --no-pdf             # ohne PDFs (kleiner)
 node scripts/build-single.js --lang de,en         # nur diese Sprachen (kleiner)
 ```
 
-Die Datei enthält alle Seiten (Start, Werkzeuge, Wissen und Bibliothek in allen Sprachen) samt Stilen, Skripten, Wörterbüchern, Daten, Bildern und PDFs (als Base64) und einen kleinen Router. Sie wird per Doppelklick im Browser geöffnet; Sprachwechsel, Links, Suche, Drucken und gespeicherte Eingaben (`localStorage`) funktionieren wie im Ordner. Größe: ca. 3 MB ohne PDFs, ca. 6,5 MB mit der PDF in `bibliothek/`.
+Die Datei enthält alle Seiten (Start, Werkzeuge, Wissen und Bibliothek in allen Sprachen) samt Stilen, Skripten, Wörterbüchern, Daten, Bildern und PDFs (als Base64) und einen kleinen Router. Sie wird per Doppelklick im Browser geöffnet; Sprachwechsel, Links, Suche, Drucken und gespeicherte Eingaben (`localStorage`) funktionieren wie im Ordner. Größe: ca. 8 MB ohne PDFs (alle Sprachen, Karten, Bilder), mit allen PDFs der Bibliothek rund 60 MB. Mit `--no-pdf` bleibt sie klein, mit `--lang de` ist sie am kleinsten.
 
 - Aufbau: jede Seite steht als Text in der Datei und wird beim Öffnen mit ihren Skripten zusammengesetzt und in einem eingebetteten Rahmen (`iframe srcdoc`) angezeigt. Die Adresse lautet z. B. `offline-ark.html#/tools/zeit.html`; der Zurück-Knopf des Browsers funktioniert.
 - Die Datei lässt sich nicht von Hand bearbeiten. Nach Änderungen im Projekt einfach neu erzeugen. Die Seitenskripte werden nur im Export angepasst (`location.*` → `scripts/single-bridge.js`), im Projekt bleibt alles unverändert.
@@ -194,7 +194,7 @@ Offline-Ark **ersetzt keine Ausbildung**. Besuche einen Erste-Hilfe-Kurs. Im Not
 - **Eigener Code und eigene Texte:** [MIT-Lizenz](LICENSE).
 - **Fremde Inhalte** behalten ihre Lizenz. Jede Wissensseite nennt unten ihre Quellen mit Link und Lizenz, zentral gesammelt auf der Seite *Quellen & Lizenzen* (`wissen/quellen.html`).
 - Genutzt werden u. a. Empfehlungen von BBK, DRK, Umweltbundesamt, Deutschem Rat für Wiederbelebung, WHO, CDC, FEMA/ready.gov, Bundesnetzagentur und Wikipedia (CC BY-SA). Offizielle Texte sind **nicht kopiert**, sondern in eigenen Worten zusammengefasst.
-- Gemeinfreies PDF in der Bibliothek: *FM 4-25.11 First Aid* (US-Armee).
+- Gemeinfreie PDFs in der Bibliothek (US-Regierungswerke, unverändert): *FM 4-25.11 First Aid*, *FM 21-10 Field Hygiene and Sanitation*, *ATP 3-50.21 Survival* und *FM 24-18 Tactical Single-Channel Radio Communications Techniques* (alle US-Armee, Vermerk „Approved for public release“) sowie *Are You Ready?* und *Be Prepared for Any Hazard* (FEMA/ready.gov, unverändert weitergeben erlaubt). Einzelheiten stehen auf der Seite *Quellen & Lizenzen*.
 - Die Startquellen [ligi/SurvivalManual](https://github.com/ligi/SurvivalManual) (GPL-3.0) und [PR0M3TH3AN/Survival-Data](https://github.com/PR0M3TH3AN/Survival-Data) (ohne Lizenzdatei) wurden als Themenanregung gelesen, aber **nicht kopiert**.
 
 ## Mithelfen

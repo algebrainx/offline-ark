@@ -40,6 +40,22 @@
     .feedback .head { font-weight: 700; margin-bottom: 4px; }
     .feedback p { margin: 0 0 8px; }
     .btn-row.center { justify-content: center; }
+    /* Bildfragen: Fotos, Namensnennung, Status-Chip */
+    .qz-photos { display: grid; gap: 10px; margin: 0 0 16px; }
+    .qz-photos.n2 { grid-template-columns: 1fr 1fr; }
+    .qz-fig { margin: 0; min-width: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--surface-2); }
+    .qz-fig img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface-2); }
+    .qz-cap { padding: 8px 12px 0; font-weight: 650; font-size: .92rem; overflow-wrap: anywhere; }
+    .qz-credit { padding: 0 12px; font-size: .75rem; line-height: 1.35; color: var(--text-2); }
+    .qz-credit a { display: inline-block; padding-block: 12px; min-height: 44px; box-sizing: border-box; color: var(--text-2); text-decoration: underline; overflow-wrap: anywhere; }
+    .qz-reveal { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 0 0 8px; }
+    .qz-chip { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; font-size: .82rem; font-weight: 650; border: 1.5px solid currentColor; background: var(--surface); }
+    .qz-chip.edible { color: var(--ok); }
+    .qz-chip.toxic { background: var(--danger); border-color: var(--danger); color: #fff; }
+    html[data-theme="night"] .qz-chip.toxic { color: #000; }
+    .qz-chip.inedible, .qz-chip.avoid { background: var(--warn-bg); border-color: var(--warn-line); color: var(--text); }
+    .qz-notice { margin: 16px 0 0; font-size: .92rem; }
+    .qz-notice a { display: inline-flex; align-items: center; min-height: 44px; }
   </style>
 </head>
 <body data-root="../" data-page="tool">
@@ -63,12 +79,18 @@
       <div class="q-head"><span id="q-prog"></span><span id="q-cat"></span></div>
       <div class="bar" aria-hidden="true"><span id="q-bar"></span></div>
       <h2 class="q-text" id="q-text" style="margin-top:0"></h2>
+      <div class="qz-photos" id="q-photos" hidden></div>
       <div class="q-prompt" id="q-prompt" hidden></div>
       <div class="answers" id="q-answers" role="group" aria-label="Antworten"></div>
       <div class="feedback" id="q-feedback" role="status" hidden>
         <div class="head" id="fb-head"></div>
+        <div class="qz-reveal" id="fb-reveal" hidden></div>
         <p id="fb-text"></p>
         <a id="fb-link" href="#"></a>
+      </div>
+      <div class="callout warn qz-notice" id="q-notice" hidden>
+        <strong>Quiz ersetzt keine Bestimmung – nur essen, wenn 100 % sicher bestimmt.</strong>
+        <a href="pflanzen.html">Pflanzen &amp; Pilze ansehen</a>
       </div>
       <div class="btn-row" style="margin-top:16px">
         <button type="button" class="btn primary" id="btn-next" hidden>Weiter</button>
@@ -95,6 +117,7 @@
 <script src="../js/common.js"></script>
 <script src="../data/morse-table.js"></script>
 <script src="../data/funk-alphabet.js"></script>
+<script src="../data/pflanzen.js"></script>
 <script src="../data/quiz-fragen.js"></script>
 <script src="../js/tool-quiz.js"></script>
 </body>

@@ -2,7 +2,10 @@
  * Zeiten sind Bereiche in Monaten: [Anfang, Ende] mit 0 = 1. Januar, 3 = 1. April, 3,5 = Mitte April, 12 = Ende Dezember.
  * Quelle der Termine: Bayerische Gartenakademie / LWG Veitshöchheim, "Sä- und Pflanztermine auf einen Blick" (Balken auf
  * halbe Monate gerundet), ergänzt durch die Infoschriften 2101, 2102, 2110, 2153, 2166 und 3182/3183 (Kräuter, Kartoffel,
- * Vorkultur, Erdbeere). Die Termine gelten für mittlere Lagen in Bayern; Baden-Württemberg liegt im ähnlichen Klima.
+ * Vorkultur, Erdbeere). Die Termine gelten für mittlere Lagen in Bayern. Eine eigene Tabelle für Baden-Württemberg gibt es
+ * nach Prüfung von LTZ Augustenberg, Gartenakademie BW, LVG Heidelberg, LOGL, Landesverband der Gartenfreunde und
+ * Verbraucherzentrale BW nicht. Aus der LTZ-Broschüre "Integrierter Pflanzenschutz im Haus- und Kleingarten" (2026) stammt nur
+ * die Pflanzung der Petersilie (Ende April bis Anfang Mai); weitere LTZ-Zeitpunkte stehen als Hinweise in bw.
  * Keys: pre = Vorkultur (Frühbeet oder drinnen), sow = Aussaat ins Freiland, plant = Pflanzung/Stecken/Legen draußen,
  * plantFoil/harvestFoil = früher mit Folie oder Vlies, harvest = Ernte.
  */
@@ -43,7 +46,7 @@
     { id:"gurke", name:"Gurke", group:"gemuese", pre:[[3.75,4]], sow:[[4.5,5.5]], plant:[[4.5,6.0]], harvest:[[6.5,8.0]] },
     { id:"paprika", name:"Paprika", group:"gemuese", pre:[[2,2.25]], plant:[[4.5,5.5]], harvest:[[7.5,9.0]] },
     { id:"fenchel", name:"Fenchel", group:"gemuese", sow:[[4.5,6.0]], plant:[[5.5,6.0]], harvest:[[7.5,9.5]] },
-    { id:"petersilie", name:"Petersilie", group:"kraut", sow:[[3,3.5]], harvest:[[4,10]] },
+    { id:"petersilie", name:"Petersilie",     group:"kraut", sow:[[3,3.5]], plant:[[3.85,4.25]], harvest:[[4,10]] },
     { id:"schnittlauch", name:"Schnittlauch", group:"kraut", sow:[[3,3.5]], harvest:[[3,11]], regrow:true },
     { id:"kresse", name:"Gartenkresse", group:"kraut", sow:[[3,3.5]], harvest:[[3,10]], emergency:true, regrow:true },
     { id:"rucola", name:"Rucola", group:"kraut", sow:[[3,3.5]], harvest:[[4,10]], regrow:true },
@@ -68,11 +71,21 @@
   frost: [
     { text: 'Frostempfindliche Kulturen (Tomate, Gurke, Zucchini, Paprika, Bohnen) erst ab Mitte Mai nach draußen bringen. Frühe Aussaaten und Pflanzungen im März und April schützt ein Vlies vor Frostschäden.' },
     { text: 'Die Eisheiligen (11. bis 15. Mai) sind eine alte, regional sehr unterschiedliche Bauernregel und nicht zuverlässig. Frost im Mai ist heute seltener als früher, aber weiterhin möglich. Beobachte die Wettervorhersage.' },
-    { text: 'In milden Lagen (Weinbauklima) kann man meist früher aussäen, in klimatisch benachteiligten Gegenden wie Höhenlagen oft erst später. Rechne dort mit einigen Wochen Verschiebung (Schätzung).' }
+    { text: 'Baden-Württemberg hat große Klimaunterschiede: Der Oberrheingraben zählt zu den wärmsten Gegenden Deutschlands (Jahresmittel etwa 11 °C), in den höchsten Lagen von Schwarzwald und Schwäbischer Alb liegt es nur bei etwa 4 bis 5 °C. Im Weinbauklima kann man meist früher, in klimatisch benachteiligten Gegenden oft erst später aussäen. Wie viele Wochen Unterschied das sind, geben die Quellen nicht an.' }
+  ],
+  // Einzelne Zeitpunkte aus Baden-Württemberg (LTZ Augustenberg, Broschüre 2026), nur mit Beleg
+  bw: [
+    { name: 'Petersilie', text: 'Anzucht ab Februar in geheizten Räumen ist möglich. Die kräftigen Jungpflanzen kommen zwischen Ende April und Anfang Mai ins Beet. Frühe Direktsaaten laufen oft schlecht auf, weil ein Bodenpilz (Pythium) die Wurzeln schädigt. Bei Aussaat Ende Juni oder Anfang Juli ist die Saat kaum noch gefährdet.' },
+    { name: 'Möhre', text: 'Frühe Sorten, die im März unter Folie angebaut werden, sind erntereif, bevor die Maden der Möhrenfliege in die Möhren fressen. Für Frühmöhren nennt das LTZ auch eine Aussaat nach Mitte Juni und im Juli, weil die erste Fliegengeneration dann kaum noch Eier legt und der Schaden in Grenzen bleibt. Die Möhrenfliege tritt ab Anfang Mai auf, in wärmeren Gebieten mit drei statt zwei Generationen.' },
+    { name: 'Kohl', text: 'Späte Kohlsorten, die erst ab Ende Mai gepflanzt werden, entgehen der Eiablage der ersten Generation der Kleinen Kohlfliege, die am meisten schadet. Die Kohldrehherzmücke fliegt ab Mitte Mai. Blumenkohl und Brokkoli sollten ab dann mit einem Gemüsefliegennetz geschützt werden. In Baden-Württemberg tritt sie vor allem in wärmeren Gebieten zunehmend auf.' },
+    { name: 'Radieschen', text: 'Früher Anbau umgeht den Befall durch die Kohlfliege: Die Ernte muss je nach Standort bis Ende April oder Anfang Mai abgeschlossen sein. Ein Vlies kann den Befall nahezu verhindern.' },
+    { name: 'Spinat', text: 'Winterspinat, der bis Anfang Mai geerntet wird, bleibt frei von der Rübenfliege, deren erste Generation Anfang Mai erscheint.' }
   ],
   sources: [
+    { name: 'LTZ Augustenberg (Baden-Württemberg) – Integrierter Pflanzenschutz im Haus- und Kleingarten, Ausgabe 2026 (PDF)', url: 'https://ltz.landwirtschaft-bw.de/site/pbs-bw-mlr-root/get/documents_E-1349457046/MLR.LEL/PB5Documents/ltz_ka/Kulturpflanzen/Haus-%20und%20Kleingarten/Pflanzenschutz/Integrierter%20Pflanzenschutz_DL/Integrierter%20Pflanzenschutz_Haus-%20und%20Kleingarten.pdf', license: '© LTZ Augustenberg – nur Fakten in eigenen Worten wiedergegeben', note: 'Zeitpunkte für Petersilie, Möhre, Kohl, Radieschen, Spinat in Baden-Württemberg' },
+    { name: 'LTZ Augustenberg – Haus- und Kleingarten (Übersichtsseite)', url: 'https://ltz.landwirtschaft-bw.de/,Lde/Startseite/Kulturpflanzen/Haus_+und+Kleingarten', license: '© LTZ Augustenberg – nur Fakten in eigenen Worten wiedergegeben', note: 'Seite mit der Pflanzenschutz-Broschüre und Beratung' },
     { name: 'LWG Bayern – Sä- und Pflanztermine auf einen Blick (PDF)', url: 'https://www.lwg.bayern.de/mam/cms06/gartenakademie/dateien/sae_und_pflanztermine.pdf', license: '© LWG Bayern – nur Fakten in eigenen Worten wiedergegeben', note: 'Termine für Aussaat, Pflanzung, Ernte' },
-    { name: 'LWG Bayern – Infoschrift 2101: Gemüse im Gartenjahr', url: 'https://www.lwg.bayern.de/cms06/gartenakademie/gartendokumente/infoschriften/071661/index.php', license: '© LWG Bayern – nur Fakten in eigenen Worten wiedergegeben', note: 'Frost, Vlies, Radieschen, Bohnen' },
+    { name: 'LWG Bayern – Infoschrift 2101: Gemüse im Gartenjahr', url: 'https://www.lwg.bayern.de/cms06/gartenakademie/gartendokumente/infoschriften/071661/index.php', license: '© LWG Bayern – nur Fakten in eigenen Worten wiedergegeben', note: 'Frost, Vlies, Radieschen, Bohnen, Lagenunterschiede' },
     { name: 'LWG Bayern – Infoschrift 2102: Gemüsearten zur Nachkultur', url: 'https://www.lwg.bayern.de/cms06/gartenakademie/gartendokumente/infoschriften/148345/index.php', license: '© LWG Bayern – nur Fakten in eigenen Worten wiedergegeben', note: 'Spinat, Feldsalat, Grünkohl' },
     { name: 'LWG Bayern – Infoschrift 2110: Jungpflanzen selbst anziehen (PDF)', url: 'https://www.lwg.bayern.de/mam/cms06/gartenakademie/dateien/2110-2020.pdf', license: '© LWG Bayern – nur Fakten in eigenen Worten wiedergegeben', note: 'Termine der Vorkultur' },
     { name: 'LWG Bayern – Infoschrift 2153: Die Kartoffel', url: 'https://www.lwg.bayern.de/cms06/gartenakademie/gartendokumente/infoschriften/247666/index.php', license: '© LWG Bayern – nur Fakten in eigenen Worten wiedergegeben', note: 'Pflanzung, Ernte, Lagerung' },
@@ -83,6 +96,7 @@
     { name: 'BZfE – How-to: Kürbis', url: 'https://www.bzfe.de/kueche-und-alltag/kochen/how-to-obst-und-gemuese/how-to-kuerbis', license: '© BZfE/BLE – nur in eigenen Worten zusammengefasst', note: 'Lagerung von Kürbis' },
     { name: 'BZfE – How-to: Möhren', url: 'https://www.bzfe.de/kueche-und-alltag/kochen/how-to-obst-und-gemuese/how-to-moehren', license: '© BZfE/BLE – nur in eigenen Worten zusammengefasst', note: 'Lagerung von Wurzelgemüse' },
     { name: 'Wikipedia – Eisheilige', url: 'https://de.wikipedia.org/wiki/Eisheilige', license: 'CC BY-SA 4.0', note: 'Eisheilige und Frost im Mai' },
+    { name: 'Wikipedia – Klima in Baden-Württemberg', url: 'https://de.wikipedia.org/wiki/Klima_in_Baden-W%C3%BCrttemberg', license: 'CC BY-SA 4.0', note: 'Klimaunterschiede im Land' },
     { name: 'Wikipedia – Gartenkresse', url: 'https://de.wikipedia.org/wiki/Gartenkresse', license: 'CC BY-SA 4.0', note: 'Keimung und Sprossen' },
     { name: 'Wikipedia – Gartenkürbis', url: 'https://de.wikipedia.org/wiki/Gartenk%C3%BCrbis', license: 'CC BY-SA 4.0', note: 'Lagerung von Kürbis' },
     { name: 'Wikipedia – Küchenzwiebel', url: 'https://de.wikipedia.org/wiki/K%C3%BCchenzwiebel', license: 'CC BY-SA 4.0', note: 'Lagerfähigkeit von Zwiebeln' }

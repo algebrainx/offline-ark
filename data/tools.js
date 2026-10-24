@@ -85,7 +85,7 @@
 
     // Selbstversorgung
     { id: 'garten', group: 'selbst', icon: 'sprout', title: 'Gartenkalender', sub: 'Säen und ernten',
-      desc: 'Was wann in Baden-Württemberg gesät, gepflanzt und geerntet wird.', kw: 'garten aussaat säen ernten gemüse kalender anbau beet' },
+      desc: 'Was wann in Süddeutschland (mit Hinweisen für Baden-Württemberg) gesät, gepflanzt und geerntet wird.', kw: 'garten aussaat säen ernten gemüse kalender anbau beet' },
     { id: 'einkochen', group: 'selbst', icon: 'jar', title: 'Haltbar machen', sub: 'Einkochen, Fermentieren, Trocknen',
       desc: 'Rechner und Anleitungen für sicheres Haltbarmachen.', kw: 'einkochen einwecken fermentieren trocknen sauerkraut salz haltbar konservieren' },
     { id: 'brennholz', group: 'selbst', icon: 'log', title: 'Brennholz-Rechner', sub: 'Holzbedarf für den Ofen',

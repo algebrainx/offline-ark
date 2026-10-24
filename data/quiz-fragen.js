@@ -1,7 +1,7 @@
 /* Offline-Ark – Quiz-Fragen (window.OA_QUIZ). Deutscher Text = Schlüssel für data/i18n/tool-quiz.js.
  * Jede Frage: a[0] ist die einzige richtige Antwort (die Reihenfolge wird beim Spielen gemischt).
  * Jede Aussage ist in content/*.md belegt (Dateiname in `src`); keine Dosierungen, keine neuen Behauptungen.
- * Morse- und Funkalphabet-Fragen werden zusätzlich zur Laufzeit aus den Tabellen erzeugt (js/tool-quiz.js). */
+ * Morse-, Funkalphabet- und Bildfragen (Pflanzen & Pilze, aus data/pflanzen.js) werden zusätzlich zur Laufzeit erzeugt (js/tool-quiz.js). */
 (function (root) {
   'use strict';
 
@@ -10,6 +10,7 @@
     { id: 'morse', name: 'Morse', link: 'tools/morse.html', more: 'Mehr dazu: Morse-Code' },
     { id: 'funk', name: 'Funkalphabet', link: 'tools/funk.html', more: 'Mehr dazu: Funk-Spickzettel' },
     { id: 'pflanzen', name: 'Pflanzen & Doppelgänger', link: 'wissen/nahrung.html', more: 'Mehr dazu: Nahrung' },
+    { id: 'bilder', name: 'Pflanzen & Pilze erkennen', link: 'tools/pflanzen.html', more: 'Mehr dazu: Pflanzen & Pilze' },
     { id: 'wasser', name: 'Wasser & Vorrat', link: 'wissen/wasser.html', more: 'Mehr dazu: Wasser finden & aufbereiten' },
     { id: 'strom', name: 'Stromausfall', link: 'wissen/stromausfall.html', more: 'Mehr dazu: Stromausfall-Leitfaden' }
   ];
@@ -23,7 +24,8 @@
     'wissen/strom-energie.html': 'Mehr dazu: Strom & Energie off-grid',
     'wissen/kommunikation.html': 'Mehr dazu: Kommunikation & Funk',
     'tools/morse.html': 'Mehr dazu: Morse-Code',
-    'tools/funk.html': 'Mehr dazu: Funk-Spickzettel'
+    'tools/funk.html': 'Mehr dazu: Funk-Spickzettel',
+    'tools/pflanzen.html': 'Mehr dazu: Pflanzen & Pilze'
   };
 
   var EH = 'wissen/erste-hilfe.html', WA = 'wissen/wasser.html', NA = 'wissen/nahrung.html', ST = 'wissen/stromausfall.html',

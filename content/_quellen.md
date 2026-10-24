@@ -12,6 +12,13 @@ title: Quellen & Lizenzen
 
 Die PDFs in der [Bibliothek](../bibliothek/index.html) sind gemeinfreie US-Regierungswerke bzw. als gemeinfrei markiert. Sie sind unverändert und englisch.
 
+- **FM 4-25.11 First Aid** (US-Armee, 2002, mit Änderung C1 von 2004): [Quellseite](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). Gemeinfrei, US-Regierungswerk, Vermerk „Approved for public release“.
+- **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA, P-2064, September 2020): [Quellseite](https://www.ready.gov/publications). Gemeinfrei, US-Regierungswerk. ready.gov erlaubt das Vervielfältigen, solange Inhalt, Fotos und Grafiken nicht verändert werden und kein Eindruck einer Billigung entsteht.
+- **Be Prepared for Any Hazard** (FEMA, P-2143, August 2024): [Quellseite](https://www.ready.gov/publications). Lizenz wie oben (US-Regierungswerk, ready.gov, unverändert).
+- **FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation** (US-Armee und US Marine Corps, 21. Juni 2000): [Quellseite](https://archive.org/details/FM21-10_2000). Gemeinfrei, Vermerk „Approved for public release; distribution is unlimited“.
+- **ATP 3-50.21 Survival** (US-Armee, September 2018): [Quellseite](https://archive.org/details/survival-atp-3-50-21). Gemeinfrei, Vermerk „Distribution restriction: Approved for public release; distribution is unlimited“.
+- **FM 24-18 Tactical Single-Channel Radio Communications Techniques** (US-Armee, 30. September 1987): [Quellseite](https://archive.org/details/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni). Gemeinfrei, Vermerk „Distribution restriction: Approved for public release; distribution is unlimited“.
+
 ## Die beiden Startquellen
 
 - **ligi/SurvivalManual** (GitHub, GPL-3.0). Eine App auf Basis des US-Armee-Handbuchs FM 3-05.70. Wir haben die Texte aus dem Repo nicht kopiert, weil die GPL-3.0 nicht zu einer MIT-lizenzierten Gesamtseite passt. Das zugrunde liegende Handbuch ist ein US-Regierungswerk; für die 2002er Ausgabe trägt das PDF aber einen Verteilungsvermerk, deshalb liegt es hier nicht in der Bibliothek.

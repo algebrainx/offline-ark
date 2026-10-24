@@ -12,6 +12,13 @@ title: Sources & licenses
 
 The PDFs in the [library](../bibliothek/index.html) are public-domain US government works or marked as public domain. They are unchanged and in English.
 
+- **FM 4-25.11 First Aid** (US Army, 2002, with change C1 of 2004): [source page](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). Public domain, US government work, notice "Approved for public release".
+- **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA, P-2064, September 2020): [source page](https://www.ready.gov/publications). Public domain, US government work. ready.gov allows reproduction as long as content, photos and graphics are not altered and no endorsement is implied.
+- **Be Prepared for Any Hazard** (FEMA, P-2143, August 2024): [source page](https://www.ready.gov/publications). License as above (US government work, ready.gov, unaltered).
+- **FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation** (US Army and US Marine Corps, 21 June 2000): [source page](https://archive.org/details/FM21-10_2000). Public domain, notice "Approved for public release; distribution is unlimited".
+- **ATP 3-50.21 Survival** (US Army, September 2018): [source page](https://archive.org/details/survival-atp-3-50-21). Public domain, notice "Distribution restriction: Approved for public release; distribution is unlimited".
+- **FM 24-18 Tactical Single-Channel Radio Communications Techniques** (US Army, 30 September 1987): [source page](https://archive.org/details/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni). Public domain, notice "Distribution restriction: Approved for public release; distribution is unlimited".
+
 ## The two starting sources
 
 - **ligi/SurvivalManual** (GitHub, GPL-3.0). An app based on the US Army manual FM 3-05.70. We did not copy the texts from the repository, because the GPL-3.0 does not fit a site as a whole that is licensed under the MIT license. The underlying manual is a US government work; however, for the 2002 edition the PDF carries a distribution notice, which is why it is not in the library here.

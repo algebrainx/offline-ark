@@ -64,6 +64,141 @@
     return q;
   }
 
+  /* ---------- Bildfragen: Pflanzen & Pilze (Daten: data/pflanzen.js) ---------- */
+  var PD = node ? require('../data/pflanzen.js') : window.OA_PFLANZEN;
+  var ITEM = {};
+  PD.items.forEach(function (it) { ITEM[it.id] = it; });
+  var IMG_DIR = 'bibliothek/bilder/pflanzen/';
+  // Status-Texte: genau die Begriffe aus tool-pflanzen (essbar, giftig, ungenießbar, nicht empfohlen, nur gekocht)
+  var LAB = { edible: 'essbar', toxic: 'giftig', inedible: 'ungenießbar', avoid: 'nicht empfohlen', cooked: 'essbar, aber nur gekocht', raw: 'essbar, auch roh' };
+  // Stichwort je giftigem Doppelgänger: eine Aussage gilt nur für ihn, wenn sie sein Stichwort enthält (oder keinen der Doppelgänger nennt)
+  var STEM = { maigloeckchen: 'Maiglöckchen', herbstzeitlose: 'Herbstzeitlose', 'gruener-knollenblaetterpilz': 'Knollenblätterpilz',
+    'weisser-knollenblaetterpilz': 'Knollenblätterpilz', 'falscher-pfifferling': 'Falsche', oelbaumpilz: 'Ölbaumpilz', gallenroehrling: 'Gallenröhrling',
+    hundspetersilie: 'Hundspetersilie', schierling: 'Schierling', attich: 'Attich', tollkirsche: 'Tollkirsche', aronstab: 'Aronstab' };
+  // Aussagen, die keinen Unterschied beschreiben (nur Hinweise): pair-id + Index in diff[]
+  var SKIP_DIFF = { champignon: [2, 3], steinpilz: [2], heidelbeere: [3], sauerampfer: [3], holunder: [3] };
+
+  /** Text in Sätze teilen. */
+  function sentences(s) {
+    var out = [], re = /[\s\S]+?[.!?]+(?=\s|$)/g, m, last = 0;
+    while ((m = re.exec(s))) { out.push(m[0].trim()); last = re.lastIndex; }
+    var tail = s.slice(last).trim();
+    if (tail) out.push(tail);
+    return out;
+  }
+  /** Die ersten n Sätze aus einer oder mehreren Textstellen; Rückgabe mit Herkunft, damit Übersetzungen satzweise zusammengesetzt werden können. */
+  function pickSentences(srcs, n) {
+    var out = [];
+    srcs.forEach(function (s, si) { sentences(s).forEach(function (t, ti) { out.push({ src: si, idx: ti, text: t }); }); });
+    return out.slice(0, n);
+  }
+  function expl(srcs, n) { return pickSentences(srcs, n || 2).map(function (p) { return p.text; }).join(' '); }
+
+  /** Aussagen eines Paares, die als Antwort taugen (höchstens 2 Sätze); y = Doppelgänger oder null (alle). */
+  function diffStatements(pair, y) {
+    var skip = SKIP_DIFF[pair.id] || [], out = [];
+    pair.diff.forEach(function (d, k) {
+      if (skip.indexOf(k) >= 0) return;
+      var text = expl([d], 2);
+      if (y) {
+        var mine = text.indexOf(STEM[y]) >= 0;
+        var other = pair.bad.some(function (b) { return b !== y && STEM[b] !== STEM[y] && text.indexOf(STEM[b]) >= 0; });
+        if (!mine && other) return;
+      }
+      out.push({ k: k, text: text });
+    });
+    return out;
+  }
+  function pairsOf(id) { return PD.pairs.filter(function (p) { return p.ok.indexOf(id) >= 0 || p.bad.indexOf(id) >= 0; }); }
+
+  function imgQuestion(base) {
+    base.cat = 'bilder'; base.prompt = null; base.qArgs = base.qArgs || null; base.eRaw = null; base.raw = false; base.link = 'tools/pflanzen.html';
+    return base;
+  }
+  function names(ids) { return ids.map(function (i) { return { t: ITEM[i].name, ok: false }; }); }
+
+  /** (1) Welche Pflanze / welcher Pilz ist das? Falsche Antworten bevorzugt aus den Doppelgängern. */
+  function genImgId(rng, used) {
+    var free = PD.items.filter(function (it) { return !used.items[it.id]; });
+    var it = pick(free.length ? free : PD.items, rng);
+    var partners = [];
+    pairsOf(it.id).forEach(function (p) { p.ok.concat(p.bad).forEach(function (i) { if (i !== it.id && partners.indexOf(i) < 0 && ITEM[i].type === it.type) partners.push(i); }); });
+    var wrong = shuffle(partners, rng).slice(0, 3);
+    shuffle(PD.items.filter(function (o) { return o.type === it.type && o.id !== it.id && wrong.indexOf(o.id) < 0; }), rng)
+      .forEach(function (o) { if (wrong.length < 3) wrong.push(o.id); });
+    var answers = [{ t: it.name, ok: true }].concat(names(wrong));
+    return imgQuestion({ id: 'gen-bild-id-' + it.id, kind: 'id', q: it.type === 'mushroom' ? 'Welcher Pilz ist das?' : 'Welche Pflanze ist das?',
+      answers: shuffle(answers, rng), img: [it.id], reveal: [it.id], e: expl(it.look, 2), item: it.id, items: [it.id] });
+  }
+
+  /** (2) Essbar oder giftig? Falsche Antworten sind nur Einstufungen, die der richtigen klar widersprechen. */
+  function genImgStatus(rng, used) {
+    var pool = PD.items.filter(function (it) { return it.st !== 'avoid'; });
+    var free = pool.filter(function (it) { return !used.items[it.id]; });
+    var it = pick(free.length ? free : pool, rng), right, wrong;
+    if (it.st === 'edible' && it.cond === 'nur gekocht') { right = 'cooked'; wrong = ['raw', 'inedible']; }
+    else if (it.st === 'edible') { right = 'edible'; wrong = ['toxic', 'inedible', 'avoid']; }
+    else if (it.st === 'toxic') { right = 'toxic'; wrong = ['edible', 'cooked']; }
+    else { right = 'inedible'; wrong = ['edible', 'cooked']; }
+    var answers = [{ t: LAB[right], ok: true }].concat(wrong.map(function (w) { return { t: LAB[w], ok: false }; }));
+    return imgQuestion({ id: 'gen-bild-st-' + it.id, kind: 'status', q: 'Ist das essbar oder giftig?', answers: shuffle(answers, rng),
+      img: [it.id], reveal: [it.id], e: expl([it.danger], 2), item: it.id, items: [it.id] });
+  }
+
+  /** (3) Was unterscheidet X von Y? Die falschen Antworten stammen aus Paaren ohne gemeinsame Art. */
+  function genImgDiff(rng, used) {
+    var combos = [];
+    PD.pairs.forEach(function (p) {
+      p.bad.forEach(function (y) {
+        var st = diffStatements(p, y);
+        if (st.length) combos.push({ p: p, y: y, st: st });
+      });
+    });
+    var free = combos.filter(function (c) { return !used.pairs[c.p.id] && !used.items[c.p.ok[0]] && !used.items[c.y]; });
+    if (!free.length) free = combos.filter(function (c) { return !used.pairs[c.p.id]; });
+    var c = pick(free.length ? free : combos, rng), s = pick(c.st, rng), x = c.p.ok[0];
+    var members = c.p.ok.concat(c.p.bad);
+    var pool = [];
+    PD.pairs.forEach(function (o) {
+      if (o.ok.concat(o.bad).some(function (i) { return members.indexOf(i) >= 0; })) return;
+      diffStatements(o, null).forEach(function (d) { pool.push({ text: d.text, fungi: !!o.fungi }); });
+    });
+    var same = pool.filter(function (d) { return d.fungi === !!c.p.fungi; });
+    var texts = [];
+    shuffle(same.length >= 3 ? same : pool, rng).forEach(function (d) { if (texts.length < 3 && texts.indexOf(d.text) < 0 && d.text !== s.text) texts.push(d.text); });
+    var answers = [{ t: s.text, ok: true }].concat(texts.map(function (t) { return { t: t, ok: false }; }));
+    return imgQuestion({ id: 'gen-bild-df-' + c.p.id + '-' + c.y + '-' + s.k, kind: 'diff', q: '{0} und {1}: Was unterscheidet die beiden?',
+      qArgs: [ITEM[x].name, ITEM[c.y].name], qArgsT: true, answers: shuffle(answers, rng), img: [x, c.y], reveal: [], e: expl([c.p.risk], 2),
+      pair: c.p.id, items: [x, c.y] });
+  }
+
+  /** k Bildfragen verschiedener Arten ohne doppelte Fotos. */
+  function genImages(k, rng, used) {
+    used = used || { items: {}, pairs: {} };
+    var out = [], kinds = [];
+    for (var i = 0; i < k; i++) {
+      if (!kinds.length) kinds = shuffle(['id', 'status', 'diff'], rng);
+      var kind = kinds.shift();
+      var q = kind === 'id' ? genImgId(rng, used) : (kind === 'status' ? genImgStatus(rng, used) : genImgDiff(rng, used));
+      q.items.forEach(function (x) { used.items[x] = 1; });
+      if (q.pair) used.pairs[q.pair] = 1;
+      out.push(q);
+    }
+    return out;
+  }
+
+  /** Alle deutschen Texte der Bildfragen für das Wörterbuch (Generator und Test). sent: Sätze, die aus mehreren Quellsätzen bestehen. */
+  function imageKeys() {
+    var direct = {}, sent = {};
+    function add(srcs) { var k = expl(srcs, 2); sent[k] = { key: k, srcs: srcs, n: 2 }; }
+    PD.items.forEach(function (it) {
+      direct[it.name] = 1; add(it.look); if (it.st !== 'avoid') add([it.danger]);
+    });
+    Object.keys(LAB).forEach(function (k) { direct[LAB[k]] = 1; });
+    PD.pairs.forEach(function (p) { add([p.risk]); diffStatements(p, null).forEach(function (d) { sent[d.text] = { key: d.text, srcs: [p.diff[d.k]], n: 2 }; }); });
+    return { direct: Object.keys(direct), sent: Object.keys(sent).map(function (k) { return sent[k]; }) };
+  }
+
   function staticOf(cat) { return QD.QUESTIONS.filter(function (q) { return q.cat === cat; }); }
 
   /** Baut eine Runde: catId = Kategorie oder 'mix'. */
@@ -83,8 +218,11 @@
       genAlphaN(n);
     } else if (catId === 'mix') {
       var pool = QD.QUESTIONS.filter(function (q) { return q.cat !== 'morse'; });
-      shuffle(pool, rng).slice(0, n - 4).forEach(function (q) { out.push(fromStatic(q, rng)); });
+      shuffle(pool, rng).slice(0, n - 5).forEach(function (q) { out.push(fromStatic(q, rng)); });
       genMorseN(2); genAlphaN(2);
+      genImages(1, rng).forEach(function (q) { out.push(q); });
+    } else if (catId === 'bilder') {
+      genImages(n, rng).forEach(function (q) { out.push(q); });
     } else {
       shuffle(staticOf(catId), rng).slice(0, n).forEach(function (q) { out.push(fromStatic(q, rng)); });
     }
@@ -99,7 +237,8 @@
     });
   }
 
-  var api = { ROUND: ROUND, MIX: MIX, buildRound: buildRound, retryRound: retryRound, staticOf: staticOf, genMorse: genMorse, genAlpha: genAlpha, shuffle: shuffle, CATS: QD.CATS, QUESTIONS: QD.QUESTIONS, LINKS: QD.LINKS };
+  var api = { ROUND: ROUND, MIX: MIX, buildRound: buildRound, retryRound: retryRound, staticOf: staticOf, genMorse: genMorse, genAlpha: genAlpha, shuffle: shuffle, CATS: QD.CATS, QUESTIONS: QD.QUESTIONS, LINKS: QD.LINKS,
+    genImages: genImages, imageKeys: imageKeys, pickSentences: pickSentences, sentences: sentences, expl: expl, diffStatements: diffStatements, SKIP_DIFF: SKIP_DIFF, STEM: STEM, LAB: LAB, IMG_DIR: IMG_DIR };
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; }
   if (node || !window.OA) return;
 
@@ -111,6 +250,7 @@
     home: OA.$('#view-home'), q: OA.$('#view-q'), res: OA.$('#view-res'), cats: OA.$('#cat-list'), mix: OA.$('#btn-mix'),
     prog: OA.$('#q-prog'), bar: OA.$('#q-bar'), qcat: OA.$('#q-cat'), text: OA.$('#q-text'), prompt: OA.$('#q-prompt'),
     ans: OA.$('#q-answers'), fb: OA.$('#q-feedback'), fbHead: OA.$('#fb-head'), fbText: OA.$('#fb-text'), fbLink: OA.$('#fb-link'),
+    photos: OA.$('#q-photos'), notice: OA.$('#q-notice'), reveal: OA.$('#fb-reveal'),
     next: OA.$('#btn-next'), quit: OA.$('#btn-quit'),
     resTitle: OA.$('#res-title'), resNum: OA.$('#res-num'), resMsg: OA.$('#res-msg'), retry: OA.$('#btn-retry'), again: OA.$('#btn-again'), back: OA.$('#btn-back')
   };
@@ -127,10 +267,43 @@
     window.scrollTo(0, 0);
   }
 
+  /* ---------- Bildfragen ---------- */
+  var chipIcon = { edible: 'check', toxic: 'alert', inedible: 'close', avoid: 'alert' };
+  function credit(id) {
+    var c = PD.credits[id];
+    var by = '<span dir="auto" data-notranslate>' + OA.esc(c.by) + '</span>';
+    var lic = '<span class="ltr" data-notranslate>' + OA.esc(c.lic) + '</span>';
+    return '<div class="qz-credit"><a href="' + OA.esc(c.url) + '" target="_blank" rel="noopener">' + OA.t('Foto: {0} · {1}', [by, lic]) +
+      (c.lic === 'CC0' ? '' : ' · ' + OA.esc(OA.t('ggf. verkleinert'))) + '</a></div>';
+  }
+  function renderPhotos(q) {
+    el.notice.hidden = !q.img;
+    el.photos.hidden = !q.img;
+    el.photos.innerHTML = '';
+    if (!q.img) return;
+    el.photos.className = 'qz-photos' + (q.img.length > 1 ? ' n2' : '');
+    el.photos.innerHTML = q.img.map(function (id) {
+      var it = ITEM[id];
+      // Der Alternativtext verrät den Namen nicht
+      return '<figure class="qz-fig"><img src="' + OA.root + IMG_DIR + id + '.jpg" width="640" height="480" alt="' +
+        OA.esc(OA.t(it.type === 'mushroom' ? 'Foto eines Pilzes' : 'Foto einer Pflanze')) + '">' +
+        (q.kind === 'diff' ? '<div class="qz-cap">' + OA.esc(OA.t(it.name)) + '</div>' : '') + credit(id) + '</figure>';
+    }).join('');
+  }
+  function renderReveal(q) {
+    var ids = q.reveal || [];
+    el.reveal.hidden = !ids.length;
+    el.reveal.innerHTML = ids.map(function (id) {
+      var it = ITEM[id], cond = it.cond ? ' · ' + OA.esc(OA.t(it.cond)) : '';
+      return '<span class="qz-chip ' + it.st + '">' + OA.icon(chipIcon[it.st]) + '&nbsp;' + OA.esc(OA.t(LAB[it.st])) + cond + '</span>' +
+        '<strong>' + OA.esc(OA.t(it.name)) + '</strong> <span class="ltr" data-notranslate><em>' + OA.esc(it.latin) + '</em></span>';
+    }).join('');
+  }
+
   function renderHome() {
     el.cats.innerHTML = QD.CATS.map(function (c) {
       var b = S.best[c.id];
-      var sub = (c.id === 'morse' || c.id === 'funk') ? OA.t('Immer neue Fragen') : OA.t('{0} Fragen', [staticOf(c.id).length]);
+      var sub = (c.id === 'morse' || c.id === 'funk' || c.id === 'bilder') ? OA.t('Immer neue Fragen') : OA.t('{0} Fragen', [staticOf(c.id).length]);
       var best = b ? OA.t('Bestwert: {0} von {1}', [b.ok, b.n]) : OA.t('Noch nicht gespielt');
       return '<button type="button" class="cat" data-cat="' + c.id + '"><span class="name">' + OA.esc(OA.t(c.name)) + '</span>' +
         '<span class="sub">' + OA.esc(sub) + ' · <span class="ltr" data-notranslate>' + OA.esc(best) + '</span></span></button>';
@@ -150,7 +323,8 @@
     el.prog.textContent = OA.t('Frage {0} von {1}', [run.i + 1, run.qs.length]);
     el.bar.style.width = (run.i / run.qs.length * 100) + '%';
     el.qcat.textContent = catName(q.cat);
-    el.text.textContent = OA.t(q.q, q.qArgs);
+    el.text.textContent = OA.t(q.q, q.qArgsT ? q.qArgs.map(function (a) { return OA.t(a); }) : q.qArgs);
+    renderPhotos(q);
     el.prompt.hidden = !q.prompt;
     el.prompt.textContent = q.prompt || '';
     el.ans.innerHTML = q.answers.map(function (a, i) {
@@ -174,6 +348,7 @@
     el.fbHead.textContent = OA.t(a.ok ? 'Richtig!' : 'Leider falsch.');
     el.fb.className = 'feedback ' + (a.ok ? 'ok' : 'bad');
     el.fbText.innerHTML = q.e ? OA.esc(OA.t(q.e)) : '<strong class="ltr" data-notranslate>' + OA.esc(q.eRaw) + '</strong>';
+    renderReveal(q);
     el.fbLink.setAttribute('href', linkUrl(q.link));
     el.fbLink.textContent = OA.t(QD.LINKS[q.link]);
     el.fb.hidden = false;

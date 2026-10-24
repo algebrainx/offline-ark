@@ -10,7 +10,7 @@
 'use strict';
 
 /* <generated> */
-const VERSION = '77bd37db87';
+const VERSION = 'bb1f7877f9';
 const ASSETS = [
 "bibliothek/ar/index.html",
 "bibliothek/bilder/knoten/mastwurf-abok11.jpg",
@@ -276,7 +276,7 @@ const ASSETS = [
 "wissen/stromausfall.html",
 "wissen/wasser.html"
 ];
-const PDFS = ["bibliothek/fm-4-25-11-first-aid.pdf"];
+const PDFS = ["bibliothek/atp-3-50-21-survival.pdf","bibliothek/fema-are-you-ready.pdf","bibliothek/fema-hazard-info-sheets.pdf","bibliothek/fm-21-10-field-hygiene-sanitation.pdf","bibliothek/fm-24-18-radio-techniques.pdf","bibliothek/fm-4-25-11-first-aid.pdf"];
 /* </generated> */
 
 const CACHE = 'oa-static-' + VERSION;

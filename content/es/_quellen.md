@@ -12,6 +12,13 @@ title: Fuentes y licencias
 
 Los PDF de la [Biblioteca](../bibliothek/index.html) son obras del gobierno de EE. UU. de dominio público o marcadas como de dominio público. Están sin modificar y en inglés.
 
+- **FM 4-25.11 First Aid** (Ejército de EE. UU., 2002, con el cambio C1 de 2004): [página de origen](https://archive.org/details/fm-4-25-11-first-aid-c-1-2004). Dominio público, obra del gobierno de EE. UU., aviso «Approved for public release».
+- **Are You Ready? An In-Depth Guide to Citizen Preparedness** (FEMA, P-2064, septiembre de 2020): [página de origen](https://www.ready.gov/publications). Dominio público, obra del gobierno de EE. UU. ready.gov permite la reproducción siempre que no se alteren el contenido, las fotos ni los gráficos y no se sugiera un respaldo oficial.
+- **Be Prepared for Any Hazard** (FEMA, P-2143, agosto de 2024): [página de origen](https://www.ready.gov/publications). Licencia como la anterior (obra del gobierno de EE. UU., ready.gov, sin modificar).
+- **FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation** (Ejército y Cuerpo de Infantería de Marina de EE. UU., 21 de junio de 2000): [página de origen](https://archive.org/details/FM21-10_2000). Dominio público, aviso «Approved for public release; distribution is unlimited».
+- **ATP 3-50.21 Survival** (Ejército de EE. UU., septiembre de 2018): [página de origen](https://archive.org/details/survival-atp-3-50-21). Dominio público, aviso «Distribution restriction: Approved for public release; distribution is unlimited».
+- **FM 24-18 Tactical Single-Channel Radio Communications Techniques** (Ejército de EE. UU., 30 de septiembre de 1987): [página de origen](https://archive.org/details/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni). Dominio público, aviso «Distribution restriction: Approved for public release; distribution is unlimited».
+
 ## Las dos fuentes iniciales
 
 - **ligi/SurvivalManual** (GitHub, GPL-3.0). Una aplicación basada en el manual del ejército de EE. UU. FM 3-05.70. No hemos copiado los textos del repositorio, porque la GPL-3.0 no encaja con un sitio completo con licencia MIT. El manual en que se basa es una obra del gobierno de EE. UU.; pero para la edición de 2002 el PDF lleva una nota de distribución, por eso no está aquí en la biblioteca.

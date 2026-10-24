@@ -317,8 +317,8 @@ OA.i18n.add({
 
   "Gartenkalender": { en: "Garden calendar", es: "Calendario de huerto", ar: "تقويم الحديقة" },
   "Säen und ernten": { en: "Sowing and harvesting", es: "Sembrar y cosechar", ar: "الزراعة والحصاد" },
-  "Was wann in Baden-Württemberg gesät, gepflanzt und geerntet wird.": {
-    en: "What is sown, planted and harvested when in Baden-Württemberg.", es: "Qué se siembra, planta y cosecha y cuándo en Baden-Württemberg.", ar: "ماذا يُزرع ويُغرس ويُحصد ومتى في بادن-فورتمبيرغ." },
+  "Was wann in Süddeutschland (mit Hinweisen für Baden-Württemberg) gesät, gepflanzt und geerntet wird.": {
+    en: "What is sown, planted and harvested when in southern Germany (with notes for Baden-Württemberg).", es: "Qué se siembra, planta y cosecha y cuándo en el sur de Alemania (con notas para Baden-Württemberg).", ar: "ماذا يُزرع ويُغرس ويُحصد ومتى في جنوب ألمانيا (مع ملاحظات لبادن-فورتمبيرغ)." },
   "garten aussaat säen ernten gemüse kalender anbau beet": {
     en: "garden sowing harvest vegetables calendar growing bed", es: "huerto siembra cosecha verduras calendario cultivo bancal", ar: "حديقة بذر حصاد خضار تقويم زراعة" },
 

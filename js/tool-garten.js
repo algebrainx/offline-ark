@@ -1,5 +1,6 @@
 /* Offline-Ark – Gartenkalender (Oberfläche). Rechenkern: js/garten-core.js, Daten: data/garten.js.
- * Termine: Bayerische Gartenakademie (LWG), siehe Quellen auf der Seite. Richtwerte, auf halbe Monate gerundet. */
+ * Termine: Bayerische Gartenakademie (LWG), dazu einzelne Zeitpunkte des LTZ Augustenberg (Baden-Württemberg), siehe Quellen
+ * auf der Seite. Richtwerte, auf halbe Monate gerundet. */
 (function () {
   'use strict';
   var OA = window.OA, D = window.OA_GARTEN, C = window.OA_GARTEN_CORE;
@@ -12,7 +13,7 @@
   var el = {
     q: OA.$('#q'), filter: OA.$('#filter'), month: OA.$('#month'), store: OA.$('#store'), count: OA.$('#count'), mhead: OA.$('#mhead'),
     list: OA.$('#list'), storeIntro: OA.$('#storeIntro'), storeList: OA.$('#storeList'), emerList: OA.$('#emerList'),
-    frostList: OA.$('#frostList'), sources: OA.$('#sources'), fSow: OA.$('#fSow'), fHarvest: OA.$('#fHarvest')
+    frostList: OA.$('#frostList'), bwList: OA.$('#bwList'), sources: OA.$('#sources'), fSow: OA.$('#fSow'), fHarvest: OA.$('#fHarvest')
   };
   OA.segSet(el.filter, state.filter);
   el.store.checked = state.store;
@@ -104,6 +105,7 @@
   }
   el.storeList.innerHTML = items(D.storage);
   el.emerList.innerHTML = items(D.emergency);
+  el.bwList.innerHTML = items(D.bw);
   el.frostList.innerHTML = D.frost.map(function (x) { return '<li>' + OA.esc(OA.t(x.text)) + '</li>'; }).join('');
   el.sources.innerHTML = D.sources.map(function (s) {
     return '<li><a href="' + OA.esc(s.url) + '" target="_blank" rel="noopener noreferrer">' + OA.esc(s.name) + '</a> – ' +

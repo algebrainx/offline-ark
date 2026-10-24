@@ -21,5 +21,120 @@
     },
     "url": "https://archive.org/download/fm-4-25-11-first-aid-c-1-2004/FM%204-25-11%20First%20Aid%20%28C1%29%20%282004%29.pdf",
     "source_page": "https://archive.org/details/fm-4-25-11-first-aid-c-1-2004"
+  },
+  {
+    "file": "fema-are-you-ready.pdf",
+    "title": {
+      "de": "Are You Ready? An In-Depth Guide to Citizen Preparedness (FEMA, Ausgabe 2020)",
+      "en": "Are You Ready? An In-Depth Guide to Citizen Preparedness (FEMA, 2020 edition)",
+      "es": "Are You Ready? An In-Depth Guide to Citizen Preparedness (FEMA, edición 2020)",
+      "ar": "Are You Ready? An In-Depth Guide to Citizen Preparedness (FEMA، طبعة 2020)"
+    },
+    "desc": {
+      "de": "Leitfaden der US-Katastrophenschutzbehörde zur Vorsorge für Haushalte: Risiken, Notfallplan, Vorräte, Evakuierung und Wiederaufbau, 36 Seiten",
+      "en": "US disaster agency guide to household preparedness: risks, emergency plan, supplies, evacuation and recovery, 36 pages",
+      "es": "Guía de la agencia estadounidense de emergencias para la preparación del hogar: riesgos, plan de emergencia, suministros, evacuación y recuperación, 36 páginas",
+      "ar": "دليل وكالة الطوارئ الأمريكية للاستعداد داخل الأسرة: المخاطر وخطة الطوارئ والمؤن والإخلاء والتعافي، 36 صفحة"
+    },
+    "license": {
+      "de": "Gemeinfrei (US-Regierungswerk der FEMA; ready.gov erlaubt die kostenlose Weitergabe unverändert)",
+      "en": "Public domain (US government work by FEMA; ready.gov allows free redistribution unaltered)",
+      "es": "Dominio público (obra del gobierno de EE. UU. de la FEMA; ready.gov permite la redistribución gratuita sin modificar)",
+      "ar": "ملك عام (عمل حكومي أمريكي من FEMA؛ يسمح موقع ready.gov بإعادة التوزيع المجاني دون تعديل)"
+    },
+    "url": "https://www.ready.gov/sites/default/files/2021-11/are-you-ready-guide.pdf",
+    "source_page": "https://www.ready.gov/publications"
+  },
+  {
+    "file": "fema-hazard-info-sheets.pdf",
+    "title": {
+      "de": "Be Prepared for Any Hazard (FEMA P-2143, Gefahren-Merkblätter)",
+      "en": "Be Prepared for Any Hazard (FEMA P-2143, hazard information sheets)",
+      "es": "Be Prepared for Any Hazard (FEMA P-2143, hojas informativas sobre peligros)",
+      "ar": "Be Prepared for Any Hazard (FEMA P-2143، نشرات معلومات عن المخاطر)"
+    },
+    "desc": {
+      "de": "Kurze Merkblätter zu 17 Gefahren, u. a. Erdbeben, Hochwasser, Hitze, Stromausfall, Waldbrand, Pandemie und Wintersturm; je Vorbereitung, Verhalten und Nachsorge, 35 Seiten",
+      "en": "Short information sheets on 17 hazards, including earthquake, flood, heat, power outage, wildfire, pandemic and winter storm; each with preparation, safety during and recovery, 35 pages",
+      "es": "Hojas breves sobre 17 peligros, entre ellos terremoto, inundación, calor, apagón, incendio forestal, pandemia y tormenta invernal; cada una con preparación, seguridad durante el evento y recuperación, 35 páginas",
+      "ar": "نشرات موجزة عن 17 خطرًا، منها الزلازل والفيضانات والحر وانقطاع الكهرباء وحرائق الغابات والأوبئة والعواصف الشتوية؛ لكل منها الاستعداد والسلامة أثناء الحدث والتعافي، 35 صفحة"
+    },
+    "license": {
+      "de": "Gemeinfrei (US-Regierungswerk der FEMA; ready.gov erlaubt die kostenlose Weitergabe unverändert)",
+      "en": "Public domain (US government work by FEMA; ready.gov allows free redistribution unaltered)",
+      "es": "Dominio público (obra del gobierno de EE. UU. de la FEMA; ready.gov permite la redistribución gratuita sin modificar)",
+      "ar": "ملك عام (عمل حكومي أمريكي من FEMA؛ يسمح موقع ready.gov بإعادة التوزيع المجاني دون تعديل)"
+    },
+    "url": "https://www.ready.gov/sites/default/files/2025-02/fema_full-suite-hazard-info-sheets.pdf",
+    "source_page": "https://www.ready.gov/publications"
+  },
+  {
+    "file": "fm-21-10-field-hygiene-sanitation.pdf",
+    "title": {
+      "de": "FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation (US-Armee, Feldhygiene)",
+      "en": "FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation (US Army field hygiene manual)",
+      "es": "FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation (manual de higiene de campaña del Ejército de EE. UU.)",
+      "ar": "FM 21-10 / MCRP 4-11.1D Field Hygiene and Sanitation (دليل النظافة الميدانية للجيش الأمريكي)"
+    },
+    "desc": {
+      "de": "Hygiene im Feld: Trinkwasser, Abfall, Latrinen, Lebensmittelhygiene, Schädlinge, Hitze- und Kälteschäden, 162 Seiten",
+      "en": "Hygiene in the field: drinking water, waste, latrines, food sanitation, pests, heat and cold injuries, 162 pages",
+      "es": "Higiene en campaña: agua potable, residuos, letrinas, higiene de los alimentos, plagas, lesiones por calor y frío, 162 páginas",
+      "ar": "النظافة في الميدان: مياه الشرب والنفايات والمراحيض ونظافة الأغذية والآفات وإصابات الحر والبرد، 162 صفحة"
+    },
+    "license": {
+      "de": "Gemeinfrei (US-Regierungswerk, \"Approved for public release; distribution is unlimited\")",
+      "en": "Public domain (US government work, \"Approved for public release; distribution is unlimited\")",
+      "es": "Dominio público (obra del gobierno de EE. UU., «Approved for public release; distribution is unlimited»)",
+      "ar": "ملك عام (عمل حكومي أمريكي، «Approved for public release; distribution is unlimited»)"
+    },
+    "url": "https://archive.org/download/FM21-10_2000/FM21-10_2000.pdf",
+    "source_page": "https://archive.org/details/FM21-10_2000"
+  },
+  {
+    "file": "atp-3-50-21-survival.pdf",
+    "title": {
+      "de": "ATP 3-50.21 Survival (US-Armee, Überlebenshandbuch, Nachfolger von FM 21-76)",
+      "en": "ATP 3-50.21 Survival (US Army survival manual, successor to FM 21-76)",
+      "es": "ATP 3-50.21 Survival (manual de supervivencia del Ejército de EE. UU., sucesor del FM 21-76)",
+      "ar": "ATP 3-50.21 Survival (دليل البقاء للجيش الأمريكي، خلف FM 21-76)"
+    },
+    "desc": {
+      "de": "Überleben in der Wildnis: Wasser, Nahrung, Feuer, Unterkunft, Navigation, Signale und Überlebensmedizin, 228 Seiten, Ausgabe 2018",
+      "en": "Wilderness survival: water, food, fire, shelter, navigation, signalling and survival medicine, 228 pages, 2018 edition",
+      "es": "Supervivencia en la naturaleza: agua, comida, fuego, refugio, orientación, señales y medicina de supervivencia, 228 páginas, edición 2018",
+      "ar": "البقاء في البرية: الماء والغذاء والنار والمأوى والملاحة والإشارات وطب البقاء، 228 صفحة، طبعة 2018"
+    },
+    "license": {
+      "de": "Gemeinfrei (US-Regierungswerk, \"Distribution restriction: Approved for public release; distribution is unlimited\")",
+      "en": "Public domain (US government work, \"Distribution restriction: Approved for public release; distribution is unlimited\")",
+      "es": "Dominio público (obra del gobierno de EE. UU., «Distribution restriction: Approved for public release; distribution is unlimited»)",
+      "ar": "ملك عام (عمل حكومي أمريكي، «Distribution restriction: Approved for public release; distribution is unlimited»)"
+    },
+    "url": "https://archive.org/download/survival-atp-3-50-21/Survival%20%28ATP%203-50-21%29.pdf",
+    "source_page": "https://archive.org/details/survival-atp-3-50-21"
+  },
+  {
+    "file": "fm-24-18-radio-techniques.pdf",
+    "title": {
+      "de": "FM 24-18 Tactical Single-Channel Radio Communications Techniques (US-Armee, Funktechnik)",
+      "en": "FM 24-18 Tactical Single-Channel Radio Communications Techniques (US Army radio manual)",
+      "es": "FM 24-18 Tactical Single-Channel Radio Communications Techniques (manual de radiocomunicaciones del Ejército de EE. UU.)",
+      "ar": "FM 24-18 Tactical Single-Channel Radio Communications Techniques (دليل الاتصالات اللاسلكية للجيش الأمريكي)"
+    },
+    "desc": {
+      "de": "Funk-Grundlagen: Ausbreitung, Modulation, Antennen und Behelfsantennen, Betriebsverfahren, Störungen, 322 Seiten, Ausgabe 1987",
+      "en": "Radio basics: propagation, modulation, antennas and field-expedient antennas, operating procedures, interference, 322 pages, 1987 edition",
+      "es": "Fundamentos de radio: propagación, modulación, antenas y antenas improvisadas, procedimientos de operación, interferencias, 322 páginas, edición 1987",
+      "ar": "أساسيات اللاسلكي: الانتشار والتعديل والهوائيات والهوائيات المرتجلة وإجراءات التشغيل والتشويش، 322 صفحة، طبعة 1987"
+    },
+    "license": {
+      "de": "Gemeinfrei (US-Regierungswerk, \"DISTRIBUTION RESTRICTION: Approved for public release; distribution is unlimited\")",
+      "en": "Public domain (US government work, \"DISTRIBUTION RESTRICTION: Approved for public release; distribution is unlimited\")",
+      "es": "Dominio público (obra del gobierno de EE. UU., «DISTRIBUTION RESTRICTION: Approved for public release; distribution is unlimited»)",
+      "ar": "ملك عام (عمل حكومي أمريكي، «DISTRIBUTION RESTRICTION: Approved for public release; distribution is unlimited»)"
+    },
+    "url": "https://archive.org/download/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni/fm_24-18_tactical_single_channel_radio_communications_techniques.pdf",
+    "source_page": "https://archive.org/details/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni"
   }
 ]
