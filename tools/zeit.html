@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Stoppuhr &amp; Timer – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .tabs { margin-bottom: 18px; }
+    .big-time { text-align: center; font-size: clamp(2.6rem, 13vw, 4.4rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; padding: 18px 0 22px; }
+    .big-time small { font-size: .5em; color: var(--text-2); font-weight: 600; letter-spacing: 0; }
+    .big-time.sm { font-size: clamp(2rem, 9vw, 3rem); padding: 6px 0 10px; }
+    .btn-row.center { justify-content: center; }
+    .btn-row .btn { flex: 1 1 120px; }
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; margin: 2px 0 16px; }
+    .quick .btn { flex: 1 1 64px; padding: 0 12px; }
+    .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .time-grid .stepper button { width: 40px; }
+    .time-grid .stepper input { padding-left: 2px; padding-right: 2px; }
+    .time-grid .label { text-align: center; margin-left: 0; }
+    .timer-card .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .timer-card .name { font-weight: 650; overflow-wrap: anywhere; }
+    .timer-card .state { color: var(--text-2); font-size: .85rem; white-space: nowrap; }
+    .timer-card.ringing { border: 2px solid var(--danger); }
+    .bar { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin: 4px 0 14px; }
+    .bar span { display: block; height: 100%; background: var(--accent); width: 0; }
+    .lap-table td, .lap-table th { padding: 10px 14px; }
+    .alarm { position: sticky; top: 64px; z-index: 40; border: 2px solid var(--danger); background: var(--surface); box-shadow: var(--shadow); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
+    .alarm strong { display: block; color: var(--danger); }
+    .alarm.pulse { animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .65; } }
+    .cd-reached { text-align: center; color: var(--ok); font-weight: 650; margin-top: 10px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Stoppuhr &amp; Timer</h1>
+    <p class="lead">Stoppuhr, Timer und Countdown mit Alarmton. Läuft weiter, auch wenn du die Seite neu lädst.</p>
+  </header>
+
+  <div class="callout danger alarm" id="alarm" role="alert" hidden>
+    <div><strong>Zeit abgelaufen</strong><span id="alarm-text"></span></div>
+    <button type="button" class="btn primary" id="alarm-ack">Quittieren</button>
+  </div>
+
+  <div class="seg tabs" id="tabs" data-local role="group" aria-label="Bereich">
+    <button type="button" data-v="sw" aria-pressed="true">Stoppuhr</button>
+    <button type="button" data-v="timer" aria-pressed="false">Timer</button>
+    <button type="button" data-v="cd" aria-pressed="false">Countdown</button>
+  </div>
+
+  <!-- Stoppuhr -->
+  <section id="tab-sw" class="stack" role="tabpanel">
+    <div class="card">
+      <div class="big-time" id="sw-time" aria-live="off">00:00<small>,00</small></div>
+      <div class="btn-row center">
+        <button type="button" class="btn primary" id="sw-start" style="flex-basis:100%;min-height:60px;font-size:1.15rem">Start</button>
+        <button type="button" class="btn" id="sw-lap" disabled>Runde</button>
+        <button type="button" class="btn" id="sw-reset" disabled>Zurücksetzen</button>
+      </div>
+    </div>
+    <div class="table-wrap" id="laps-wrap" hidden>
+      <table class="lap-table">
+        <thead><tr><th>Runde</th><th class="num">Rundenzeit</th><th class="num">Gesamt</th></tr></thead>
+        <tbody id="laps"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Timer -->
+  <section id="tab-timer" class="stack" role="tabpanel" hidden>
+    <div class="card">
+      <div class="time-grid">
+        <div class="field" style="margin:0"><span class="label">Std.</span>
+          <div class="stepper" data-min="0" data-max="99"><button type="button" aria-label="Stunden weniger">−</button><input type="number" id="th" inputmode="numeric" value="0" aria-label="Stunden"><button type="button" aria-label="Stunden mehr">+</button></div></div>
+        <div class="field" style="margin:0"><span class="label">Min.</span>
+          <div class="stepper" data-min="0" data-max="59"><button type="button" aria-label="Minuten weniger">−</button><input type="number" id="tm" inputmode="numeric" value="5" aria-label="Minuten"><button type="button" aria-label="Minuten mehr">+</button></div></div>
+        <div class="field" style="margin:0"><span class="label">Sek.</span>
+          <div class="stepper" data-min="0" data-max="59"><button type="button" aria-label="Sekunden weniger">−</button><input type="number" id="ts" inputmode="numeric" value="0" aria-label="Sekunden"><button type="button" aria-label="Sekunden mehr">+</button></div></div>
+      </div>
+      <div class="quick" id="quick" aria-label="Schnellwahl">
+        <button type="button" class="btn sm" data-min="1">1 min</button>
+        <button type="button" class="btn sm" data-min="3">3 min</button>
+        <button type="button" class="btn sm" data-min="5">5 min</button>
+        <button type="button" class="btn sm" data-min="10">10 min</button>
+        <button type="button" class="btn sm" data-min="15">15 min</button>
+        <button type="button" class="btn sm" data-min="30">30 min</button>
+      </div>
+      <div class="field"><label for="tname">Name (optional)</label>
+        <input type="text" id="tname" maxlength="30" inputmode="text" placeholder="z. B. Nudeln, Pause, Akku laden" autocomplete="off"></div>
+      <button type="button" class="btn primary block" id="t-add" style="min-height:56px">Timer starten</button>
+      <p class="hint" id="t-hint">Bis zu 3 Timer gleichzeitig.</p>
+    </div>
+
+    <div id="timers" class="stack"></div>
+
+    <div class="btn-row"><button type="button" class="btn sm" id="t-test">Alarmton testen</button></div>
+    <p class="hint">Der Alarm klingelt, bis du ihn quittierst. Damit der Ton nach dem Laden der Seite sicher kommt, tippe einmal irgendwo auf die Seite. Bildschirmsperre und Stummschaltung können den Ton verhindern; bei Vibration hilft ein Gerät mit Vibrationsmotor.</p>
+  </section>
+
+  <!-- Countdown -->
+  <section id="tab-cd" class="stack" role="tabpanel" hidden>
+    <div class="card" id="cd-setup">
+      <div class="form-grid">
+        <div class="field"><label for="cd-date">Datum</label><input type="date" id="cd-date"></div>
+        <div class="field"><label for="cd-time">Uhrzeit</label><input type="time" id="cd-time" value="12:00"></div>
+      </div>
+      <div class="field"><label for="cd-label">Bezeichnung (optional)</label>
+        <input type="text" id="cd-label" maxlength="40" inputmode="text" placeholder="z. B. Abholung, Neustart, Ankunft" autocomplete="off"></div>
+      <button type="button" class="btn primary block" id="cd-start" style="min-height:56px">Countdown starten</button>
+      <p class="hint" id="cd-hint">Ziel in der Zukunft wählen.</p>
+    </div>
+    <div class="card" id="cd-run" hidden>
+      <div class="center muted" id="cd-title" style="margin-bottom:10px"></div>
+      <div class="stats" id="cd-stats" style="grid-template-columns:repeat(2,1fr)">
+        <div class="stat center"><div class="num" id="cd-d">0</div><div class="cap">Tage</div></div>
+        <div class="stat center"><div class="num" id="cd-h">0</div><div class="cap">Stunden</div></div>
+        <div class="stat center"><div class="num" id="cd-m">0</div><div class="cap">Minuten</div></div>
+        <div class="stat center"><div class="num" id="cd-s">0</div><div class="cap">Sekunden</div></div>
+      </div>
+      <div class="cd-reached" id="cd-reached" hidden>Ziel erreicht</div>
+      <div class="btn-row" style="margin-top:16px"><button type="button" class="btn" id="cd-stop">Countdown beenden</button></div>
+    </div>
+  </section>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-zeit.js"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Funk-Spickzettel – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .sheet-body { font-size: 1rem; }
+    .sheet-body ul, .sheet-body ol { padding-left: 1.3em; margin: 0 0 1em; }
+    .sheet-body li { margin-bottom: .4em; }
+    .sheet-body li::marker { color: var(--text-2); }
+    .sheet-body h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); margin: 1.4em 0 .5em; font-weight: 650; }
+    .sheet-body .stats { margin-bottom: 14px; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .sheet-body .stat { padding: 12px; }
+    .sheet-body .stat .num { font-size: clamp(1.15rem, 5vw, 1.6rem); overflow-wrap: anywhere; }
+    .sheet-body .stat .cap { font-size: .78rem; line-height: 1.3; }
+    .split { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-bottom: 12px; }
+    .sheet-body table td, .sheet-body table th { padding: 9px 14px; }
+    .sheet-body tr[hidden] { display: none; }
+    .letter { font-size: 1.25rem; width: 3.2rem; color: var(--text); text-transform: none; letter-spacing: 0; background: transparent; }
+    .abc td { font-size: 1.05rem; }
+    .abc td small { display: block; font-size: .78rem; letter-spacing: .04em; }
+    .abc-search { margin-bottom: 12px; }
+    .say { background: var(--surface-2); border-radius: var(--r); padding: 14px 18px; margin: 0 0 1em; line-height: 1.6; }
+    .say b { letter-spacing: .02em; }
+    .toc { margin-bottom: 16px; }
+    .sheet-body details details { background: var(--surface-2); border: 0; margin: 10px 0 0; }
+    .sheet-body details details summary { font-weight: 600; min-height: 48px; }
+    @media print {
+      .sheet-body details details { background: #fff; }
+      .abc-search { display: none; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Funk-Spickzettel</h1>
+    <p class="lead">Kanäle, Regeln und Funkalphabete für PMR446, Freenet, CB-Funk und Meshtastic. Zum Nachschlagen und zum Ausdrucken.</p>
+  </header>
+
+  <div class="callout warn">
+    <strong>Funk ersetzt nie den Notruf 112</strong>
+    PMR, Freenet und CB sind keine Verbindung zu Leitstellen. Es hört nur mit, wer zufällig in Reichweite ist. Mit Telefon oder Handy gilt immer zuerst: 112 anrufen.
+  </div>
+
+  <nav class="toc no-print" aria-label="Abschnitte">
+    <a href="#pmr">PMR446</a>
+    <a href="#freenet">Freenet</a>
+    <a href="#cb">CB-Funk</a>
+    <a href="#mesh">Meshtastic</a>
+    <a href="#abc">Funkalphabet</a>
+    <a href="#notruf">Notruf-Regeln</a>
+    <a href="#recht">Wichtig</a>
+  </nav>
+
+  <div class="sheet-body">
+
+    <!-- PMR446 -->
+    <details id="pmr" open>
+      <summary>PMR446: Handfunkgeräte für alle</summary>
+      <div>
+        <div class="stats">
+          <div class="stat"><div class="num">16</div><div class="cap">Kanäle (analog)</div></div>
+          <div class="stat"><div class="num">0,5 W</div><div class="cap">höchstens (ERP)</div></div>
+          <div class="stat"><div class="num">446 MHz</div><div class="cap">Frequenzbereich 446,0 bis 446,2</div></div>
+        </div>
+        <ul>
+          <li>Genehmigungsfrei: keine Anmeldung, keine Gebühr. Es zählen nur Geräte, die für diese Nutzung zugelassen sind.</li>
+          <li>Nur Handfunkgeräte mit <strong>fest eingebauter Antenne</strong>. Keine Antennenverlängerung, keine Basisstation, kein Repeater.</li>
+          <li>Ein Sendevorgang darf höchstens 180 Sekunden dauern. Kurz funken, dann loslassen.</li>
+          <li>Reichweite: in Städten etwa 0,5 bis 1 km, im Wald 2 bis 3 km. Nur unter besten Bedingungen (Sicht zwischen zwei Bergen) deutlich mehr.</li>
+          <li>Einen amtlichen Notrufkanal gibt es nicht. <strong>Verabredet vorher Kanal und Unterton</strong> (CTCSS/DCS). Ein Unterton ist keine Verschlüsselung; der Kanal bleibt für andere belegt.</li>
+        </ul>
+        <h3>Kanäle (analog, FM, 12,5 kHz Abstand)</h3>
+        <div id="pmr-table"></div>
+        <details>
+          <summary>Digital: DMR Tier I und dPMR446</summary>
+          <div>
+            <ul>
+              <li><strong>DMR Tier I</strong> nutzt dieselben 16 Kanäle und Frequenzen wie analog (12,5 kHz).</li>
+              <li><strong>dPMR446</strong> hat 32 Kanäle im 6,25-kHz-Raster (Tabelle unten).</li>
+              <li>Digitalfunk kommt bei ähnlicher Sprachqualität oft etwas weiter. Analoge und digitale Geräte verstehen sich nur, wenn das Gerät den passenden Modus hat. Prüft das vorher.</li>
+              <li>Die Nummerierung der digitalen Kanäle kann je nach Gerät abweichen. Verlasst euch im Zweifel auf die Frequenz.</li>
+            </ul>
+            <div id="dpmr-table"></div>
+          </div>
+        </details>
+      </div>
+    </details>
+
+    <!-- Freenet -->
+    <details id="freenet">
+      <summary>Freenet: 6 Kanäle im 2-m-Band</summary>
+      <div>
+        <div class="stats">
+          <div class="stat"><div class="num">6</div><div class="cap">Kanäle (12,5 kHz)</div></div>
+          <div class="stat"><div class="num">1 W</div><div class="cap">höchstens (ERP)</div></div>
+          <div class="stat"><div class="num">149 MHz</div><div class="cap">Frequenzbereich 149,01875 bis 149,11875</div></div>
+        </div>
+        <ul>
+          <li>Genehmigungsfrei, nur in Deutschland zugelassen. Im Ausland nicht benutzen.</li>
+          <li>Höchstens 1 Watt ERP. In 10 km Abstand zur Grenze nach <strong>Belgien und Polen nur 0,5 Watt</strong>.</li>
+          <li>Handsprechfunkgeräte mit eigener Stromversorgung. Fest eingebaute oder aufgesteckte Wechselantennen sind erlaubt, <strong>keine</strong> externen Antennen über Kabel oder an Gegenständen.</li>
+          <li>Nur Gerät zu Gerät: kein Repeater, kein Gateway ins Internet. Keine Dauersendungen (nach 180 Sekunden Senden gilt es als Dauersendung).</li>
+          <li>Reichweite realistisch etwa 0,5 bis 5 km, je nach Hindernissen. Freenet kommt oft weiter als PMR446.</li>
+        </ul>
+        <h3>Kanäle (analog; 1 bis 6 ist die übliche Zählung)</h3>
+        <div id="freenet-table"></div>
+        <p class="small muted">Zusätzlich gibt es für Digitalfunk zwölf Kanäle im 6,25-kHz-Raster von 149,021875 bis 149,115625 MHz. Die Kanalnummern können je nach Gerät anders gezählt werden; die Frequenz ist maßgeblich.</p>
+      </div>
+    </details>
+
+    <!-- CB-Funk -->
+    <details id="cb">
+      <summary>CB-Funk: 27 MHz, 80 Kanäle</summary>
+      <div>
+        <div class="stats">
+          <div class="stat"><div class="num">80</div><div class="cap">Kanäle in FM</div></div>
+          <div class="stat"><div class="num">4 W</div><div class="cap">FM und AM (ERP)</div></div>
+          <div class="stat"><div class="num">27 MHz</div><div class="cap">11-m-Band</div></div>
+        </div>
+        <ul>
+          <li>Genehmigungsfrei, aber nur mit zugelassenen Geräten. Geräte dürfen nicht verändert oder selbst gebaut werden. Antennen dürfen selbst gebaut werden, solange die erlaubte Leistung nicht überschritten wird.</li>
+          <li><strong>FM:</strong> Kanäle 1 bis 80, höchstens 4 Watt. <strong>AM:</strong> Kanäle 1 bis 40, höchstens 4 Watt. <strong>SSB:</strong> Kanäle 1 bis 40, höchstens 12 Watt (PEP).</li>
+          <li>Nicht erlaubt: Dauersendungen, rundfunkähnliche Sendungen, Senden ohne Nachrichteninhalt, kommerzielle Nutzung.</li>
+          <li>Reichweite stark abhängig von der Antenne: Auto mit Antenne grob 10 bis 30 km, Haus mit Dachantenne 20 bis 80 km. Handgeräte mit kurzer Antenne kommen deutlich weniger weit.</li>
+          <li><strong>Kanal 9</strong> (27,065 MHz) ist international als Notrufkanal bekannt. Als Notrufkanal für FM wird in Deutschland außerdem <strong>Kanal 3</strong> genannt. Das ist keine amtliche Pflicht, und niemand muss mithören.</li>
+          <li><strong>Kanal 19</strong> gilt in der Szene oft als Verkehrs- und Fernfahrerkanal. <span class="chip warn">bitte selbst prüfen</span> Das ließ sich in den geprüften Quellen nicht bestätigen.</li>
+        </ul>
+        <details>
+          <summary>Alle 80 Kanäle mit Frequenzen</summary>
+          <div>
+            <p class="small muted">Kanäle 41 bis 80 sind nationale Zusatzkanäle (nur FM). In Grenznähe gibt es Einschränkungen. Auffällig: Kanal 24 und 25 liegen unter Kanal 23.</p>
+            <div id="cb-table"></div>
+          </div>
+        </details>
+      </div>
+    </details>
+
+    <!-- Meshtastic -->
+    <details id="mesh">
+      <summary>Meshtastic: Textnachrichten ohne Mobilfunk</summary>
+      <div>
+        <ul>
+          <li><strong>Was ist das?</strong> Eine quelloffene Funkanwendung auf Basis von LoRa. Kleine Funkmodule bilden selbstständig ein Mesh-Netz und leiten Textnachrichten und Positionen von Gerät zu Gerät weiter. Kein Mobilfunk, kein WLAN, kein Internet nötig.</li>
+          <li><strong>Frequenz:</strong> in Europa meist das 868-MHz-Band. Das Funken ist lizenzfrei, die Geräte senden nur mit 10 bis 100 Milliwatt (selten 500) und dürfen nur einen kleinen Teil der Zeit senden.</li>
+          <li><strong>Reichweite:</strong> im Kilometerbereich bei freier Sicht, in bebauter Umgebung deutlich weniger. Weitere Strecken entstehen nur, wenn Zwischenstationen vorhanden sind.</li>
+          <li><strong>Was du brauchst:</strong> ein Meshtastic-fähiges Funkmodul und eine App auf dem Smartphone. Alle Geräte müssen dieselben Funkeinstellungen haben.</li>
+        </ul>
+        <h3>Ehrlich gesagt</h3>
+        <ul>
+          <li><strong>Vorher einrichten.</strong> Firmware und App brauchen Internet. Im Notfall ist dafür keine Zeit.</li>
+          <li>Nur kurze Textnachrichten, kein Sprechfunk. Ohne andere Teilnehmer in der Nähe erreicht niemand deine Nachricht.</li>
+          <li>Der Standardkanal ist nur mit einem allgemein bekannten Schlüssel gesichert. Jeder mit Meshtastic kann mitlesen. Für private Gespräche einen eigenen Kanal mit eigenem Schlüssel anlegen.</li>
+          <li>Meshtastic erreicht keine Leitstelle. Notruf bleibt 112.</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Funkalphabet -->
+    <details id="abc">
+      <summary>Funkalphabet: Deutsch und NATO</summary>
+      <div>
+        <p>Namen, Orte und Rufzeichen immer buchstabieren, besonders bei schlechter Verbindung. Zahlen einzeln sprechen („eins-zwo-drei“; „zwo“ klingt im Funk anders als „drei“).</p>
+        <div class="field abc-search no-print"><label for="abc-search">Suchen</label>
+          <input type="search" id="abc-search" inputmode="search" placeholder="Buchstabe oder Wort, z. B. K oder Nordpol" autocomplete="off"></div>
+        <div class="table-wrap">
+          <table class="abc">
+            <thead><tr><th>Buchst.</th><th>Deutsch (klassisch)</th><th>NATO / ICAO</th></tr></thead>
+            <tbody id="abc-rows"></tbody>
+          </table>
+        </div>
+        <p class="muted" id="abc-empty" hidden style="margin-top:10px">Nichts gefunden.</p>
+        <p class="small muted" style="margin-top:12px">Das ist die klassische deutsche Buchstabiertafel (Anton, Berta, Cäsar …) aus der DIN 5009 von 1983 und 1996. Sie wird bei Behörden und Hilfsorganisationen weiter benutzt. Die neue DIN-Fassung von 2022 mit Städtenamen (Aachen, Berlin, Chemnitz …) ist eine andere Tafel. Q: „Qu“ wird als „Quelle“ gesagt. NATO-Aussprache nach englischer Art.</p>
+      </div>
+    </details>
+
+    <!-- Notruf-Regeln -->
+    <details id="notruf">
+      <summary>Notruf und Sprechdisziplin</summary>
+      <div>
+        <div class="callout danger">
+          <strong>Nur bei echter Gefahr</strong>
+          „Mayday“ nur bei unmittelbarer Lebensgefahr. Notrufe oder Notzeichen zu missbrauchen oder eine Notlage vorzutäuschen ist strafbar (§ 145 StGB).
+        </div>
+        <h3>MAYDAY: Lebensgefahr, sofort Hilfe nötig</h3>
+        <ol>
+          <li><div class="say"><b>„MAYDAY, MAYDAY, MAYDAY.“</b></div></li>
+          <li>Wer ruft? <b>„Hier ist … (Name oder Gruppe).“</b></li>
+          <li>Noch einmal: <b>„MAYDAY, … (Name).“</b></li>
+          <li><strong>Wo?</strong> Ort, Straße, Hausnummer, Wegpunkt oder Koordinaten.</li>
+          <li><strong>Was ist passiert?</strong> Art des Notfalls in einem Satz.</li>
+          <li><strong>Welche Hilfe?</strong> Zum Beispiel Rettungsdienst oder Feuerwehr.</li>
+          <li><strong>Wie viele Personen?</strong> Verletzte, Kinder.</li>
+          <li>Schluss: <b>„Kommen“</b> (englisch: „Over“) und auf Antwort warten.</li>
+        </ol>
+        <p class="say"><b>Beispiel:</b> „Mayday, Mayday, Mayday. Hier ist Familie Muster, Familie Muster, Familie Muster. Mayday, Familie Muster. Wir sind auf dem Waldweg 2 Kilometer östlich vom Parkplatz Seeblick. Ein Mensch ist gestürzt und kann nicht aufstehen. Wir brauchen den Rettungsdienst. Zwei Erwachsene, ein Verletzter. Kommen.“</p>
+        <h3>PAN-PAN: dringend, aber keine unmittelbare Lebensgefahr</h3>
+        <p>Gleicher Aufbau, aber mit <b>„PAN-PAN, PAN-PAN, PAN-PAN“</b> eingeleitet. Beispiel: Fahrzeug liegengeblieben, Abholung dringend nötig. Wenn es schlimmer wird, auf MAYDAY wechseln.</p>
+        <h3>Sprechdisziplin</h3>
+        <ul>
+          <li><strong>Erst hören</strong>, ob der Kanal frei ist. Bei laufendem Notverkehr nicht dazwischenfunken.</li>
+          <li>Taste drücken, eine Sekunde warten, dann <strong>langsam und deutlich</strong> sprechen. Kurze Sätze.</li>
+          <li>Wichtiges wiederholen: <b>„Ich wiederhole: …“</b>. Nicht verstanden? <b>„Wiederholen Sie bitte.“</b> Verstanden? <b>„Verstanden.“</b></li>
+          <li>Namen und Orte buchstabieren (siehe Funkalphabet).</li>
+          <li>Taste loslassen zum Hören. Nicht länger als 180 Sekunden am Stück senden.</li>
+          <li>Ein Notruf hat Vorrang vor jedem anderen Funkverkehr. Wer „SILENCE MAYDAY“ hört, schweigt.</li>
+          <li>Akku schonen: kurz senden, Gerät zwischendurch auf Empfang lassen, Beleuchtung dimmen.</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Rechtliches -->
+    <details id="recht">
+      <summary>Wichtig: Erlaubtes und Verbotenes</summary>
+      <div>
+        <ul>
+          <li><strong>Amateurfunk braucht eine Genehmigung</strong> (Amateurfunkprüfung und Rufzeichen). Ohne sie nicht auf Amateurfunkbändern senden, auch wenn das Gerät es technisch kann.</li>
+          <li>PMR446, Freenet und CB nur mit dafür zugelassenen Geräten und innerhalb der erlaubten Leistung nutzen. Keine Leistungsverstärker, keine zusätzlichen Antennen, wo sie nicht erlaubt sind.</li>
+          <li>Nicht auf Frequenzen von Behörden, Rettungsdienst, Bahn, Flugfunk oder Seefunk senden.</li>
+          <li>Funkgespräche sind nicht privat. Andere können mithören; ein Unterton schützt nicht davor.</li>
+          <li>Die Regeln können sich ändern. Die Zuteilungen der Bundesnetzagentur sind befristet (siehe Quellen).</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <section class="sources" aria-labelledby="src-h">
+    <h2 id="src-h">Quellen</h2>
+    <p class="small muted">Geprüft am 24.10.2026. Die Texte sind eigene Zusammenfassungen. Die Bundesnetzagentur-Texte werden nur verlinkt, nicht kopiert.</p>
+    <ul>
+      <li>Bundesnetzagentur: <a href="https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Frequenzen/Allgemeinzuteilungen/start.html" rel="noopener">Allgemeinzuteilungen (Übersicht)</a>. Lizenz: nur Verlinkung.</li>
+      <li>Bundesnetzagentur: <a href="https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Frequenzen/Allgemeinzuteilungen/_DL/vfg91_2025.pdf?__blob=publicationFile&amp;v=3" rel="noopener">Vfg. 91/2025, Geräte geringer Reichweite (enthält PMR446: 446,0 bis 446,2 MHz, 500 mW ERP, nur eingebaute Antennen)</a>. Lizenz: nur Verlinkung.</li>
+      <li>Bundesnetzagentur: <a href="https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Frequenzen/Allgemeinzuteilungen/_DL/MobilfunkDectWlanCBFunk/vfg45_2025.pdf?__blob=publicationFile&amp;v=11" rel="noopener">Vfg. 45/2025, Handsprechfunk 149,01875 bis 149,11875 MHz (Freenet)</a>. Lizenz: nur Verlinkung.</li>
+      <li>Bundesnetzagentur: <a href="https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Frequenzen/Allgemeinzuteilungen/_DL/MobilfunkDectWlanCBFunk/vfg21_2021.pdf?__blob=publicationFile&amp;v=2" rel="noopener">Vfg. 21/2021, CB-Funk</a>. Lizenz: nur Verlinkung.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/PMR446" rel="noopener">PMR446</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/Freenet_(Funkanwendung)" rel="noopener">Freenet (Funkanwendung)</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/CB-Funk" rel="noopener">CB-Funk</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/Meshtastic" rel="noopener">Meshtastic</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/Buchstabiertafel" rel="noopener">Buchstabiertafel</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/Mayday_(Notruf)" rel="noopener">Mayday (Notruf)</a> und <a href="https://de.wikipedia.org/wiki/Pan-pan" rel="noopener">Pan-pan</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Wikipedia: <a href="https://de.wikipedia.org/wiki/Amateurfunk" rel="noopener">Amateurfunk</a>. Lizenz: CC BY-SA 4.0.</li>
+      <li>Gesetze im Internet: <a href="https://www.gesetze-im-internet.de/stgb/__145.html" rel="noopener">§ 145 StGB, Missbrauch von Notrufen</a>. Amtliches Werk (§ 5 UrhG).</li>
+    </ul>
+    <p class="small muted">Wikipedia-Texte: © die jeweiligen Autorinnen und Autoren, Lizenz <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de" rel="noopener">CC BY-SA 4.0</a>. Kanaltabellen und Angaben wurden übernommen und zusammengefasst. Die Links führen nur bei vorhandenem Internet zur Quelle.</p>
+  </section>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-funk.js"></script>
+</body>
+</html>

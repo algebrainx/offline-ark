@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kompass – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .dial { width: min(100%, 320px); margin: 0 auto 8px; display: block; }
+    .dial .ring { fill: var(--surface-2); stroke: var(--line); stroke-width: 2; }
+    .dial .tick { stroke: var(--text-2); stroke-width: 1.5; }
+    .dial .tick.major { stroke: var(--text); stroke-width: 2.5; }
+    .dial text { font: 700 18px var(--font); fill: var(--text-2); text-anchor: middle; dominant-baseline: central; }
+    .dial text.n { fill: var(--danger); font-size: 24px; }
+    .dial .needle-n { fill: var(--danger); }
+    .dial .needle-s { fill: var(--text-2); opacity: .55; }
+    .dial .hub { fill: var(--surface); stroke: var(--text-2); stroke-width: 2; }
+    .dial .marker { fill: var(--accent); }
+    .reading { text-align: center; }
+    .reading .num { font-size: clamp(2.6rem, 11vw, 3.8rem); font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .reading .unit { font-size: 1.3rem; color: var(--text-2); font-weight: 600; margin-left: 4px; }
+    .reading .cap { color: var(--text-2); margin-top: 4px; min-height: 1.5em; }
+    .btn-row.mid { justify-content: center; margin-top: 14px; }
+    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .plain li { margin-bottom: .45em; }
+    h2.sub { font-size: 1.25rem; margin: 32px 0 12px 2px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Kompass</h1>
+    <p class="lead">Nord finden mit dem Handysensor – und ohne Technik mit Sonne, Uhr und Sternen.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card reading" aria-live="off">
+      <svg class="dial" viewBox="0 -8 240 248" role="img" aria-label="Kompassnadel">
+        <circle class="ring" cx="120" cy="120" r="106"/>
+        <g id="rose">
+          <g id="ticks"></g>
+          <path class="needle-n" d="M120 58 L131 120 L109 120 Z"/>
+          <path class="needle-s" d="M120 182 L131 120 L109 120 Z"/>
+        </g>
+        <circle class="hub" cx="120" cy="120" r="7"/>
+        <path class="marker" d="M120 12 L110 -5 L130 -5 Z"/>
+      </svg>
+      <div><span class="num" id="deg">–</span><span class="unit" id="dir"></span></div>
+      <div class="cap" id="dirName">Kompass noch nicht gestartet.</div>
+      <div class="btn-row mid">
+        <button type="button" class="btn primary" id="go">Kompass starten</button>
+      </div>
+    </section>
+
+    <div class="callout warn" id="msg" hidden role="status"></div>
+
+    <div class="callout info">
+      <strong>Kalibrieren und richtig halten</strong>
+      <ul class="plain">
+        <li>Handy flach halten und in einer <strong>liegenden Acht</strong> (∞) schwenken, bis die Anzeige ruhig wird.</li>
+        <li>Abstand zu Metall, Autos, Stromleitungen, Magnet-Hüllen und Lautsprechern halten.</li>
+        <li>Der Sensor zeigt Magnetisch-Nord. Der Unterschied zum Kartennorden beträgt in Deutschland nur wenige Grad und ist für grobe Orientierung zu vernachlässigen.</li>
+        <li>Bei Abweichungen zählt im Zweifel ein echter Magnetkompass oder die Methoden unten.</li>
+      </ul>
+    </div>
+
+    <h2 class="sub">Ohne Kompass</h2>
+    <div>
+      <details>
+        <summary>Sonne: Schattenstock-Methode</summary>
+        <div>
+          <ol class="plain">
+            <li>Einen geraden Stock (ca. 1 m) senkrecht in ebenen Boden stecken. Er muss einen klaren Schatten werfen.</li>
+            <li>Die Spitze des Schattens mit einem Stein markieren. Das ist <strong>Markierung 1 (Westen)</strong>.</li>
+            <li>15–20 Minuten warten. Der Schatten wandert. Die neue Schattenspitze markieren: <strong>Markierung 2 (Osten)</strong>.</li>
+            <li>Die Linie zwischen beiden Markierungen verläuft ungefähr West–Ost. Wer mit dem linken Fuß an Markierung 1 und dem rechten an Markierung 2 steht, schaut nach <strong>Norden</strong>.</li>
+          </ol>
+          <p class="small muted" style="margin-top:10px">Je länger man wartet, desto genauer. Zum Mittag (Sonnenhöchststand) zeigt der Schatten in Mitteleuropa nach Norden. Der Höchststand ist nicht um 12 Uhr, sondern in Deutschland je nach Ort, Datum und Sommerzeit etwa zwischen 11:45 und 13:50 Uhr – genau steht er unter <a href="sonne.html">Sonne &amp; Tageslicht</a>.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Analoguhr-Methode (Nordhalbkugel)</summary>
+        <div>
+          <ol class="plain">
+            <li>Eine Uhr mit Zeigern flach halten. Den <strong>Stundenzeiger</strong> auf die Sonne richten.</li>
+            <li>Der Winkel zwischen Stundenzeiger und der <strong>12</strong> wird halbiert. Die Mittellinie zeigt nach <strong>Süden</strong>.</li>
+            <li><strong>Sommerzeit:</strong> In Mitteleuropa im Sommer stattdessen die <strong>1 Uhr</strong> statt der 12 verwenden.</li>
+          </ol>
+          <p class="small muted" style="margin-top:10px">Gegenüber von Süden liegt Norden. Nur grob (Abweichung bis ca. 15–20°), nutzbar bei Sonnenschein. Ohne Zeigeruhr: ein Zifferblatt mit Zeiger in den Boden ritzen oder auf Papier zeichnen. Auf der Südhalbkugel gilt es umgekehrt (12-Uhr-Marke zur Sonne, Mitte zeigt nach Norden).</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Sterne: Polarstern finden</summary>
+        <div>
+          <ul class="plain">
+            <li><strong>Großer Wagen:</strong> die beiden hinteren Sterne des „Kastens“ verbinden und diese Strecke etwa fünfmal nach oben verlängern – dort steht der Polarstern.</li>
+            <li><strong>Kassiopeia</strong> (großes „W“ am Himmel): Sie steht auf der gegenüberliegenden Seite des Polarsterns wie der Große Wagen. Der Polarstern liegt ungefähr in der Mitte zwischen beiden.</li>
+            <li>Der Polarstern ist nur mittelhell, aber der einzige auffällige Stern in seiner Umgebung. Er ist das Ende der Deichsel des Kleinen Wagens.</li>
+            <li>Blick zum Polarstern = <strong>Norden</strong>. Gerade nach unten zum Horizont gedacht ist das die Nordrichtung. In Deutschland steht er etwa 47–55° über dem Horizont.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Mond (nur grobe Orientierung)</summary>
+        <div>
+          <ul class="plain">
+            <li><strong>Sichelmond:</strong> die beiden Spitzen der Sichel mit einer gedachten Linie verbinden und diese nach unten zum Horizont verlängern. Dort liegt grob <strong>Süden</strong> (Nordhalbkugel).</li>
+            <li>Der Mond geht wie die Sonne im Osten auf und im Westen unter. Der Vollmond steht gegen Mitternacht im Süden.</li>
+            <li>Das ist ungenauer als Sonne und Polarstern. Mit anderen Hinweisen abgleichen.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Grobe Faustregeln</summary>
+        <div>
+          <ul class="plain">
+            <li>Die Sonne steht morgens im Osten, mittags im Süden, abends im Westen. Im Sommer geht sie weiter im Nordosten auf und im Nordwesten unter.</li>
+            <li>Moos am Baum, Ameisenhaufen oder Wuchsrichtung sind <strong>nicht verlässlich</strong>. Nicht darauf verlassen.</li>
+            <li>Auf einer Karte hilft ein markanter Punkt (Kirchturm, Fluss, Mast): Karte danach ausrichten.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-kompass.js"></script>
+</body>
+</html>

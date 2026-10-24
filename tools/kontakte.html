@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kontakte &amp; Treffpunkte – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .sos-list a { display: flex; align-items: center; gap: 16px; min-height: 64px; padding: 10px 18px; color: var(--text); border-bottom: 1px solid var(--line); }
+    .sos-list a:last-child { border-bottom: 0; }
+    .sos-list a:hover { background: var(--surface-2); text-decoration: none; }
+    .sos-list .nr { font-size: 1.5rem; font-weight: 750; letter-spacing: -.02em; min-width: 5.2em; font-variant-numeric: tabular-nums; }
+    .sos-list .nr.red { color: var(--danger); }
+    .sos-list .what { font-weight: 600; }
+    .sos-list .sub { display: block; color: var(--text-2); font-size: .85rem; font-weight: 400; }
+    .sos-note { padding: 12px 18px; color: var(--text-2); font-size: .9rem; border-top: 1px solid var(--line); }
+
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .row:last-child { border-bottom: 0; }
+    .row .main { flex: 1 1 220px; min-width: 0; }
+    .row .name { font-weight: 650; font-size: 1.08rem; overflow-wrap: anywhere; }
+    .row .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .row .txt { margin-top: 6px; color: var(--text-2); font-size: .92rem; overflow-wrap: anywhere; white-space: pre-line; }
+    .row .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .star { width: var(--hit); height: var(--hit); border: 0; border-radius: 50%; background: transparent; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--text-2); }
+    .star[aria-pressed="true"] { color: var(--accent); }
+    .star:hover { background: var(--surface-2); }
+    .empty { padding: 28px 18px; text-align: center; color: var(--text-2); }
+    .tips ul { margin: 0; padding-left: 1.2em; }
+    .tips li { margin-bottom: .5em; }
+
+    dialog { width: min(520px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: auto; padding: 22px; border: 1px solid var(--line);
+      border-radius: var(--r-lg); background: var(--surface); color: var(--text); }
+    dialog::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    dialog h2 { margin: 0 0 16px; font-size: 1.3rem; }
+    dialog textarea { min-height: 80px; }
+    .dlg-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .dlg-actions .btn.primary { flex: 1 1 140px; }
+    .form-error { color: var(--danger); font-weight: 600; margin: 0 0 12px; }
+    .star-field { display: flex; align-items: center; gap: 12px; min-height: var(--hit); margin-bottom: 14px; cursor: pointer; }
+    @media (max-width: 560px) {
+      dialog { margin: auto 0 0; width: 100%; max-width: none; border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 92vh; }
+    }
+
+    /* Druckkarte: schlank, zweispaltig, passt gefaltet in die Geldbörse */
+    .print-view { display: none; }
+    @media print {
+      .print-view { display: block !important; font-size: 9.5pt; line-height: 1.3; }
+      main > .page-head, main > .screen { display: none !important; }
+      .print-view h1 { font-size: 15pt; margin: 0 0 2pt; }
+      .print-view h2 { font-size: 10pt; margin: 8pt 0 2pt; padding-bottom: 1pt; border-bottom: 1px solid var(--text-2); text-transform: uppercase; letter-spacing: .04em; }
+      .print-view .cols { column-count: 2; column-gap: 18pt; }
+      .print-view p { margin: 0 0 3pt; break-inside: avoid; }
+      .print-view .sub { color: var(--text-2); }
+      .print-view .small { font-size: 8pt; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Kontakte &amp; Treffpunkte</h1>
+    <p class="lead">Notfallkontakte, Familien-Treffpunkt und wichtige Adressen.</p>
+  </header>
+
+  <div class="stack screen">
+    <div class="callout warn" id="storeWarn" role="alert" hidden>
+      <strong>Speicher blockiert</strong>
+      Dein Browser erlaubt kein Speichern. Bitte nutze den Export („Mehr“ unten), sonst gehen die Einträge beim Schließen verloren.
+    </div>
+
+    <div class="seg" data-local id="sec" role="group" aria-label="Bereich">
+      <button type="button" data-v="kontakte" aria-pressed="true">Kontakte</button>
+      <button type="button" data-v="treffpunkte" aria-pressed="false">Treffpunkte</button>
+      <button type="button" data-v="adressen" aria-pressed="false">Adressen</button>
+    </div>
+
+    <button type="button" class="btn primary block" id="add">Kontakt hinzufügen</button>
+
+    <!-- Feste Notrufnummern (nur im Bereich Kontakte) -->
+    <section class="list sos-list" id="sosCard" aria-label="Notrufnummern">
+      <a href="tel:112"><span class="nr red">112</span><span class="what">Feuerwehr &amp; Rettungsdienst<span class="sub">Notruf, kostenlos, europaweit</span></span></a>
+      <a href="tel:110"><span class="nr">110</span><span class="what">Polizei<span class="sub">Notruf, kostenlos</span></span></a>
+      <a href="tel:116117"><span class="nr">116 117</span><span class="what">Ärztlicher Bereitschaftsdienst<span class="sub">Wenn die Praxis zu hat und es nicht lebensbedrohlich ist</span></span></a>
+      <a href="tel:116123"><span class="nr">116 123</span><span class="what">Telefonseelsorge<span class="sub">Zuhören, rund um die Uhr, anonym</span></span></a>
+      <div class="sos-note"><strong>Giftnotruf:</strong> Die Nummer der regionalen Giftinformationszentrale hier selbst eintragen – unter „Adressen“, Kategorie „Sonstiges“. Bei Lebensgefahr immer zuerst 112.</div>
+    </section>
+
+    <!-- Tipp (nur im Bereich Treffpunkte) -->
+    <details class="tips" id="tipsCard">
+      <summary>So planst du Treffpunkte</summary>
+      <div>
+        <ul>
+          <li><strong>Drei Stufen festlegen:</strong> <em>nah</em> (z. B. Haustür oder Parkplatz vor dem Haus, wenn das Haus geräumt wird), <em>im Viertel</em> (z. B. Schule, Spielplatz, Kirche – wenn ihr nicht nach Hause kommt) und <em>außerhalb der Stadt</em> (z. B. Verwandte oder Freunde – wenn das ganze Gebiet gesperrt ist).</li>
+          <li><strong>Alle müssen ihn kennen,</strong> auch Kinder. Den Weg einmal zu Fuß gehen und üben. Plane eine Ausweichroute ein.</li>
+          <li><strong>Eine Kontaktperson außerhalb der Region</strong> bestimmen: Alle melden sich dort per Anruf oder SMS. Das klappt oft besser als gegenseitiges Anrufen.</li>
+          <li><strong>Wartezeit vereinbaren</strong> (z. B. „bis zwei Stunden warten“) und für Spätere einen Zettel mit Datum, Uhrzeit und neuem Ziel hinterlassen.</li>
+          <li><strong>Aufschreiben und ausdrucken:</strong> Handys fallen aus. Karte in Geldbörse, Schulranzen und Notgepäck stecken.</li>
+          <li>Koordinaten sind optional (Dezimalgrad: Breite, Länge). Siehe <a href="koordinaten.html">Koordinaten &amp; GPS</a>.</li>
+        </ul>
+      </div>
+    </details>
+
+    <section class="list" id="list" aria-label="Einträge"></section>
+
+    <details>
+      <summary>Mehr: Export, Import, Karte drucken</summary>
+      <div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="print">Karte drucken</button>
+          <button type="button" class="btn" id="export">Exportieren</button>
+          <button type="button" class="btn" id="import">Importieren</button>
+        </div>
+        <p class="hint">Die Karte enthält alle Notrufnummern und alle deine Einträge auf einer schlanken Seite – zum Ausdrucken und in die Geldbörse stecken. Der Export ist eine JSON-Datei mit Kontakten, Treffpunkten und Adressen.</p>
+        <p class="hint" id="msg" role="status"></p>
+      </div>
+    </details>
+  </div>
+
+  <section class="print-view" id="printView" aria-hidden="true"></section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <form id="form" novalidate>
+    <h2 id="dlgTitle"></h2>
+    <p class="form-error" id="formErr" role="alert" hidden></p>
+    <div class="field" data-t="kontakte treffpunkte adressen"><label for="f-name" id="l-name">Name</label>
+      <input type="text" id="f-name" data-k="name" maxlength="120" autocomplete="off"></div>
+    <div class="field" data-t="kontakte adressen"><label for="f-phone">Telefon</label>
+      <input type="tel" id="f-phone" data-k="phone" inputmode="tel" maxlength="40" autocomplete="off" placeholder="z. B. 0151 1234567"></div>
+    <div class="field" data-t="kontakte"><label for="f-rel">Beziehung</label>
+      <input type="text" id="f-rel" data-k="rel" maxlength="60" autocomplete="off" placeholder="z. B. Schwester, Nachbar, Hausarzt"></div>
+    <label class="star-field" data-t="kontakte"><input type="checkbox" id="f-star" data-k="star"><span>Wichtig (steht ganz oben, mit ★)</span></label>
+    <div class="field" data-t="treffpunkte"><label for="f-type">Art des Treffpunkts</label>
+      <select id="f-type" data-k="type"></select></div>
+    <div class="field" data-t="treffpunkte"><label for="f-place">Adresse oder Beschreibung</label>
+      <textarea id="f-place" data-k="place" maxlength="500" placeholder="z. B. Spielplatz hinter der Schule, an der großen Eiche"></textarea></div>
+    <div class="field" data-t="treffpunkte"><label for="f-coords">Koordinaten (optional)</label>
+      <input type="text" id="f-coords" data-k="coords" inputmode="text" maxlength="60" autocomplete="off" placeholder="Breite, Länge in Dezimalgrad"></div>
+    <div class="field" data-t="adressen"><label for="f-cat">Kategorie</label>
+      <select id="f-cat" data-k="cat"></select></div>
+    <div class="field" data-t="adressen"><label for="f-address">Adresse</label>
+      <textarea id="f-address" data-k="address" maxlength="300" placeholder="Straße, Hausnummer, Ort"></textarea></div>
+    <div class="field" data-t="kontakte treffpunkte adressen"><label for="f-note">Notiz (optional)</label>
+      <textarea id="f-note" data-k="note" maxlength="500"></textarea></div>
+    <div class="dlg-actions">
+      <button type="submit" class="btn primary">Speichern</button>
+      <button type="button" class="btn" id="fCancel">Abbrechen</button>
+    </div>
+    <div class="dlg-actions" id="moveRow" hidden>
+      <button type="button" class="btn sm" id="mUp">↑ Weiter nach oben</button>
+      <button type="button" class="btn sm" id="mDown">↓ Weiter nach unten</button>
+    </div>
+    <div class="dlg-actions"><button type="button" class="btn danger sm" id="fDelete" hidden>Eintrag löschen</button></div>
+  </form>
+</dialog>
+
+<dialog id="impDlg" aria-labelledby="impTitle">
+  <h2 id="impTitle">Datei importieren</h2>
+  <p id="impText"></p>
+  <div class="dlg-actions">
+    <button type="button" class="btn primary" id="impMerge">Zusammenführen</button>
+    <button type="button" class="btn danger" id="impReplace">Ersetzen</button>
+    <button type="button" class="btn" id="impCancel">Abbrechen</button>
+  </div>
+  <p class="hint">Zusammenführen: Neue Einträge kommen dazu, Einträge mit gleicher Kennung werden aktualisiert. Ersetzen: Deine jetzigen Kontakte, Treffpunkte und Adressen werden gelöscht.</p>
+</dialog>
+
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/kontakte-core.js"></script>
+<script src="../js/tool-kontakte.js"></script>
+</body>
+</html>

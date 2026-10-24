@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wasserbedarf – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Wasserbedarf</h1>
+    <p class="lead">Wie viel Trinkwasser brauchen wir für Personen und Tage?</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="form-grid">
+        <div class="field"><span class="label">Personen</span>
+          <div class="stepper" data-min="1" data-max="50"><button type="button" aria-label="Weniger Personen">−</button><input type="number" id="persons" inputmode="numeric" value="2" aria-label="Personen"><button type="button" aria-label="Mehr Personen">+</button></div></div>
+        <div class="field"><span class="label">Tage</span>
+          <div class="stepper" data-min="1" data-max="365"><button type="button" aria-label="Weniger Tage">−</button><input type="number" id="days" inputmode="numeric" value="10" aria-label="Tage"><button type="button" aria-label="Mehr Tage">+</button></div></div>
+      </div>
+      <div class="field"><span class="label">Klima</span>
+        <div class="seg" data-local id="climate">
+          <button type="button" data-v="mild" aria-pressed="true">Gemäßigt</button>
+          <button type="button" data-v="warm" aria-pressed="false">Warm</button>
+          <button type="button" data-v="hot" aria-pressed="false">Heiß</button>
+        </div></div>
+      <div class="field"><span class="label">Aktivität</span>
+        <div class="seg" data-local id="activity">
+          <button type="button" data-v="rest" aria-pressed="false">Ruhig</button>
+          <button type="button" data-v="normal" aria-pressed="true">Normal</button>
+          <button type="button" data-v="hard" aria-pressed="false">Schwer</button>
+        </div></div>
+      <div class="switch-row">
+        <span>Wasser zum Waschen mitrechnen</span>
+        <label class="switch"><input type="checkbox" id="hygiene"><span></span></label>
+      </div>
+    </section>
+
+    <section class="card result" aria-live="polite">
+      <div><span class="num" id="total">–</span><span class="unit">Liter</span></div>
+      <div class="cap" id="perday"></div>
+    </section>
+
+    <section class="card">
+      <div class="stats" id="containers"></div>
+    </section>
+
+    <div class="callout info">
+      <strong>Hinweise</strong>
+      <ul style="margin:6px 0 0;padding-left:1.2em">
+        <li>Das <abbr title="Bundesamt für Bevölkerungsschutz und Katastrophenhilfe">BBK</abbr> empfiehlt als Grundwert 2 Liter pro Person und Tag, davon 0,5 Liter zum Kochen.</li>
+        <li>Mehr brauchen: Kinder (bezogen auf das Gewicht), Schwangere, Stillende, Kranke, Fieber, Durchfall und Erbrechen. Bei diesen Personen großzügig planen.</li>
+        <li>Die Zuschläge für Hitze und Anstrengung sind Richtwerte. Trinke nach Durst und Urinfarbe: hellgelb ist gut.</li>
+        <li>Wasser nicht rationieren, wenn Nachschub möglich ist. Lieber Wasser aufbereiten (siehe <a href="entkeimung.html">Wasser entkeimen</a>).</li>
+      </ul>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-wasserbedarf.js"></script>
+</body>
+</html>

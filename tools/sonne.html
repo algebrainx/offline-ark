@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sonne &amp; Tageslicht – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .btn-row.mid { margin-top: 4px; align-items: center; }
+    .status { color: var(--text-2); font-size: .9rem; margin-top: 10px; min-height: 1.4em; }
+    .where { color: var(--text-2); font-size: .9rem; margin: 0 0 12px 2px; }
+    .date-row { display: flex; gap: 10px; align-items: stretch; }
+    .date-row input { flex: 1; }
+    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .plain li { margin-bottom: .45em; }
+    .stat .num { font-size: 1.6rem; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Sonne &amp; Tageslicht</h1>
+    <p class="lead">Wann geht die Sonne auf und unter? Wie lange bleibt es hell? Offline berechnet.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="field"><span class="label">Ort</span>
+        <div class="seg" data-local id="place" role="group" aria-label="Ort wählen">
+          <button type="button" data-v="waiblingen" aria-pressed="true">Waiblingen</button>
+          <button type="button" data-v="stuttgart" aria-pressed="false">Stuttgart</button>
+          <button type="button" data-v="custom" aria-pressed="false">Eigener Ort</button>
+        </div></div>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="gps">GPS verwenden</button>
+      </div>
+      <div class="status" id="gpsMsg" role="status" aria-live="polite"></div>
+
+      <details style="margin:10px 0 18px">
+        <summary>Koordinaten selbst eingeben</summary>
+        <div>
+          <div class="form-grid">
+            <div class="field"><label for="lat">Breite (° Nord, Süden negativ)</label><input type="text" id="lat" inputmode="decimal" autocomplete="off"></div>
+            <div class="field"><label for="lon">Länge (° Ost, Westen negativ)</label><input type="text" id="lon" inputmode="decimal" autocomplete="off"></div>
+          </div>
+        </div>
+      </details>
+
+      <div class="field" style="margin-bottom:0"><label for="date">Datum</label>
+        <div class="date-row">
+          <input type="date" id="date" aria-label="Datum">
+          <button type="button" class="btn" id="today">Heute</button>
+        </div></div>
+    </section>
+
+    <div>
+      <p class="where" id="where"></p>
+      <section class="card result" aria-live="polite">
+        <div id="dur" class="num">–</div>
+        <div class="cap" id="durCap"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="stats" id="stats"></div>
+      <p class="hint" style="margin-bottom:0">Zeiten in der Ortszeit deines Geräts (<span id="tz">–</span>), einschließlich Sommerzeit. Berechnung auf etwa ±2 Minuten genau.</p>
+    </section>
+
+    <section>
+      <div class="section-title" style="margin-top:8px">Tageslichtdauer der nächsten 7 Tage</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tag</th><th class="num">Aufgang</th><th class="num">Untergang</th><th class="num">Tageslicht</th></tr></thead>
+          <tbody id="week"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="callout info">
+      <strong>Gut zu wissen</strong>
+      <ul class="plain">
+        <li><strong>Bürgerliche Dämmerung:</strong> Die Sonne steht höchstens 6° unter dem Horizont. Draußen kann man dann noch gut sehen, ohne Lampe. Danach wird es schnell dunkel.</li>
+        <li><strong>Höchststand:</strong> Zu diesem Zeitpunkt steht die Sonne genau im Süden. Ein senkrechter Stock wirft dann einen Schatten nach Norden – praktisch für den Kompass.</li>
+        <li>Berge, Wald und Wetter verkürzen das nutzbare Tageslicht. Plane Wege so, dass du vor Sonnenuntergang ankommst.</li>
+        <li>Das GPS funktioniert auch ohne Internet, braucht aber freien Himmel und kann dauern. Alternativ die Koordinaten selbst eingeben.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-sonne.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Morse-Code – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .morse-out { background: var(--surface-2); border-radius: var(--r); padding: 16px 18px; min-height: 76px; font: 600 1.5rem/1.5 var(--mono); letter-spacing: .08em; overflow-wrap: anywhere; word-break: break-word; }
+    .morse-out.empty { color: var(--text-2); }
+    .morse-out.empty::before { content: "Hier erscheint die Übersetzung"; font: 400 1rem var(--font); letter-spacing: 0; }
+    .morse-note { min-height: 1.4em; margin: 8px 2px 0; color: var(--text-2); font-size: .9rem; }
+    .presets { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .play-row { display: flex; align-items: center; gap: 14px; }
+    .lamp { width: 30px; height: 30px; border-radius: 50%; flex: none; background: var(--surface-2); border: 2px solid var(--line); transition: background .03s; }
+    .lamp.on { background: var(--accent); border-color: var(--accent); }
+    .range-field { display: flex; justify-content: space-between; align-items: baseline; }
+    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0 0 0 2px; }
+    .range-field output { font-weight: 650; color: var(--text); font-variant-numeric: tabular-nums; }
+    .morse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+    .morse-cell { background: var(--surface-2); border-radius: var(--r-sm); padding: 10px 6px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+    .morse-cell .ch { font-size: 1.3rem; font-weight: 700; }
+    .morse-cell .cd { font: 600 1rem var(--mono); letter-spacing: .08em; color: var(--text-2); }
+    #table-body h3 { margin: 18px 0 8px; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
+    #table-body h3:first-child { margin-top: 4px; }
+    /* Blinker: echtes Schwarz/Weiß, damit der Kontrast maximal ist */
+    .morse-flash { cursor: pointer; touch-action: manipulation; }
+    .flash-hint { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center; font: 500 1rem var(--font); color: #fff; mix-blend-mode: difference; opacity: .7; pointer-events: none; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Morse-Code</h1>
+    <p class="lead">Text in Morsezeichen umwandeln und zurück, als Ton abspielen oder den Bildschirm blinken lassen.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="seg" id="dir" data-local role="group" aria-label="Richtung" style="margin-bottom:14px">
+        <button type="button" data-v="encode" aria-pressed="true">Text → Morse</button>
+        <button type="button" data-v="decode" aria-pressed="false">Morse → Text</button>
+      </div>
+
+      <div class="presets" id="presets" aria-label="Schnelle Voreinstellungen">
+        <button type="button" class="btn sm" data-text="SOS">SOS</button>
+        <button type="button" class="btn sm" data-text="HILFE">HILFE</button>
+      </div>
+
+      <div class="field"><label for="input" id="in-label">Text</label>
+        <textarea id="input" rows="3" maxlength="300" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"></textarea></div>
+
+      <div class="field" style="margin-bottom:0"><span class="label" id="out-label">Morsezeichen</span>
+        <div class="morse-out empty" id="out" aria-live="polite" aria-labelledby="out-label"></div>
+        <div class="morse-note" id="note" aria-live="polite"></div></div>
+    </section>
+
+    <section class="card">
+      <div class="play-row" style="margin-bottom:16px">
+        <span class="lamp" id="lamp" aria-hidden="true"></span>
+        <span class="muted" id="duration">&nbsp;</span>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="btn-tone">Ton abspielen</button>
+        <button type="button" class="btn" id="btn-flash">Bildschirm blinken</button>
+        <button type="button" class="btn danger" id="btn-stop" disabled>Stopp</button>
+      </div>
+
+      <div class="form-grid" style="margin-top:22px">
+        <div class="field"><div class="range-field"><label for="wpm">Tempo</label><output id="wpm-val" for="wpm">12 WPM</output></div>
+          <input type="range" id="wpm" min="5" max="30" step="1" value="12"></div>
+        <div class="field"><div class="range-field"><label for="hz">Tonhöhe</label><output id="hz-val" for="hz">700 Hz</output></div>
+          <input type="range" id="hz" min="400" max="1000" step="25" value="700"></div>
+      </div>
+      <div class="switch-row"><span>Wiederholen, bis ich stoppe</span>
+        <label class="switch"><input type="checkbox" id="loop" aria-label="Wiederholen"><span></span></label></div>
+      <div class="switch-row"><span>Beim Blinken zusätzlich Ton</span>
+        <label class="switch"><input type="checkbox" id="flash-tone" aria-label="Beim Blinken zusätzlich Ton"><span></span></label></div>
+      <p class="hint">WPM = Wörter pro Minute. Langsam anfangen: 5 bis 12 WPM sind gut zu verstehen. Lautstärke am Gerät einstellen.</p>
+    </section>
+
+    <details>
+      <summary>Morsealphabet zum Nachschlagen</summary>
+      <div id="table-body"></div>
+    </details>
+
+    <div class="callout info">
+      <strong>So wird gesendet</strong>
+      Ein Punkt ist 1 Zeiteinheit lang, ein Strich 3. Zwischen Zeichen liegen 3 Einheiten Pause, zwischen Wörtern 7.
+      Bildschirm-Licht ist nur auf kurze Entfernung zu sehen. Ein Notruf geht immer zuerst über die <strong style="display:inline">112</strong>.
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-morse.js"></script>
+</body>
+</html>

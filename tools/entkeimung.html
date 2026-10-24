@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wasser entkeimen – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .clock { font-size: clamp(3rem, 16vw, 5rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+    .clock.done { color: var(--danger); }
+    .btn-row.mid { justify-content: center; margin-top: 16px; }
+    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .plain li { margin-bottom: .4em; }
+    details .plain { margin-top: 0; }
+    details > div > p:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Wasser entkeimen</h1>
+    <p class="lead">Abkochen, filtern oder mit Tabletten behandeln: was hilft, was nicht – und wann Wasser tabu ist.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="field"><span class="label">Höhe über dem Meer (Meter)</span>
+        <div class="stepper" data-min="0" data-max="9000" data-step="100"><button type="button" aria-label="100 Meter weniger">−</button><input type="number" id="alt" inputmode="numeric" value="0" min="0" max="9000" aria-label="Höhe in Metern"><button type="button" aria-label="100 Meter mehr">+</button></div>
+        <div class="hint">Fast ganz Deutschland liegt unter 2000 m. In den Alpen kann es höher sein. Im Zweifel: lieber länger kochen.</div>
+      </div>
+    </section>
+
+    <section class="card result" aria-live="polite">
+      <div><span class="num" id="mins">1</span><span class="unit" id="minsUnit">Minute</span></div>
+      <div class="cap" id="minsCap">sprudelnd kochen</div>
+    </section>
+
+    <section class="card result" id="timerCard">
+      <div class="clock" id="clock" aria-live="off">01:00</div>
+      <div class="cap" id="timerCap">Zeit erst starten, wenn das Wasser durchgehend sprudelt (große Blasen).</div>
+      <div class="btn-row mid">
+        <button type="button" class="btn primary" id="start">Kochen starten</button>
+        <button type="button" class="btn" id="stop" hidden>Abbrechen</button>
+      </div>
+    </section>
+
+    <div class="callout danger">
+      <strong>Wann Wasser NICHT trinken – auch nicht abgekocht</strong>
+      <ul class="plain">
+        <li><strong>Chemikalien:</strong> Geruch nach Benzin, Heizöl, Lösungsmittel oder Chemie, Ölfilm, Schaum oder ungewöhnliche Farbe. Abkochen entfernt keine Chemikalien, Schwermetalle oder Nitrat.</li>
+        <li><strong>Hochwasser und Überschwemmung:</strong> Das Wasser kann Abwasser, Heizöl und Chemikalien enthalten.</li>
+        <li><strong>Starke Fäkalbelastung:</strong> Abwasser, Gülle, Jauche, Tränken von Vieh oder Gewässer unterhalb von Siedlungen.</li>
+        <li>Im Zweifel anderes Wasser nehmen (Flaschenwasser, Regenwasser aus sauberem Auffangbehälter) und auf amtliche Warnungen achten (Radio, Warn-App, Gesundheitsamt).</li>
+      </ul>
+    </div>
+
+    <section class="card prose">
+      <h2 style="margin-top:0">So geht’s</h2>
+      <ol class="steps">
+        <li><strong>Trübes Wasser vorfiltern:</strong> durch ein sauberes, dicht gewebtes Tuch oder einen Kaffeefilter gießen. Oder Wasser stehen lassen und den klaren Teil vorsichtig abgießen. Trübstoffe schützen Keime und stören Filter und Tabletten.</li>
+        <li><strong>In einen sauberen Topf füllen</strong> und mit Deckel zum Kochen bringen.</li>
+        <li><strong>Sprudelnd kochen</strong> – erst wenn es durchgehend große Blasen wirft, läuft die Zeit. Oben den Timer starten.</li>
+        <li><strong>Abkühlen lassen</strong> – mit Deckel, ohne Umrühren mit schmutzigen Löffeln.</li>
+        <li><strong>In sauberes, verschließbares Gefäß füllen</strong> (vorher mit abgekochtem Wasser ausspülen).</li>
+      </ol>
+    </section>
+
+    <div>
+      <details>
+        <summary>Filter: was sie können – und was nicht</summary>
+        <div>
+          <ul class="plain">
+            <li><strong>Keramik- und Hohlfaserfilter</strong> (z. B. Outdoor-Filter) halten Bakterien und Parasiten (Giardien, Kryptosporidien) zurück, wenn sie heil sind und richtig gewartet werden.</li>
+            <li><strong>Viren</strong> sind oft zu klein und gehen durch viele Filter. Nur wenn der Hersteller ausdrücklich eine Virenentfernung angibt, darf man sich darauf verlassen. Sonst: nach dem Filtern zusätzlich abkochen.</li>
+            <li><strong>Chemikalien</strong> (Öl, Pestizide, Industriechemie, Schwermetalle) filtern die üblichen Notfallfilter NICHT sicher heraus. Aktivkohle verbessert den Geschmack und mindert manche Stoffe, bietet aber keinen verlässlichen Schutz.</li>
+            <li>Gefrorene oder heruntergefallene Hohlfaserfilter können unsichtbare Risse haben und nicht mehr dicht sein. Dann austauschen.</li>
+            <li>Filter regelmäßig nach Anleitung reinigen und rechtzeitig wechseln. Bei verstopftem Filter nie mit Druck durchpressen.</li>
+            <li>Bei Verdacht auf Abwasser oder Fäkalien: erst filtern, dann abkochen – oder anderes Wasser verwenden.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Entkeimungstabletten und Chlor</summary>
+        <div>
+          <p><strong>Nur nach Herstellerangabe verwenden.</strong> Dosierung, Einwirkzeit und Wassertemperatur stehen auf der Packung oder dem Beipackzettel. Hier gibt es bewusst keine eigenen Mengenangaben – falsche Dosierung ist gefährlich oder wirkungslos.</p>
+          <ul class="plain">
+            <li>Trübes Wasser vorher abfiltern. Kaltes Wasser braucht oft längere Einwirkzeit (Herstellerangabe).</li>
+            <li>Nicht alle Mittel wirken gegen alle Keime. Chlor wirkt gegen Kryptosporidien nur schwach. Auf der Packung nachlesen, wogegen das Mittel getestet ist.</li>
+            <li>Haltbarkeit der Tabletten beachten und trocken lagern.</li>
+            <li>Jodhaltige Mittel sind nicht für jeden geeignet (z. B. Schwangere, Schilddrüsenerkrankte, Säuglinge) und nicht für Dauergebrauch. Hinweise des Herstellers lesen.</li>
+            <li>Keine Haushaltsmittel (Reiniger, Bleiche mit Zusätzen) selbst dosieren.</li>
+            <li>Gegen Chemikalien helfen Tabletten nicht.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Haltbarkeit von abgekochtem Wasser</summary>
+        <div>
+          <ul class="plain">
+            <li>Abgekochtes Wasser ist <strong>nicht keimfrei für immer</strong>: Keime können über Hände, Becher oder Gefäß wieder hineingelangen.</li>
+            <li>Richtwert: am besten am selben Tag trinken, spätestens nach <strong>24 Stunden</strong>. Bei Wärme schneller. Für Säuglingsnahrung immer frisch abkochen.</li>
+            <li>Verschlossen, kühl und dunkel aufbewahren. Nicht aus dem Gefäß trinken, sondern ausgießen.</li>
+            <li>Wird es trüb, riecht oder schmeckt es komisch: nicht mehr trinken.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Quellen und Grenzen der Zeitangabe</summary>
+        <div>
+          <p class="small muted">Konservative Regel nach CDC („Making Water Safe in an Emergency“) und WHO („Boil water“): bis 2000 m mindestens 1 Minute sprudelnd kochen, darüber 3 Minuten, weil der Siedepunkt in der Höhe sinkt. Gibt das Gesundheitsamt oder eine Behörde ein Abkochgebot mit längerer Kochzeit vor, gilt deren Angabe.</p>
+          <p class="small muted">Abkochen tötet Bakterien, Viren und Parasiten ab. Es ersetzt keine Aufbereitung bei chemischer Verunreinigung. Dieses Werkzeug ist ein Hilfsmittel, keine Garantie.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-entkeimung.js"></script>
+</body>
+</html>

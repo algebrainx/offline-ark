@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vorratsliste – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .toolbar { display: grid; gap: 12px; }
+    .toolbar .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; align-items: end; }
+    .toolbar .field { margin-bottom: 0; }
+    @media (max-width: 560px) { .toolbar .row { grid-template-columns: 1fr; } }
+    .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat { padding: 12px; }
+    .stat.bad .num { color: var(--danger); }
+
+    .inv { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .inv:last-child { border-bottom: 0; }
+    .inv.bad { box-shadow: inset 4px 0 0 var(--danger); }
+    .inv.warn { box-shadow: inset 4px 0 0 var(--warn-line); }
+    .inv-main { flex: 1 1 220px; min-width: 0; }
+    .inv-name { font-weight: 650; font-size: 1.08rem; overflow-wrap: anywhere; }
+    .inv-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .inv-note { margin-top: 6px; overflow-wrap: anywhere; }
+    .inv-side { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .qty { display: flex; align-items: center; background: var(--surface-2); border-radius: 12px; }
+    .qty button { width: 48px; min-height: 48px; border: 0; background: transparent; color: var(--accent); font: 500 1.6rem var(--font); cursor: pointer; border-radius: 12px; }
+    .qty button:hover { background: color-mix(in srgb, var(--text) 6%, transparent); }
+    .qty .val { min-width: 72px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; line-height: 1.2; padding: 0 2px; }
+    .qty .val small { display: block; font-weight: 400; color: var(--text-2); font-size: .78rem; overflow-wrap: anywhere; }
+    .empty { padding: 28px 18px; text-align: center; color: var(--text-2); }
+
+    dialog { width: min(520px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: auto; padding: 22px; border: 1px solid var(--line);
+      border-radius: var(--r-lg); background: var(--surface); color: var(--text); }
+    dialog::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    dialog h2 { margin: 0 0 16px; font-size: 1.3rem; }
+    dialog textarea { min-height: 80px; }
+    .dlg-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .dlg-actions .btn.primary { flex: 1 1 140px; }
+    .form-error { color: var(--danger); font-weight: 600; margin: 0 0 12px; }
+    @media (max-width: 560px) {
+      dialog { margin: auto 0 0; width: 100%; max-width: none; border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 92vh; }
+    }
+
+    .print-view { display: none; }
+    .print-view table { width: 100%; }
+    @media print {
+      .print-view { display: block !important; }
+      .print-view th, .print-view td { border: 1px solid var(--line); padding: 6px 8px; font-size: 10pt; }
+      .print-view h1 { font-size: 18pt; margin-bottom: 4pt; }
+      main > .page-head, main > .screen { display: none !important; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Vorratsliste</h1>
+    <p class="lead">Artikel, Menge und Ablaufdatum – mit Warnung und JSON-Export.</p>
+  </header>
+
+  <div class="stack screen">
+    <div class="callout warn" id="storeWarn" role="alert" hidden>
+      <strong>Speicher blockiert</strong>
+      Dein Browser erlaubt kein Speichern. Bitte nutze „Exportieren“ (unten bei „Mehr“), sonst gehen die Daten beim Schließen verloren.
+    </div>
+
+    <section class="card" aria-live="polite">
+      <div class="stats">
+        <div class="stat bad"><div class="num" id="nBad">0</div><div class="cap">abgelaufen</div></div>
+        <div class="stat"><div class="num" id="nWarn">0</div><div class="cap">bald fällig</div></div>
+        <div class="stat"><div class="num" id="nTotal">0</div><div class="cap">Artikel</div></div>
+      </div>
+      <p class="hint" id="sumLine"></p>
+    </section>
+
+    <button type="button" class="btn primary block" id="add">Artikel hinzufügen</button>
+
+    <section class="card toolbar">
+      <div class="field"><label for="q">Suchen</label>
+        <input type="search" id="q" inputmode="search" placeholder="Name oder Notiz" autocomplete="off"></div>
+      <div class="row">
+        <div class="field"><label for="fcat">Kategorie</label>
+          <select id="fcat"></select></div>
+        <div class="field"><span class="label">Sortieren nach</span>
+          <div class="seg" data-local id="sort" role="group" aria-label="Sortierung">
+            <button type="button" data-v="exp" aria-pressed="true">Ablauf</button>
+            <button type="button" data-v="name" aria-pressed="false">Name</button>
+            <button type="button" data-v="cat" aria-pressed="false">Kategorie</button>
+          </div></div>
+      </div>
+    </section>
+
+    <section class="list" id="list" aria-label="Artikel"></section>
+
+    <details>
+      <summary>Mehr: Warnschwelle, Export, Import, Drucken</summary>
+      <div>
+        <div class="field"><span class="label">Bald fällig = läuft ab in höchstens …</span>
+          <div class="seg" data-local id="warn" role="group" aria-label="Warnschwelle">
+            <button type="button" data-v="7" aria-pressed="false">7 Tagen</button>
+            <button type="button" data-v="30" aria-pressed="true">30 Tagen</button>
+            <button type="button" data-v="90" aria-pressed="false">90 Tagen</button>
+          </div></div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="export">Exportieren</button>
+          <button type="button" class="btn" id="import">Importieren</button>
+          <button type="button" class="btn" id="print">Drucken</button>
+        </div>
+        <p class="hint">Der Export ist eine JSON-Datei. Sie enthält nur deine Vorratsliste und bleibt auf deinem Gerät.</p>
+        <p class="hint" id="msg" role="status"></p>
+      </div>
+    </details>
+  </div>
+
+  <section class="print-view" id="printView" aria-hidden="true"></section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <form id="form" novalidate>
+    <h2 id="dlgTitle">Artikel hinzufügen</h2>
+    <p class="form-error" id="formErr" role="alert" hidden></p>
+    <div class="field"><label for="fName">Name</label>
+      <input type="text" id="fName" maxlength="120" autocomplete="off" required placeholder="z. B. Nudeln"></div>
+    <div class="form-grid">
+      <div class="field"><label for="fQty">Menge</label>
+        <input type="text" id="fQty" inputmode="decimal" autocomplete="off" value="1"></div>
+      <div class="field"><label for="fUnit">Einheit</label>
+        <input type="text" id="fUnit" list="units" maxlength="30" autocomplete="off" placeholder="Stück">
+        <datalist id="units"><option value="Stück"><option value="Packung"><option value="Dose"><option value="Flasche"><option value="Beutel"><option value="Liter"><option value="kg"><option value="g"></datalist></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label for="fCat">Kategorie</label><select id="fCat"></select></div>
+      <div class="field"><label for="fExp">Ablaufdatum (optional)</label><input type="date" id="fExp"></div>
+    </div>
+    <div class="field"><label for="fNote">Notiz (optional)</label><textarea id="fNote" maxlength="500" placeholder="z. B. Lagerort"></textarea></div>
+    <div class="dlg-actions">
+      <button type="submit" class="btn primary" id="fSave">Speichern</button>
+      <button type="button" class="btn" id="fCancel">Abbrechen</button>
+      <button type="button" class="btn danger" id="fDelete" hidden>Löschen</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="impDlg" aria-labelledby="impTitle">
+  <h2 id="impTitle">Liste importieren</h2>
+  <p id="impText"></p>
+  <div class="dlg-actions">
+    <button type="button" class="btn primary" id="impMerge">Zusammenführen</button>
+    <button type="button" class="btn danger" id="impReplace">Ersetzen</button>
+    <button type="button" class="btn" id="impCancel">Abbrechen</button>
+  </div>
+  <p class="hint">Zusammenführen: Neue Artikel kommen dazu, Artikel mit gleicher Kennung werden aktualisiert. Ersetzen: Deine jetzige Liste wird gelöscht.</p>
+</dialog>
+
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/inventar-core.js"></script>
+<script src="../js/tool-inventar.js"></script>
+</body>
+</html>

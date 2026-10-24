@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Checklisten – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .picks { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .pick { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 68px; padding: 12px 16px; text-align: left; font: inherit; color: var(--text);
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); cursor: pointer; }
+    .pick:hover { background: var(--surface-2); }
+    .pick[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+    .pick .t { font-weight: 650; }
+    .pick .c { color: var(--text-2); font-size: .85rem; font-variant-numeric: tabular-nums; }
+
+    .progress-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .progress-head .big { font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+    .bar { height: 12px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 12px 0 16px; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width .25s; }
+
+    .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 6px; }
+    .sec-head h2 { margin: 0; font-size: 1.15rem; }
+    .sec-head .n { color: var(--text-2); font-size: .85rem; font-variant-numeric: tabular-nums; }
+    .crow { display: flex; align-items: center; border-bottom: 1px solid var(--line); }
+    .crow:last-child { border-bottom: 0; }
+    .crow .check { flex: 1; border-bottom: 0; min-width: 0; }
+    .crow .check span { overflow-wrap: anywhere; }
+    .crow .x { width: var(--hit); height: var(--hit); flex: none; border: 0; border-radius: 50%; background: transparent; color: var(--text-2); font-size: 1.2rem; cursor: pointer; }
+    .crow .x:hover { background: var(--surface-2); color: var(--danger); }
+    .add-row { display: flex; gap: 10px; margin-top: 14px; }
+    .add-row input { flex: 1; min-width: 0; }
+    @media (max-width: 420px) { .add-row { flex-direction: column; } }
+
+    .print-view { display: none; }
+    @media print {
+      .print-view { display: block !important; }
+      main > .page-head, main > .screen { display: none !important; }
+      .print-view h1 { font-size: 18pt; margin-bottom: 2pt; }
+      .print-view h2 { font-size: 12pt; margin: 10pt 0 3pt; break-after: avoid; }
+      .print-view ul { list-style: none; padding: 0; margin: 0; }
+      .print-view li { margin: 0 0 4pt; break-inside: avoid; padding-left: 0; }
+      .print-view .box { display: inline-block; width: 1.4em; font-size: 12pt; }
+      .print-view .cols { column-count: 2; column-gap: 20pt; }
+      .print-view .src { margin-top: 12pt; font-size: 8.5pt; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Checklisten</h1>
+    <p class="lead">Notgepäck, Hausapotheke, Stromausfall, Evakuierung, Winter.</p>
+  </header>
+
+  <div class="stack screen">
+    <div class="callout warn" id="storeWarn" role="alert" hidden>
+      <strong>Speicher blockiert</strong>
+      Dein Browser erlaubt kein Speichern. Deine Häkchen gehen beim Schließen der Seite verloren. Drucke die Liste bei Bedarf aus.
+    </div>
+
+    <div class="picks" id="picks" role="group" aria-label="Liste wählen"></div>
+
+    <section class="card" aria-live="polite">
+      <div class="progress-head">
+        <span class="big" id="progText">0 von 0</span>
+        <span class="muted" id="progPct"></span>
+      </div>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barWrap"><i id="bar"></i></div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="reset">Alles zurücksetzen</button>
+        <button type="button" class="btn" id="print">Drucken</button>
+      </div>
+    </section>
+
+    <div class="callout info" id="intro"></div>
+
+    <div class="stack" id="sections"></div>
+
+    <section class="card" id="customCard">
+      <div class="sec-head"><h2>Eigene Punkte</h2><span class="n" id="customN"></span></div>
+      <div id="customList"></div>
+      <form class="add-row" id="addForm" autocomplete="off">
+        <input type="text" id="addText" maxlength="120" placeholder="Eigenen Punkt eintragen" aria-label="Eigenen Punkt eintragen">
+        <button type="submit" class="btn primary">Hinzufügen</button>
+      </form>
+    </section>
+
+    <section class="sources">
+      <h2>Quellen</h2>
+      <ul>
+        <li>BBK – Ratgeber „Vorsorgen für Krisen und Katastrophen“ mit Checklisten (zur Orientierung; der Link braucht Internet):
+          <a href="https://www.bbk.bund.de/DE/Warnung-Vorsorge/Vorsorge/Ratgeber-Checkliste/ratgeber-checkliste_node.html" rel="noopener">bbk.bund.de – Ratgeber &amp; Checklisten</a></li>
+        <li>© BBK, Inhalte hier in eigenen Worten zusammengefasst. Die Listen sind Anregungen und ersetzen keine individuelle Beratung.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="print-view" id="printView" aria-hidden="true"></section>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/checklisten.js"></script>
+<script src="../js/tool-checklisten.js"></script>
+</body>
+</html>

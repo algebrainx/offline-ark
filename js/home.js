@@ -1,0 +1,107 @@
+/* Offline-Ark – Startseite: Kacheln, Suche, Uhr/Datum/Akku. */
+(function () {
+  'use strict';
+  var OA = window.OA;
+  var tools = window.OA_TOOLS || [], groups = window.OA_TOOL_GROUPS || [], wissen = window.OA_WISSEN || [];
+  var search = window.OA_SEARCH || [];
+
+  /* ---------- Icons im Notfallbereich ---------- */
+  OA.$('#ic-aid').innerHTML = OA.icon('aid');
+  OA.$('#ic-power').innerHTML = OA.icon('boltoff');
+  OA.$('#ic-water').innerHTML = OA.icon('drop');
+
+  /* ---------- Kacheln: Werkzeuge nach Gruppen ---------- */
+  var html = '';
+  groups.forEach(function (g) {
+    var items = tools.filter(function (t) { return t.group === g.id; });
+    if (!items.length) return;
+    html += '<h2 class="section-title">' + OA.esc(g.title) + '</h2><div class="tiles">' + items.map(function (t) {
+      return '<a class="tile" href="tools/' + t.id + '.html">' + OA.icon(t.icon) +
+        '<span class="name">' + OA.esc(t.title) + '<span class="sub">' + OA.esc(t.sub) + '</span></span></a>';
+    }).join('') + '</div>';
+  });
+  OA.$('#tool-groups').innerHTML = html;
+
+  /* ---------- Wissensliste ---------- */
+  OA.$('#wissen-list').innerHTML = wissen.map(function (w) {
+    return '<a href="wissen/' + w.id + '.html">' + OA.icon(w.icon) +
+      '<span class="name">' + OA.esc(w.title) + '<span class="sub">' + OA.esc(w.sub) + '</span></span>' + OA.icon('chev', 'chev') + '</a>';
+  }).join('');
+
+  /* ---------- Uhr, Datum, Akku ---------- */
+  function tick() {
+    var d = new Date();
+    OA.$('#clock').textContent = OA.pad(d.getHours()) + ':' + OA.pad(d.getMinutes());
+    OA.$('#date').textContent = d.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  tick(); setInterval(tick, 1000);
+
+  try {
+    if (navigator.getBattery) {
+      navigator.getBattery().then(function (b) {
+        function show() {
+          OA.$('#battery').hidden = false;
+          OA.$('#batval').textContent = Math.round(b.level * 100) + ' %' + (b.charging ? ' (lädt)' : '');
+        }
+        show(); b.addEventListener('levelchange', show); b.addEventListener('chargingchange', show);
+      }).catch(function () {});
+    }
+  } catch (e) { /* Akkuanzeige nicht verfügbar */ }
+
+  /* ---------- Suche ---------- */
+  // Vereinfachen: klein, Umlaute weg, damit "waerme" und "wärme" beide treffen
+  function fold(s) {
+    return String(s).toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss')
+      .replace(/ae/g, 'a').replace(/oe/g, 'o').replace(/ue/g, 'u');
+  }
+
+  var docs = [];
+  tools.forEach(function (t) {
+    docs.push({ kind: 'Werkzeug', url: 'tools/' + t.id + '.html', icon: t.icon, title: t.title, desc: t.desc,
+      title_f: fold(t.title), kw_f: fold(t.kw || '') + ' ' + fold(t.sub), body_f: fold(t.desc) });
+  });
+  wissen.forEach(function (w) {
+    var s = search.filter(function (x) { return x.id === w.id; })[0] || {};
+    docs.push({ kind: 'Wissen', url: 'wissen/' + w.id + '.html', icon: w.icon, title: w.title, desc: w.sub,
+      title_f: fold(w.title), kw_f: fold((s.headings || '') + ' ' + w.sub), body_f: fold(s.text || '') });
+  });
+
+  function run(query) {
+    var words = fold(query).split(/\s+/).filter(Boolean);
+    if (!words.length) return [];
+    var out = [];
+    docs.forEach(function (d) {
+      var score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i], s = 0;
+        if (d.title_f.indexOf(w) !== -1) s += 10;
+        if (d.kw_f.indexOf(w) !== -1) s += 5;
+        if (d.body_f.indexOf(w) !== -1) s += 1;
+        if (!s) return;           // jedes Wort muss irgendwo vorkommen
+        score += s;
+      }
+      out.push({ d: d, score: score });
+    });
+    out.sort(function (a, b) { return b.score - a.score; });
+    return out.slice(0, 8).map(function (x) { return x.d; });
+  }
+
+  var input = OA.$('#q'), box = OA.$('#results');
+  function render() {
+    var q = input.value.trim();
+    if (!q) { box.classList.remove('show'); box.innerHTML = ''; return; }
+    var res = run(q);
+    box.innerHTML = res.length ? res.map(function (d) {
+      return '<a href="' + d.url + '" role="option">' + OA.icon(d.icon) +
+        '<span><span class="t">' + OA.esc(d.title) + '</span><br><span class="d">' + OA.esc(d.desc) + '</span></span>' +
+        '<span class="kind">' + d.kind + '</span></a>';
+    }).join('') : '<div class="empty">Nichts gefunden. Versuche ein kürzeres Wort.</div>';
+    box.classList.add('show');
+  }
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { var a = OA.$('a', box); if (a) location.href = a.getAttribute('href'); }
+  });
+  if (location.hash === '#suche') input.focus();
+  window.addEventListener('hashchange', function () { if (location.hash === '#suche') input.focus(); });
+})();

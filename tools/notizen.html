@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Notizen &amp; Tagebuch – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .entry { display: block; width: 100%; text-align: left; font: inherit; color: var(--text); background: none; border: 0; border-bottom: 1px solid var(--line);
+      padding: 14px 18px; min-height: 60px; cursor: pointer; }
+    .entry:last-child { border-bottom: 0; }
+    .entry:hover { background: var(--surface-2); }
+    .entry .t { font-weight: 650; font-size: 1.05rem; overflow-wrap: anywhere; }
+    .entry .d { color: var(--text-2); font-size: .85rem; }
+    .entry .s { color: var(--text-2); margin-top: 2px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+    .empty { padding: 28px 18px; text-align: center; color: var(--text-2); }
+    .ed-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .ed-top h2 { margin: 0; font-size: 1.25rem; }
+    #edText { min-height: 45vh; font-size: 1.1rem; }
+    .save-state { min-height: 1.5em; font-size: .9rem; color: var(--text-2); margin: 10px 2px 0; }
+    .save-state.err { color: var(--danger); font-weight: 600; }
+    .inline-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .inline-row .field { flex: 1 1 180px; margin-bottom: 0; }
+
+    .print-view { display: none; }
+    .print-view .p-item { margin: 0 0 14pt; break-inside: avoid; }
+    .print-view .p-item h2 { font-size: 12pt; margin: 0 0 2pt; }
+    .print-view .p-text { white-space: pre-wrap; margin: 0; }
+    @media print {
+      .print-view { display: block !important; }
+      main > .page-head, main > .screen { display: none !important; }
+      .print-view h1 { font-size: 18pt; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Notizen &amp; Tagebuch</h1>
+    <p class="lead">Notizen und Tagebuch mit Datum, nur auf diesem Gerät gespeichert.</p>
+  </header>
+
+  <div class="stack screen">
+    <div class="callout warn" id="storeWarn" role="alert" hidden>
+      <strong>Speicher blockiert</strong>
+      Dein Browser erlaubt kein Speichern. Bitte nutze den Export („Mehr“ in der Liste), sonst gehen die Texte beim Schließen verloren.
+    </div>
+
+    <!-- Listenansicht -->
+    <div class="stack" id="listView">
+      <div class="seg" data-local id="mode" role="group" aria-label="Bereich">
+        <button type="button" data-v="notizen" aria-pressed="true">Notizen</button>
+        <button type="button" data-v="tagebuch" aria-pressed="false">Tagebuch</button>
+      </div>
+
+      <button type="button" class="btn primary block" id="newBtn">Neue Notiz</button>
+
+      <div class="field" id="searchField" style="margin:0"><label for="q" class="sr-only">Suchen</label>
+        <input type="search" id="q" inputmode="search" placeholder="Notizen durchsuchen" autocomplete="off"></div>
+
+      <details id="otherDay" hidden>
+        <summary>Für einen anderen Tag schreiben</summary>
+        <div class="inline-row">
+          <div class="field"><label for="otherDate">Datum</label><input type="date" id="otherDate"></div>
+          <button type="button" class="btn" id="otherOpen">Öffnen</button>
+        </div>
+      </details>
+
+      <section class="list" id="list" aria-label="Einträge"></section>
+
+      <details>
+        <summary>Mehr: Export, Import, Drucken</summary>
+        <div>
+          <div class="btn-row">
+            <button type="button" class="btn" id="expJson">Export (.json)</button>
+            <button type="button" class="btn" id="expTxt">Export (.txt)</button>
+            <button type="button" class="btn" id="impJson">Import (.json)</button>
+            <button type="button" class="btn" id="print">Drucken</button>
+          </div>
+          <p class="hint">Exportiert werden alle Notizen und alle Tagebucheinträge. Gedruckt wird der gerade gewählte Bereich. Beim Import werden Einträge hinzugefügt; bei gleicher Kennung gewinnt die neuere Fassung.</p>
+          <p class="hint" id="msg" role="status"></p>
+        </div>
+      </details>
+    </div>
+
+    <!-- Bearbeiten -->
+    <section class="card" id="editView" hidden>
+      <div class="ed-top">
+        <button type="button" class="btn sm" id="back">← Zurück</button>
+        <h2 id="edHead"></h2>
+      </div>
+      <div class="field" id="titleField"><label for="edTitle">Titel</label>
+        <input type="text" id="edTitle" maxlength="200" autocomplete="off" placeholder="Worum geht es?"></div>
+      <div class="field" style="margin-bottom:0"><label for="edText">Text</label>
+        <textarea id="edText" placeholder="Hier schreiben …"></textarea></div>
+      <div class="save-state" id="saveState" role="status" aria-live="polite"></div>
+      <div class="btn-row" style="margin-top:14px">
+        <button type="button" class="btn primary" id="done">Fertig</button>
+        <button type="button" class="btn" id="stampBtn">Zeit einfügen</button>
+        <button type="button" class="btn danger" id="delBtn">Löschen</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="print-view" id="printView" aria-hidden="true"></section>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/notizen-core.js"></script>
+<script src="../js/tool-notizen.js"></script>
+</body>
+</html>

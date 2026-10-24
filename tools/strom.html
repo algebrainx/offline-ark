@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Strom &amp; Akku – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .picks { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .pick {
+      min-height: var(--hit); padding: 6px 12px; border: 1px solid transparent; border-radius: 12px; cursor: pointer;
+      background: var(--surface-2); color: var(--text); font: 500 .95rem var(--font); text-align: left;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .pick span { color: var(--text-2); font-size: .85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pick[aria-pressed="true"] { border-color: var(--accent); background: var(--surface); font-weight: 650; }
+    .pick:hover { filter: brightness(.97); }
+    .tabs { margin-bottom: 4px; }
+    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .plain li { margin-bottom: .4em; }
+    .eff-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .eff-row .stepper { flex: 1 1 150px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Strom &amp; Akku</h1>
+    <p class="lead">Wie lange hält der Akku? Wie viel liefert ein Solarpanel am Tag?</p>
+  </header>
+
+  <div class="stack">
+    <div class="seg tabs" data-local id="tab" role="group" aria-label="Rechner wählen">
+      <button type="button" data-v="laufzeit" aria-pressed="true">Laufzeit</button>
+      <button type="button" data-v="solar" aria-pressed="false">Solarpanel</button>
+    </div>
+
+    <!-- Laufzeit-Rechner -->
+    <div class="stack" id="paneLaufzeit">
+      <section class="card">
+        <div class="field"><span class="label">Akku angeben in</span>
+          <div class="seg" data-local id="unit">
+            <button type="button" data-v="wh" aria-pressed="true">Wattstunden (Wh)</button>
+            <button type="button" data-v="mah" aria-pressed="false">mAh und Volt</button>
+          </div></div>
+        <div class="form-grid">
+          <div class="field" id="boxWh"><label for="wh">Akku-Energie (Wh)</label>
+            <input type="text" id="wh" inputmode="decimal" placeholder="z. B. 37" autocomplete="off"></div>
+          <div class="field" id="boxMah" hidden><label for="mah">Kapazität (mAh)</label>
+            <input type="text" id="mah" inputmode="decimal" placeholder="z. B. 10000" autocomplete="off"></div>
+          <div class="field" id="boxV" hidden><label for="volt">Spannung (V)</label>
+            <input type="text" id="volt" inputmode="decimal" value="3,7" autocomplete="off"></div>
+        </div>
+        <div class="hint" id="unitHint" style="margin:-4px 0 14px">Steht meist auf dem Akku oder der Powerbank. Powerbanks nennen oft mAh bei 3,7 Volt.</div>
+
+        <div class="field"><span class="label">Verbraucher antippen (Richtwerte, auch mehrere)</span>
+          <div class="picks" id="picks"></div></div>
+        <div class="form-grid">
+          <div class="field"><label for="watt">Leistung des Verbrauchers (W)</label>
+            <input type="text" id="watt" inputmode="decimal" placeholder="z. B. 10" autocomplete="off"></div>
+          <div class="field"><span class="label">Wirkungsgrad (%)</span>
+            <div class="stepper" data-min="30" data-max="100" data-step="5"><button type="button" aria-label="Wirkungsgrad senken">−</button><input type="number" id="eff" inputmode="numeric" value="85" aria-label="Wirkungsgrad in Prozent"><button type="button" aria-label="Wirkungsgrad erhöhen">+</button></div></div>
+        </div>
+      </section>
+
+      <section class="card result" aria-live="polite">
+        <div><span class="num" id="runNum">–</span><span class="unit" id="runUnit"></span></div>
+        <div class="cap" id="runCap">Akku-Energie und Leistung eingeben.</div>
+      </section>
+    </div>
+
+    <!-- Solar-Rechner -->
+    <div class="stack" id="paneSolar" hidden>
+      <section class="card">
+        <div class="form-grid">
+          <div class="field"><span class="label">Panel-Leistung (W)</span>
+            <div class="stepper" data-min="1" data-max="2000" data-step="10"><button type="button" aria-label="Weniger Watt">−</button><input type="number" id="pw" inputmode="numeric" value="100" aria-label="Panel-Leistung in Watt"><button type="button" aria-label="Mehr Watt">+</button></div></div>
+          <div class="field"><span class="label">Systemverluste (%)</span>
+            <div class="stepper" data-min="0" data-max="80" data-step="5"><button type="button" aria-label="Weniger Verluste">−</button><input type="number" id="loss" inputmode="numeric" value="25" aria-label="Systemverluste in Prozent"><button type="button" aria-label="Mehr Verluste">+</button></div></div>
+        </div>
+        <div class="field"><span class="label">Jahreszeit in Deutschland</span>
+          <div class="seg" data-local id="season">
+            <button type="button" data-v="1" aria-pressed="false">Winter</button>
+            <button type="button" data-v="3" aria-pressed="false">Frühling / Herbst</button>
+            <button type="button" data-v="5" aria-pressed="true">Sommer</button>
+          </div></div>
+        <div class="field" style="margin-bottom:0"><label for="sun">Volllaststunden pro Tag (Richtwert)</label>
+          <input type="text" id="sun" inputmode="decimal" value="5" autocomplete="off">
+          <div class="hint">Winter ca. 1, Frühling/Herbst ca. 3, Sommer ca. 5. Das sind Stunden, in denen das Panel rechnerisch die volle Leistung bringt. Bei Wolken weniger.</div></div>
+      </section>
+
+      <section class="card result" aria-live="polite">
+        <div><span class="num" id="solWh">–</span><span class="unit">Wh pro Tag</span></div>
+        <div class="cap" id="solCap"></div>
+      </section>
+
+      <section class="card">
+        <div class="stats" id="solStats"></div>
+        <p class="hint" style="margin-bottom:0">Eine Handy-Ladung rechnet mit ca. 12 Wh (Richtwert), der Laptop mit 45 W.</p>
+      </section>
+    </div>
+
+    <div class="callout info">
+      <strong>Wichtig zu wissen</strong>
+      <ul class="plain">
+        <li>Alle Werte sind <strong>Richtwerte</strong>. Echte Laufzeiten hängen von Alter und Temperatur des Akkus ab. Kälte senkt die nutzbare Kapazität deutlich.</li>
+        <li>Der Wirkungsgrad deckt Verluste beim Umwandeln (z. B. Powerbank auf 5 Volt, Wechselrichter) ab. 85 % ist ein üblicher Annahmewert.</li>
+        <li>Solarpanel: möglichst nach Süden ausrichten, etwa 30–40° neigen, nicht verschatten. Die Leistung auf dem Panel ist ein Höchstwert (Wp).</li>
+        <li>Geräte mit Motor oder Kompressor (Kühlschrank) ziehen beim Anlaufen kurz mehr und laufen nicht dauerhaft. Gemessene Werte (Strommessgerät) sind genauer.</li>
+        <li>Akkus nicht öffnen, nicht in der Hitze laden, aufgeblähte oder beschädigte Akkus nicht mehr benutzen.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-strom.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Notvorrat – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Notvorrat</h1>
+    <p class="lead">Wie viel Essen und Wasser brauchen wir? Orientiert an den Empfehlungen des BBK.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="form-grid">
+        <div class="field"><span class="label">Personen</span>
+          <div class="stepper" data-min="1" data-max="50"><button type="button" aria-label="Weniger Personen">−</button><input type="number" id="persons" inputmode="numeric" value="2" aria-label="Personen"><button type="button" aria-label="Mehr Personen">+</button></div></div>
+        <div class="field"><span class="label">Tage</span>
+          <div class="stepper" data-min="1" data-max="90"><button type="button" aria-label="Weniger Tage">−</button><input type="number" id="days" inputmode="numeric" value="10" aria-label="Tage"><button type="button" aria-label="Mehr Tage">+</button></div></div>
+      </div>
+      <div class="seg" data-local id="preset" aria-label="Schnellwahl Tage">
+        <button type="button" data-v="3" aria-pressed="false">3 Tage</button>
+        <button type="button" data-v="10" aria-pressed="true">10 Tage</button>
+        <button type="button" data-v="14" aria-pressed="false">14 Tage</button>
+      </div>
+      <p class="hint">BBK: möglichst für 10 Tage selbst versorgen können, mindestens 3 Tage sind schon eine große Hilfe.</p>
+    </section>
+
+    <section class="card">
+      <div class="stats" id="main-stats" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h3 style="margin-top:0">Lebensmittel nach Gruppen</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Gruppe</th><th class="num">Gesamt</th><th class="num">pro Person und Tag</th></tr></thead>
+          <tbody id="groups"></tbody>
+        </table>
+      </div>
+      <p class="hint">Eigene Rechnung: Der Tagesbedarf von etwa 2.200 kcal pro Erwachsenem (Richtwert) wird auf sechs Lebensmittelgruppen verteilt. Mengen sind Näherungswerte für haltbare Ware (z. B. Nudeln trocken, Gemüse und Fisch aus der Dose). Kauf nach dem, was ihr wirklich esst.</p>
+    </section>
+
+    <div class="callout info">
+      <strong>Nicht vergessen</strong>
+      <ul style="margin:6px 0 0;padding-left:1.2em">
+        <li>Persönliche Medikamente (ärztlich abgestimmt), Hygieneartikel, Müllbeutel, Toilettenpapier.</li>
+        <li>Babynahrung, Spezialnahrung bei Allergien, Futter und Wasser für Haustiere.</li>
+        <li>Kochmöglichkeit ohne Strom (Campingkocher, nur im Freien/ausreichend belüftet verwenden) und Essen, das kalt gegessen werden kann.</li>
+        <li>Bargeld, Batterieradio, Taschenlampe. Siehe <a href="checklisten.html">Checklisten</a>.</li>
+        <li>Vorrat im Alltag mitverbrauchen und regelmäßig erneuern: <a href="inventar.html">Vorratsliste mit Ablaufwarnung</a>.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-notvorrat.js"></script>
+</body>
+</html>
