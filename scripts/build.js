@@ -7,9 +7,9 @@
  * Was es tut (Node.js ≥ 16, keine Pakete nötig):
  *   1. liest content/*.md (Deutsch) und content/<en|es|ar>/*.md (Übersetzungen)
  *   2. erzeugt wissen/<id>.html und wissen/<sprache>/<id>.html (reines HTML, druckfreundlich)
- *   3. erzeugt wissen/**/quellen.html (zentrale Seite "Quellen & Lizenzen")
+ *   3. erzeugt die zentrale Seite "Quellen & Lizenzen" (je Sprache)
  *   4. erzeugt data/search-index.js (Volltext je Sprache für die Offline-Suche)
- *   5. erzeugt bibliothek/**/index.html aus scripts/library.json
+ *   5. erzeugt die Bibliothek-Seiten aus scripts/library.json
  *
  * Aufruf:  node scripts/build.js
  */
