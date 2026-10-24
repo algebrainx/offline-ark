@@ -6,13 +6,15 @@
   <title>Wasser entkeimen – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     [hidden] { display: none !important; }
     .clock { font-size: clamp(3rem, 16vw, 5rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; font-variant-numeric: tabular-nums; }
     .clock.done { color: var(--danger); }
     .btn-row.mid { justify-content: center; margin-top: 16px; }
-    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .result .unit { margin-left: 0; margin-inline-start: 4px; }
+    .plain { margin: 6px 0 0; padding-left: 0; padding-inline-start: 1.2em; }
     .plain li { margin-bottom: .4em; }
     details .plain { margin-top: 0; }
     details > div > p:last-child { margin-bottom: 0; }
@@ -39,7 +41,7 @@
     </section>
 
     <section class="card result" id="timerCard">
-      <div class="clock" id="clock" aria-live="off">01:00</div>
+      <div class="clock ltr" id="clock" aria-live="off">01:00</div>
       <div class="cap" id="timerCap">Zeit erst starten, wenn das Wasser durchgehend sprudelt (große Blasen).</div>
       <div class="btn-row mid">
         <button type="button" class="btn primary" id="start">Kochen starten</button>
@@ -50,9 +52,9 @@
     <div class="callout danger">
       <strong>Wann Wasser NICHT trinken – auch nicht abgekocht</strong>
       <ul class="plain">
-        <li><strong>Chemikalien:</strong> Geruch nach Benzin, Heizöl, Lösungsmittel oder Chemie, Ölfilm, Schaum oder ungewöhnliche Farbe. Abkochen entfernt keine Chemikalien, Schwermetalle oder Nitrat.</li>
-        <li><strong>Hochwasser und Überschwemmung:</strong> Das Wasser kann Abwasser, Heizöl und Chemikalien enthalten.</li>
-        <li><strong>Starke Fäkalbelastung:</strong> Abwasser, Gülle, Jauche, Tränken von Vieh oder Gewässer unterhalb von Siedlungen.</li>
+        <li data-t=""><strong>Chemikalien:</strong> Geruch nach Benzin, Heizöl, Lösungsmittel oder Chemie, Ölfilm, Schaum oder ungewöhnliche Farbe. Abkochen entfernt keine Chemikalien, Schwermetalle oder Nitrat.</li>
+        <li data-t=""><strong>Hochwasser und Überschwemmung:</strong> Das Wasser kann Abwasser, Heizöl und Chemikalien enthalten.</li>
+        <li data-t=""><strong>Starke Fäkalbelastung:</strong> Abwasser, Gülle, Jauche, Tränken von Vieh oder Gewässer unterhalb von Siedlungen.</li>
         <li>Im Zweifel anderes Wasser nehmen (Flaschenwasser, Regenwasser aus sauberem Auffangbehälter) und auf amtliche Warnungen achten (Radio, Warn-App, Gesundheitsamt).</li>
       </ul>
     </div>
@@ -60,11 +62,11 @@
     <section class="card prose">
       <h2 style="margin-top:0">So geht’s</h2>
       <ol class="steps">
-        <li><strong>Trübes Wasser vorfiltern:</strong> durch ein sauberes, dicht gewebtes Tuch oder einen Kaffeefilter gießen. Oder Wasser stehen lassen und den klaren Teil vorsichtig abgießen. Trübstoffe schützen Keime und stören Filter und Tabletten.</li>
-        <li><strong>In einen sauberen Topf füllen</strong> und mit Deckel zum Kochen bringen.</li>
-        <li><strong>Sprudelnd kochen</strong> – erst wenn es durchgehend große Blasen wirft, läuft die Zeit. Oben den Timer starten.</li>
-        <li><strong>Abkühlen lassen</strong> – mit Deckel, ohne Umrühren mit schmutzigen Löffeln.</li>
-        <li><strong>In sauberes, verschließbares Gefäß füllen</strong> (vorher mit abgekochtem Wasser ausspülen).</li>
+        <li data-t=""><strong>Trübes Wasser vorfiltern:</strong> durch ein sauberes, dicht gewebtes Tuch oder einen Kaffeefilter gießen. Oder Wasser stehen lassen und den klaren Teil vorsichtig abgießen. Trübstoffe schützen Keime und stören Filter und Tabletten.</li>
+        <li data-t=""><strong>In einen sauberen Topf füllen</strong> und mit Deckel zum Kochen bringen.</li>
+        <li data-t=""><strong>Sprudelnd kochen</strong> – erst wenn es durchgehend große Blasen wirft, läuft die Zeit. Oben den Timer starten.</li>
+        <li data-t=""><strong>Abkühlen lassen</strong> – mit Deckel, ohne Umrühren mit schmutzigen Löffeln.</li>
+        <li data-t=""><strong>In sauberes, verschließbares Gefäß füllen</strong> (vorher mit abgekochtem Wasser ausspülen).</li>
       </ol>
     </section>
 
@@ -73,9 +75,9 @@
         <summary>Filter: was sie können – und was nicht</summary>
         <div>
           <ul class="plain">
-            <li><strong>Keramik- und Hohlfaserfilter</strong> (z. B. Outdoor-Filter) halten Bakterien und Parasiten (Giardien, Kryptosporidien) zurück, wenn sie heil sind und richtig gewartet werden.</li>
-            <li><strong>Viren</strong> sind oft zu klein und gehen durch viele Filter. Nur wenn der Hersteller ausdrücklich eine Virenentfernung angibt, darf man sich darauf verlassen. Sonst: nach dem Filtern zusätzlich abkochen.</li>
-            <li><strong>Chemikalien</strong> (Öl, Pestizide, Industriechemie, Schwermetalle) filtern die üblichen Notfallfilter NICHT sicher heraus. Aktivkohle verbessert den Geschmack und mindert manche Stoffe, bietet aber keinen verlässlichen Schutz.</li>
+            <li data-t=""><strong>Keramik- und Hohlfaserfilter</strong> (z. B. Outdoor-Filter) halten Bakterien und Parasiten (Giardien, Kryptosporidien) zurück, wenn sie heil sind und richtig gewartet werden.</li>
+            <li data-t=""><strong>Viren</strong> sind oft zu klein und gehen durch viele Filter. Nur wenn der Hersteller ausdrücklich eine Virenentfernung angibt, darf man sich darauf verlassen. Sonst: nach dem Filtern zusätzlich abkochen.</li>
+            <li data-t=""><strong>Chemikalien</strong> (Öl, Pestizide, Industriechemie, Schwermetalle) filtern die üblichen Notfallfilter NICHT sicher heraus. Aktivkohle verbessert den Geschmack und mindert manche Stoffe, bietet aber keinen verlässlichen Schutz.</li>
             <li>Gefrorene oder heruntergefallene Hohlfaserfilter können unsichtbare Risse haben und nicht mehr dicht sein. Dann austauschen.</li>
             <li>Filter regelmäßig nach Anleitung reinigen und rechtzeitig wechseln. Bei verstopftem Filter nie mit Druck durchpressen.</li>
             <li>Bei Verdacht auf Abwasser oder Fäkalien: erst filtern, dann abkochen – oder anderes Wasser verwenden.</li>
@@ -86,7 +88,7 @@
       <details>
         <summary>Entkeimungstabletten und Chlor</summary>
         <div>
-          <p><strong>Nur nach Herstellerangabe verwenden.</strong> Dosierung, Einwirkzeit und Wassertemperatur stehen auf der Packung oder dem Beipackzettel. Hier gibt es bewusst keine eigenen Mengenangaben – falsche Dosierung ist gefährlich oder wirkungslos.</p>
+          <p data-t=""><strong>Nur nach Herstellerangabe verwenden.</strong> Dosierung, Einwirkzeit und Wassertemperatur stehen auf der Packung oder dem Beipackzettel. Hier gibt es bewusst keine eigenen Mengenangaben – falsche Dosierung ist gefährlich oder wirkungslos.</p>
           <ul class="plain">
             <li>Trübes Wasser vorher abfiltern. Kaltes Wasser braucht oft längere Einwirkzeit (Herstellerangabe).</li>
             <li>Nicht alle Mittel wirken gegen alle Keime. Chlor wirkt gegen Kryptosporidien nur schwach. Auf der Packung nachlesen, wogegen das Mittel getestet ist.</li>
@@ -102,8 +104,8 @@
         <summary>Haltbarkeit von abgekochtem Wasser</summary>
         <div>
           <ul class="plain">
-            <li>Abgekochtes Wasser ist <strong>nicht keimfrei für immer</strong>: Keime können über Hände, Becher oder Gefäß wieder hineingelangen.</li>
-            <li>Richtwert: am besten am selben Tag trinken, spätestens nach <strong>24 Stunden</strong>. Bei Wärme schneller. Für Säuglingsnahrung immer frisch abkochen.</li>
+            <li data-t="">Abgekochtes Wasser ist <strong>nicht keimfrei für immer</strong>: Keime können über Hände, Becher oder Gefäß wieder hineingelangen.</li>
+            <li data-t="">Richtwert: am besten am selben Tag trinken, spätestens nach <strong>24 Stunden</strong>. Bei Wärme schneller. Für Säuglingsnahrung immer frisch abkochen.</li>
             <li>Verschlossen, kühl und dunkel aufbewahren. Nicht aus dem Gefäß trinken, sondern ausgießen.</li>
             <li>Wird es trüb, riecht oder schmeckt es komisch: nicht mehr trinken.</li>
           </ul>

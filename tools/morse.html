@@ -6,18 +6,20 @@
   <title>Morse-Code – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
+    [hidden] { display: none !important; }
     .morse-out { background: var(--surface-2); border-radius: var(--r); padding: 16px 18px; min-height: 76px; font: 600 1.5rem/1.5 var(--mono); letter-spacing: .08em; overflow-wrap: anywhere; word-break: break-word; }
     .morse-out.empty { color: var(--text-2); }
-    .morse-out.empty::before { content: "Hier erscheint die Übersetzung"; font: 400 1rem var(--font); letter-spacing: 0; }
+    .morse-out.empty::before { content: attr(data-empty); font: 400 1rem var(--font); letter-spacing: 0; }
     .morse-note { min-height: 1.4em; margin: 8px 2px 0; color: var(--text-2); font-size: .9rem; }
     .presets { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
     .play-row { display: flex; align-items: center; gap: 14px; }
     .lamp { width: 30px; height: 30px; border-radius: 50%; flex: none; background: var(--surface-2); border: 2px solid var(--line); transition: background .03s; }
     .lamp.on { background: var(--accent); border-color: var(--accent); }
     .range-field { display: flex; justify-content: space-between; align-items: baseline; }
-    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0 0 0 2px; }
+    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0; }
     .range-field output { font-weight: 650; color: var(--text); font-variant-numeric: tabular-nums; }
     .morse-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
     .morse-cell { background: var(--surface-2); border-radius: var(--r-sm); padding: 10px 6px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
@@ -44,6 +46,12 @@
         <button type="button" data-v="decode" aria-pressed="false">Morse → Text</button>
       </div>
 
+      <div class="field" id="script-field" hidden><span class="label">Zeichensatz beim Übersetzen in Text</span>
+        <div class="seg" id="script" data-local role="group" aria-label="Zeichensatz">
+          <button type="button" data-v="latin" aria-pressed="true">Lateinisch (A B C)</button>
+          <button type="button" data-v="ar" aria-pressed="false">Arabisch (ا ب ت)</button>
+        </div></div>
+
       <div class="presets" id="presets" aria-label="Schnelle Voreinstellungen">
         <button type="button" class="btn sm" data-text="SOS">SOS</button>
         <button type="button" class="btn sm" data-text="HILFE">HILFE</button>
@@ -69,9 +77,9 @@
       </div>
 
       <div class="form-grid" style="margin-top:22px">
-        <div class="field"><div class="range-field"><label for="wpm">Tempo</label><output id="wpm-val" for="wpm">12 WPM</output></div>
+        <div class="field"><div class="range-field"><label for="wpm">Tempo</label><output id="wpm-val" class="ltr" for="wpm">12 WPM</output></div>
           <input type="range" id="wpm" min="5" max="30" step="1" value="12"></div>
-        <div class="field"><div class="range-field"><label for="hz">Tonhöhe</label><output id="hz-val" for="hz">700 Hz</output></div>
+        <div class="field"><div class="range-field"><label for="hz">Tonhöhe</label><output id="hz-val" class="ltr" for="hz">700 Hz</output></div>
           <input type="range" id="hz" min="400" max="1000" step="25" value="700"></div>
       </div>
       <div class="switch-row"><span>Wiederholen, bis ich stoppe</span>
@@ -89,7 +97,7 @@
     <div class="callout info">
       <strong>So wird gesendet</strong>
       Ein Punkt ist 1 Zeiteinheit lang, ein Strich 3. Zwischen Zeichen liegen 3 Einheiten Pause, zwischen Wörtern 7.
-      Bildschirm-Licht ist nur auf kurze Entfernung zu sehen. Ein Notruf geht immer zuerst über die <strong style="display:inline">112</strong>.
+      Bildschirm-Licht ist nur auf kurze Entfernung zu sehen. Ein Notruf geht immer zuerst über die 112.
     </div>
   </div>
 </main>

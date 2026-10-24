@@ -12,9 +12,9 @@ Stromausfall · Netzausfall · Katastrophe – einfach `index.html` öffnen.
 ![Lizenz MIT](https://img.shields.io/badge/code-MIT-1d1d1f?style=flat-square)
 ![Deutsch](https://img.shields.io/badge/sprache-deutsch-1d1d1f?style=flat-square)
 
-<img src="docs/screenshots/home-hell.png" alt="Startseite im hellen Modus" width="31%"> <img src="docs/screenshots/home-dunkel.png" alt="Startseite im dunklen Modus" width="31%"> <img src="docs/screenshots/home-nacht.png" alt="Startseite im Nachtmodus: rot auf schwarz" width="31%">
+<img src="docs/screenshots/home-hell.png" alt="Startseite hell, Deutsch" width="23%"> <img src="docs/screenshots/home-nacht.png" alt="Startseite im Nachtmodus: rot auf schwarz" width="23%"> <img src="docs/screenshots/home-espanol.png" alt="Startseite dunkel, Spanisch" width="23%"> <img src="docs/screenshots/home-arabisch.png" alt="Startseite Arabisch, rechts nach links" width="23%">
 
-<sub>Hell · Dunkel · Nacht (rot auf schwarz, schont Augen und Akku)</sub>
+<sub>Hell · Nacht (rot auf schwarz, schont Augen und Akku) · Español · العربية (rechts-nach-links)</sub>
 
 </div>
 
@@ -22,9 +22,18 @@ Stromausfall · Netzausfall · Katastrophe – einfach `index.html` öffnen.
 
 ## Was ist das?
 
-Offline-Ark ist eine Notfall-Website in **reinem HTML, CSS und JavaScript**. Sie braucht weder Server noch Internet noch Installation. Man kopiert den Ordner auf einen USB-Stick, eine Festplatte oder ein Handy und öffnet `index.html` per Doppelklick.
+**Offline-Ark** ist eine Notfall-Website in **reinem HTML, CSS und JavaScript**. Sie braucht weder Server noch Internet noch Installation. Man kopiert den Ordner auf einen USB-Stick, eine Festplatte oder ein Handy und öffnet `index.html` per Doppelklick.
 
 Gedacht für **ganz normale Menschen in Deutschland**, die unter Stress schnell Antworten brauchen. Große Bedienelemente, einfache Sprache, kein Fachchinesisch.
+
+### 🌍 Vier Sprachen: Deutsch · English · Español · العربية
+
+Alles gibt es in allen vier Sprachen: alle Werkzeuge, alle Wissensseiten, Suche, Hinweise und Quellenseite. Arabisch wird **von rechts nach links** angezeigt.
+
+- Die Sprache wird beim ersten Start aus dem Browser übernommen.
+- Wechseln: Weltkugel-Symbol oben rechts. Die Sprachnamen stehen immer in ihrer eigenen Sprache.
+- Die Texte beziehen sich auf **Deutschland** (Notruf 112, deutsche Behörden, deutsche Funkregeln). Die Übersetzungen folgen der deutschen Fassung. Bei Abweichungen gilt der deutsche Text.
+- Die Übersetzungen sind KI-gestützt entstanden und noch nicht von Muttersprachlern geprüft, vor allem Fachbegriffe (Erste Hilfe, Pflanzen, Funk) auf Arabisch. Korrekturen sind sehr willkommen.
 
 ## Was steckt drin?
 
@@ -88,17 +97,29 @@ Vorratsliste, Notizen, Kontakte, Wegpunkte, Checklisten und Einstellungen liegen
 offline-ark/
 ├── index.html          Startseite
 ├── tools/*.html        die 17 Werkzeuge
-├── wissen/*.html       Wissensseiten (erzeugt aus content/*.md)
-├── css/style.css       gesamtes Design (hell, dunkel, nacht, Druck)
-├── js/                 gemeinsamer Code + ein Skript je Werkzeug
+├── wissen/*.html       Wissensseiten Deutsch (erzeugt aus content/*.md)
+├── wissen/{en,es,ar}/  dieselben Seiten in den anderen Sprachen
+├── css/style.css       gesamtes Design (hell, dunkel, nacht, Druck, rechts-nach-links)
+├── js/                 gemeinsamer Code + ein Skript je Werkzeug, i18n.js = Sprachen
 ├── data/*.js           Daten als JS (statt fetch, damit file:// geht)
-├── content/*.md        Quelltexte der Wissensseiten inkl. Quellenangaben
+├── data/i18n/*.js      Übersetzungen der Werkzeuge und der Oberfläche
+├── content/*.md        Quelltexte der Wissensseiten (Deutsch) inkl. Quellenangaben
+├── content/{en,es,ar}/ Übersetzungen der Wissensseiten
 ├── bibliothek/         PDFs, Bilder
 ├── scripts/            Generator und Hilfsskripte (Node.js)
 └── update-content.sh   Inhalte neu laden und Seiten neu erzeugen
 ```
 
 Regeln: kein Framework, kein CDN, keine Schriftarten oder Dienste von außen, kein `fetch()` auf lokale Dateien, Speicherung nur über `localStorage` mit `try/catch`.
+
+### Übersetzen
+Der **deutsche Text ist der Schlüssel**: `OA.t('Personen')` liefert die Übersetzung, fehlt sie, bleibt der deutsche Text stehen. Statische Seitentexte werden automatisch übersetzt. Wörterbücher: `data/i18n/core.js` (Oberfläche, Startseite) und `data/i18n/tool-<name>.js` (je Werkzeug), Format:
+
+```js
+OA.i18n.add({ "Personen": { en: "People", es: "Personas", ar: "الأشخاص" } });
+```
+
+Wissensseiten: Übersetzung als Markdown in `content/<sprache>/<seite>.md`, dann `node scripts/build.js`. Eine neue Sprache braucht außerdem einen Eintrag in `js/i18n.js` und `scripts/build.js`.
 
 ### Inhalte aktualisieren
 Texte stehen in `content/*.md`. Danach (mit [Node.js](https://nodejs.org)):
@@ -118,6 +139,7 @@ node scripts/test-inventar.js
 node scripts/test-notizen.js
 node scripts/test-kontakte.js
 node scripts/test-checklisten.js
+node scripts/test-i18n.js
 ```
 
 ## ⚠️ Wichtiger Hinweis

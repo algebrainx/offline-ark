@@ -6,6 +6,7 @@
   <title>Vorratsliste – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     [hidden] { display: none !important; }
@@ -21,6 +22,8 @@
     .inv:last-child { border-bottom: 0; }
     .inv.bad { box-shadow: inset 4px 0 0 var(--danger); }
     .inv.warn { box-shadow: inset 4px 0 0 var(--warn-line); }
+    html[dir="rtl"] .inv.bad { box-shadow: inset -4px 0 0 var(--danger); }
+    html[dir="rtl"] .inv.warn { box-shadow: inset -4px 0 0 var(--warn-line); }
     .inv-main { flex: 1 1 220px; min-width: 0; }
     .inv-name { font-weight: 650; font-size: 1.08rem; overflow-wrap: anywhere; }
     .inv-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
@@ -127,10 +130,10 @@
       <input type="text" id="fName" maxlength="120" autocomplete="off" required placeholder="z. B. Nudeln"></div>
     <div class="form-grid">
       <div class="field"><label for="fQty">Menge</label>
-        <input type="text" id="fQty" inputmode="decimal" autocomplete="off" value="1"></div>
+        <input type="text" id="fQty" class="ltr" inputmode="decimal" autocomplete="off" value="1"></div>
       <div class="field"><label for="fUnit">Einheit</label>
         <input type="text" id="fUnit" list="units" maxlength="30" autocomplete="off" placeholder="Stück">
-        <datalist id="units"><option value="Stück"><option value="Packung"><option value="Dose"><option value="Flasche"><option value="Beutel"><option value="Liter"><option value="kg"><option value="g"></datalist></div>
+        <datalist id="units"></datalist></div>
     </div>
     <div class="form-grid">
       <div class="field"><label for="fCat">Kategorie</label><select id="fCat"></select></div>

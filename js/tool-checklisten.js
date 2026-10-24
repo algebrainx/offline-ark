@@ -35,28 +35,30 @@
   }
 
   function row(it, custom) {
-    var cb = '<label class="check"><input type="checkbox" data-id="' + OA.esc(it.id) + '"' + (st.checked[it.id] ? ' checked' : '') + '><span>' + OA.esc(it.text) + '</span></label>';
-    return custom ? '<div class="crow">' + cb + '<button type="button" class="x" data-del="' + OA.esc(it.id) + '" aria-label="Punkt entfernen: ' + OA.esc(it.text) + '">✕</button></div>' : cb;
+    // Eigene Punkte sind Nutzertext und werden nie übersetzt; feste Punkte kommen aus dem Wörterbuch
+    var label = custom ? '<span data-notranslate>' + OA.esc(it.text) + '</span>' : '<span>' + OA.esc(OA.t(it.text)) + '</span>';
+    var cb = '<label class="check"><input type="checkbox" data-id="' + OA.esc(it.id) + '"' + (st.checked[it.id] ? ' checked' : '') + '>' + label + '</label>';
+    return custom ? '<div class="crow">' + cb + '<button type="button" class="x" data-del="' + OA.esc(it.id) + '" aria-label="' + OA.esc(OA.t('Punkt entfernen: {0}', [it.text])) + '">✕</button></div>' : cb;
   }
 
   /* ---------- Anzeige ---------- */
   function renderPicks() {
     el.picks.innerHTML = LISTS.map(function (l) {
       var c = count(l);
-      return '<button type="button" class="pick" data-list="' + l.id + '" aria-pressed="' + (l.id === cur) + '"><span class="t">' + OA.esc(l.title) +
-        '</span><span class="c">' + c.done + ' von ' + c.total + '</span></button>';
+      return '<button type="button" class="pick" data-list="' + l.id + '" aria-pressed="' + (l.id === cur) + '"><span class="t">' + OA.esc(OA.t(l.title)) +
+        '</span><span class="c">' + OA.esc(OA.t('{0} von {1}', [c.done, c.total])) + '</span></button>';
     }).join('');
   }
 
   function updateProgress() {
     var c = count(list()), pct = c.total ? Math.round(c.done / c.total * 100) : 0;
-    el.progText.textContent = c.done + ' von ' + c.total;
-    el.progPct.textContent = pct + ' % erledigt';
+    el.progText.textContent = OA.t('{0} von {1}', [c.done, c.total]);
+    el.progPct.textContent = OA.t('{0} % erledigt', [pct]);
     el.bar.style.width = pct + '%';
     el.barWrap.setAttribute('aria-valuenow', pct);
     OA.$$('.pick', el.picks).forEach(function (b) {
       var l = LISTS.filter(function (x) { return x.id === b.getAttribute('data-list'); })[0], n = count(l);
-      OA.$('.c', b).textContent = n.done + ' von ' + n.total;
+      OA.$('.c', b).textContent = OA.t('{0} von {1}', [n.done, n.total]);
     });
     OA.$$('[data-sec]', el.sections).forEach(function (s) {
       var boxes = OA.$$('input[type="checkbox"]', s);
@@ -65,13 +67,14 @@
   }
 
   function renderPrint(l) {
+    var li = function (txt, custom) { return '<li><span class="box">☐</span>' + (custom ? '<span data-notranslate>' + OA.esc(txt) + '</span>' : OA.esc(OA.t(txt))) + '</li>'; };
     var secs = l.sections.map(function (s) {
-      return '<h2>' + OA.esc(s.title) + '</h2><ul>' + s.items.map(function (it) { return '<li><span class="box">☐</span>' + OA.esc(it.text) + '</li>'; }).join('') + '</ul>';
+      return '<h2>' + OA.esc(OA.t(s.title)) + '</h2><ul>' + s.items.map(function (it) { return li(it.text, false); }).join('') + '</ul>';
     }).join('');
     var custom = st.custom[l.id];
-    if (custom.length) secs += '<h2>Eigene Punkte</h2><ul>' + custom.map(function (it) { return '<li><span class="box">☐</span>' + OA.esc(it.text) + '</li>'; }).join('') + '</ul>';
-    el.printView.innerHTML = '<h1>' + OA.esc(l.title) + ' – Checkliste</h1><p>' + OA.esc(l.intro) + '</p><div class="cols">' + secs + '</div>' +
-      '<p class="src">Orientierung: BBK-Ratgeber „Vorsorgen für Krisen und Katastrophen“ (bbk.bund.de). © BBK, Inhalte hier in eigenen Worten zusammengefasst.</p>';
+    if (custom.length) secs += '<h2>' + OA.esc(OA.t('Eigene Punkte')) + '</h2><ul>' + custom.map(function (it) { return li(it.text, true); }).join('') + '</ul>';
+    el.printView.innerHTML = '<h1>' + OA.esc(OA.t('{0} – Checkliste', [OA.t(l.title)])) + '</h1><p>' + OA.esc(OA.t(l.intro)) + '</p><div class="cols">' + secs + '</div>' +
+      '<p class="src">' + OA.esc(OA.t('Orientierung: BBK-Ratgeber „Vorsorgen für Krisen und Katastrophen“ (bbk.bund.de). © BBK, Inhalte hier in eigenen Worten zusammengefasst.')) + '</p>';
   }
 
   function renderCustom() {
@@ -82,9 +85,9 @@
 
   function render() {
     var l = list();
-    el.intro.innerHTML = '<strong>' + OA.esc(l.title) + '</strong>' + OA.esc(l.intro);
+    el.intro.innerHTML = '<strong>' + OA.esc(OA.t(l.title)) + '</strong>' + OA.esc(OA.t(l.intro));
     el.sections.innerHTML = l.sections.map(function (s) {
-      return '<section class="card" data-sec><div class="sec-head"><h2>' + OA.esc(s.title) + '</h2><span class="n"></span></div>' +
+      return '<section class="card" data-sec><div class="sec-head"><h2>' + OA.esc(OA.t(s.title)) + '</h2><span class="n"></span></div>' +
         s.items.map(function (it) { return row(it, false); }).join('') + '</section>';
     }).join('');
     renderCustom();
@@ -129,7 +132,7 @@
   $('#reset').addEventListener('click', function () {
     var l = list();
     if (!count(l).done) return;
-    if (!confirm('Alle Häkchen in der Liste „' + l.title + '“ wirklich zurücksetzen? Deine eigenen Punkte bleiben erhalten.')) return;
+    if (!confirm(OA.t('Alle Häkchen in der Liste „{0}“ wirklich zurücksetzen? Deine eigenen Punkte bleiben erhalten.', [OA.t(l.title)]))) return;
     allItems(l).forEach(function (it) { delete st.checked[it.id]; });
     save(); render();
   });

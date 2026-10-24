@@ -6,22 +6,27 @@
   'use strict';
 
   /* ---------- Daten ---------- */
+  // Dezimalzeichen je Sprache (de/es Komma, en/ar Punkt)
+  var LANG = (typeof window !== 'undefined' && window.OA && window.OA.lang) || 'de';
+  var DEC = (LANG === 'en' || LANG === 'ar') ? '.' : ',';
+  function loc(s) { return s.replace(',', DEC); }
   // Hz → deutsch formatierte MHz-Angabe, z. B. 446006250 → "446,00625"
-  function mhz(hz, digits) { return (hz / 1e6).toFixed(digits).replace('.', ','); }
+  function mhz(hz, digits) { return (hz / 1e6).toFixed(digits).replace('.', DEC); }
 
   var PMR = [], DPMR = [];
   for (var i = 0; i < 16; i++) PMR.push([i + 1, mhz(446006250 + i * 12500, 5)]);        // 12,5-kHz-Raster
   for (var j = 0; j < 32; j++) DPMR.push([j + 1, mhz(446003125 + j * 6250, 6)]);        // 6,25-kHz-Raster
 
   // Freenet: die sechs 12,5-kHz-Kanäle (übliche Zählung 1–6)
-  var FREENET = [[1, '149,0250'], [2, '149,0375'], [3, '149,0500'], [4, '149,0875'], [5, '149,1000'], [6, '149,1125']];
+  var FREENET = [[1, '149,0250'], [2, '149,0375'], [3, '149,0500'], [4, '149,0875'], [5, '149,1000'], [6, '149,1125']]
+    .map(function (r) { return [r[0], loc(r[1])]; });
 
   // CB-Funk Kanäle 1–40: Mittenfrequenzen laut Allgemeinzuteilung (Kanäle 23–25 sind nicht aufsteigend!)
   var CB_LOW = ['26,965', '26,975', '26,985', '27,005', '27,015', '27,025', '27,035', '27,055', '27,065', '27,075',
     '27,085', '27,105', '27,115', '27,125', '27,135', '27,155', '27,165', '27,175', '27,185', '27,205',
     '27,215', '27,225', '27,255', '27,235', '27,245', '27,265', '27,275', '27,285', '27,295', '27,305',
     '27,315', '27,325', '27,335', '27,345', '27,355', '27,365', '27,375', '27,385', '27,395', '27,405'];
-  var CB = CB_LOW.map(function (f, k) { return [k + 1, f]; });
+  var CB = CB_LOW.map(function (f, k) { return [k + 1, loc(f)]; });
   for (var c = 41; c <= 80; c++) CB.push([c, mhz(26565000 + (c - 41) * 10000, 3)]);     // 26,565 … 26,955 MHz
 
   // Buchstabiertafeln: Deutsch (klassisch, DIN 5009 Ausgaben 1983/1996) und NATO/ICAO mit englische Aussprachehilfe (nach Wikipedia)
@@ -43,14 +48,15 @@
 if (typeof document === 'undefined') return;
 
 /* ---------- Rendering ---------- */
+  var OA = window.OA;
   function table(rows, head, extraCls) {
     return '<div class="table-wrap"><table' + (extraCls ? ' class="' + extraCls + '"' : '') + '><thead><tr>' +
-      head.map(function (h, k) { return '<th' + (k === head.length - 1 ? ' class="num"' : '') + '>' + h + '</th>'; }).join('') +
+      head.map(function (h, k) { return '<th' + (k === head.length - 1 ? ' class="num"' : '') + '>' + OA.esc(OA.t(h)) + '</th>'; }).join('') +
       '</tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
   function chRows(list, mark) {
     return list.map(function (r) {
-      return '<tr><td><strong>' + r[0] + '</strong>' + (mark && mark[r[0]] ? ' <span class="chip">' + mark[r[0]] + '</span>' : '') + '</td><td class="num">' + r[1] + '</td></tr>';
+      return '<tr><td><strong>' + r[0] + '</strong>' + (mark && mark[r[0]] ? ' <span class="chip">' + OA.esc(OA.t(mark[r[0]])) + '</span>' : '') + '</td><td class="num ltr">' + r[1] + '</td></tr>';
     }).join('');
   }
   function split(list, at, mark) {

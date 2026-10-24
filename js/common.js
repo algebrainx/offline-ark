@@ -51,14 +51,18 @@
   /** Zahl aus Eingabe lesen; akzeptiert Komma und Punkt. NaN bei leerer/ungültiger Eingabe. */
   OA.num = function (v) {
     if (typeof v === 'number') return v;
-    var s = String(v == null ? '' : v).trim().replace(/\s/g, '').replace(',', '.');
+    var s = String(v == null ? '' : v).trim().replace(/\s/g, '')
+      // arabisch-indische Ziffern (٠-٩, ۰-۹) und arabisches Komma/Minus zulassen
+      .replace(/[\u0660-\u0669]/g, function (c) { return c.charCodeAt(0) - 0x0660; })
+      .replace(/[\u06F0-\u06F9]/g, function (c) { return c.charCodeAt(0) - 0x06F0; })
+      .replace(/[\u066B\u060C]/g, '.').replace(/\u2212/g, '-').replace(',', '.');
     return s === '' ? NaN : Number(s);
   };
   /** Zahl deutsch formatieren (Komma, Tausenderpunkt). */
   OA.fmt = function (n, digits) {
     if (!isFinite(n)) return '–';
     var d = digits == null ? 2 : digits;
-    return n.toLocaleString('de-DE', { maximumFractionDigits: d, minimumFractionDigits: 0 });
+    return n.toLocaleString(OA.locale || 'de-DE', { maximumFractionDigits: d, minimumFractionDigits: 0 });
   };
   OA.pad = function (n, len) { n = String(n); while (n.length < (len || 2)) n = '0' + n; return n; };
   OA.$ = function (sel, el) { return (el || document).querySelector(sel); };
@@ -166,8 +170,9 @@
     bar.className = 'appbar no-print';
     bar.innerHTML =
       '<div class="container">' +
-        '<a class="brand" href="' + r + 'index.html" aria-label="Zur Startseite">' + (isHome ? OA.icon('ark') : OA.icon('back')) + '<span>Offline-Ark</span></a>' +
+        '<a class="brand" href="' + r + 'index.html" aria-label="Zur Startseite">' + (isHome ? OA.icon('ark') : OA.icon('back', 'flip')) + '<span>Offline-Ark</span></a>' +
         '<div class="appbar-actions">' +
+          '<button class="iconbtn" type="button" id="oa-lang-btn" aria-label="Sprache / Language" aria-haspopup="dialog" aria-expanded="false">' + OA.icon('globe') + '</button>' +
           '<a class="iconbtn" href="' + r + 'index.html#suche" aria-label="Suche">' + OA.icon('search') + '</a>' +
           '<button class="iconbtn" type="button" id="oa-settings-btn" aria-label="Einstellungen" aria-haspopup="dialog" aria-expanded="false">' + OA.icon('settings') + '</button>' +
         '</div>' +
@@ -188,18 +193,33 @@
       '<button class="sheet-link" type="button" id="oa-export">' + OA.icon('download') + 'Alle Daten sichern</button>' +
       '<button class="sheet-link" type="button" id="oa-import">' + OA.icon('upload') + 'Daten wiederherstellen</button></section>' +
       '<section><h3>Mehr</h3>' +
-      '<a class="sheet-link" href="' + r + 'bibliothek/index.html">' + OA.icon('book') + 'Bibliothek (PDFs)</a>' +
-      '<a class="sheet-link" href="' + r + 'wissen/quellen.html">' + OA.icon('info') + 'Quellen &amp; Lizenzen</a></section>';
-    document.body.appendChild(backdrop); document.body.appendChild(sheet);
+      '<a class="sheet-link" href="' + OA.genUrl('bibliothek/index.html') + '">' + OA.icon('book') + 'Bibliothek (PDFs)</a>' +
+      '<a class="sheet-link" href="' + OA.genUrl('wissen/quellen.html') + '">' + OA.icon('info') + 'Quellen &amp; Lizenzen</a></section>';
 
-    var btn = document.getElementById('oa-settings-btn');
-    function toggle(open) {
-      sheet.classList.toggle('open', open); backdrop.classList.toggle('open', open);
-      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    // Sprachwahl: eigenes kleines Menü, Namen immer in der jeweiligen Sprache (auch ohne Deutsch lesbar)
+    var langSheet = document.createElement('div'); langSheet.className = 'sheet langsheet no-print';
+    langSheet.setAttribute('role', 'dialog'); langSheet.setAttribute('aria-label', 'Sprache / Language');
+    langSheet.innerHTML = OA.LANGS.map(function (l) {
+      return '<button class="sheet-link" type="button" data-lang="' + l + '" lang="' + l + '" data-notranslate' + (l === OA.lang ? ' aria-current="true"' : '') + '>' +
+        '<span>' + OA.langNames[l] + '</span>' + (l === OA.lang ? OA.icon('check') : '') + '</button>';
+    }).join('');
+    document.body.appendChild(backdrop); document.body.appendChild(sheet); document.body.appendChild(langSheet);
+
+    var btn = document.getElementById('oa-settings-btn'), langBtn = document.getElementById('oa-lang-btn');
+    function toggle(open, which) {
+      var target = which || sheet;
+      [sheet, langSheet].forEach(function (s) { s.classList.toggle('open', open && s === target); });
+      backdrop.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open && target === sheet ? 'true' : 'false');
+      langBtn.setAttribute('aria-expanded', open && target === langSheet ? 'true' : 'false');
     }
-    btn.addEventListener('click', function () { toggle(!sheet.classList.contains('open')); });
+    btn.addEventListener('click', function () { toggle(!sheet.classList.contains('open'), sheet); });
+    langBtn.addEventListener('click', function () { toggle(!langSheet.classList.contains('open'), langSheet); });
     backdrop.addEventListener('click', function () { toggle(false); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+    langSheet.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-lang]'); if (b) OA.setLang(b.getAttribute('data-lang'));
+    });
 
     OA.$$('[data-seg]', sheet).forEach(function (group) {
       group.addEventListener('click', function (e) {
@@ -221,9 +241,9 @@
           var obj = JSON.parse(text);
           if (!obj || obj.app !== 'offline-ark' || !obj.data) throw new Error('Format');
           Object.keys(obj.data).forEach(function (k) { OA.store.set(k, obj.data[k]); });
-          alert('Daten wiederhergestellt. Die Seite wird neu geladen.');
+          alert(OA.t('Daten wiederhergestellt. Die Seite wird neu geladen.'));
           location.reload();
-        } catch (e) { alert('Diese Datei ist keine gültige Offline-Ark-Sicherung.'); }
+        } catch (e) { alert(OA.t('Diese Datei ist keine gültige Offline-Ark-Sicherung.')); }
       });
     });
 
@@ -231,12 +251,12 @@
     foot.className = 'footer no-print';
     foot.innerHTML =
       '<div class="container"><span>Offline-Ark · läuft komplett ohne Internet</span>' +
-      '<nav><a href="' + r + 'wissen/quellen.html">Quellen &amp; Lizenzen</a><a href="' + r + 'bibliothek/index.html">Bibliothek</a></nav></div>';
+      '<nav><a href="' + OA.genUrl('wissen/quellen.html') + '">Quellen &amp; Lizenzen</a><a href="' + OA.genUrl('bibliothek/index.html') + '">Bibliothek</a></nav></div>';
     document.body.appendChild(foot);
 
     // Druckfuß: zeigt auf Papier, woher die Seite stammt
     var pf = document.createElement('p');
-    pf.className = 'print-only small'; pf.textContent = 'Offline-Ark – Notfallwissen ohne Internet. Ersetzt keine Ausbildung. Notruf 112.';
+    pf.className = 'print-only small'; pf.textContent = OA.t('Offline-Ark – Notfallwissen ohne Internet. Ersetzt keine Ausbildung. Notruf 112.');
     document.body.appendChild(pf);
   }
 

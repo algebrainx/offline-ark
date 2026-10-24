@@ -18,15 +18,16 @@
     return panelW * sunHours * (1 - lossPct / 100);
   }
 
-  /** Dauer verständlich ausgeben, z. B. "1 Tag 5 Std 20 Min". */
-  function durationText(hours) {
+  /** Dauer verständlich ausgeben, z. B. "1 Tag 5 Std 20 Min". tr: Übersetzer (Standard: Deutsch). */
+  function durationText(hours, tr) {
+    tr = tr || function (s, a) { return s.replace(/\{(\d+)\}/g, function (m, i) { return a[i]; }); };
     var total = Math.round(hours * 60);
     var d = Math.floor(total / 1440), h = Math.floor((total % 1440) / 60), m = total % 60;
     var parts = [];
-    if (d) parts.push(d + (d === 1 ? ' Tag' : ' Tage'));
-    if (h) parts.push(h + ' Std');
-    if (m && d === 0) parts.push(m + ' Min');
-    return parts.length ? parts.join(' ') : 'unter 1 Min';
+    if (d) parts.push(tr(d === 1 ? '{0} Tag' : '{0} Tage', [d]));
+    if (h) parts.push(tr('{0} Std', [h]));
+    if (m && d === 0) parts.push(tr('{0} Min', [m]));
+    return parts.length ? parts.join(' ') : tr('unter 1 Min', []);
   }
 
   if (typeof module !== 'undefined' && module.exports) {
@@ -53,7 +54,7 @@
 
   el.picks.innerHTML = PICKS.map(function (p) {
     return '<button type="button" class="pick" aria-pressed="false" data-n="' + OA.esc(p[0]) + '" data-w="' + p[1] + '">' +
-      OA.esc(p[0]) + '<span>~' + p[1] + ' W</span></button>';
+      OA.esc(OA.t(p[0])) + '<span class="ltr">~' + p[1] + ' W</span></button>';
   }).join('');
 
   function syncPicks() {
@@ -83,12 +84,12 @@
     var h = runtimeHours(wh, watt, eff);
     if (isNaN(h)) {
       el.runNum.textContent = '–'; el.runUnit.textContent = '';
-      el.runCap.textContent = 'Akku-Energie und Leistung eingeben.';
+      el.runCap.textContent = OA.t('Akku-Energie und Leistung eingeben.');
     } else {
-      if (h < 1) { el.runNum.textContent = OA.fmt(h * 60, 0); el.runUnit.textContent = 'Minuten'; }
-      else if (h < 48) { el.runNum.textContent = OA.fmt(h, 1); el.runUnit.textContent = 'Stunden'; }
-      else { el.runNum.textContent = OA.fmt(h / 24, 1); el.runUnit.textContent = 'Tage'; }
-      el.runCap.textContent = '≈ ' + durationText(h) + ' · nutzbar ' + OA.fmt(wh * eff / 100, 1) + ' von ' + OA.fmt(wh, 1) + ' Wh (Richtwert)';
+      if (h < 1) { el.runNum.textContent = OA.fmt(h * 60, 0); el.runUnit.textContent = OA.t('Minuten'); }
+      else if (h < 48) { el.runNum.textContent = OA.fmt(h, 1); el.runUnit.textContent = OA.t('Stunden'); }
+      else { el.runNum.textContent = OA.fmt(h / 24, 1); el.runUnit.textContent = OA.t('Tage'); }
+      el.runCap.textContent = OA.t('≈ {0} · nutzbar {1} von {2} Wh (Richtwert)', [durationText(h, OA.t), OA.fmt(wh * eff / 100, 1), OA.fmt(wh, 1)]);
     }
     save();
   }
@@ -97,17 +98,17 @@
     var pw = OA.num(el.pw.value), sun = OA.num(el.sun.value), loss = OA.num(el.loss.value);
     if (isNaN(loss)) loss = 25;
     if (!(pw > 0) || !(sun >= 0)) {
-      el.solWh.textContent = '–'; el.solCap.textContent = 'Leistung und Sonnenstunden eingeben.'; el.solStats.innerHTML = '';
+      el.solWh.textContent = '–'; el.solCap.textContent = OA.t('Leistung und Sonnenstunden eingeben.'); el.solStats.innerHTML = '';
       save(); return;
     }
     var wh = solarWhPerDay(pw, sun, loss);
     el.solWh.textContent = OA.fmt(wh, 0);
-    el.solCap.textContent = OA.fmt(pw, 0) + ' W × ' + OA.fmt(sun, 1) + ' Std × ' + OA.fmt(100 - loss, 0) + ' % (nach Abzug der Verluste) · Richtwert';
+    el.solCap.textContent = OA.t('{0} W × {1} Std × {2} % (nach Abzug der Verluste) · Richtwert', [OA.fmt(pw, 0), OA.fmt(sun, 1), OA.fmt(100 - loss, 0)]);
     el.solStats.innerHTML = [
-      [OA.fmt(Math.floor(wh / PHONE_WH), 0), 'volle Handy-Ladungen pro Tag (≈ ' + PHONE_WH + ' Wh je Ladung)'],
-      [OA.fmt(wh / LAPTOP_W, 1), 'Stunden Laptop (' + LAPTOP_W + ' W)'],
-      [OA.fmt(wh / LED_W, 1), 'Stunden LED-Lampe (' + LED_W + ' W)']
-    ].map(function (c) { return '<div class="stat"><div class="num">' + c[0] + '</div><div class="cap">' + c[1] + '</div></div>'; }).join('');
+      [OA.fmt(Math.floor(wh / PHONE_WH), 0), OA.t('volle Handy-Ladungen pro Tag (≈ {0} Wh je Ladung)', [PHONE_WH])],
+      [OA.fmt(wh / LAPTOP_W, 1), OA.t('Stunden Laptop ({0} W)', [LAPTOP_W])],
+      [OA.fmt(wh / LED_W, 1), OA.t('Stunden LED-Lampe ({0} W)', [LED_W])]
+    ].map(function (c) { return '<div class="stat"><div class="num">' + c[0] + '</div><div class="cap">' + OA.esc(c[1]) + '</div></div>'; }).join('');
     save();
   }
 

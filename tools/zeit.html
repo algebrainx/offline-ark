@@ -6,6 +6,7 @@
   <title>Stoppuhr &amp; Timer – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     [hidden] { display: none !important; }
@@ -19,8 +20,9 @@
     .quick .btn { flex: 1 1 64px; padding: 0 12px; }
     .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     .time-grid .stepper button { width: 40px; }
-    .time-grid .stepper input { padding-left: 2px; padding-right: 2px; }
-    .time-grid .label { text-align: center; margin-left: 0; }
+    .time-grid .stepper { direction: ltr; }
+    .time-grid .stepper input { padding-inline: 2px; }
+    .time-grid .label { text-align: center; margin-inline-start: 0; }
     .timer-card .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
     .timer-card .name { font-weight: 650; overflow-wrap: anywhere; }
     .timer-card .state { color: var(--text-2); font-size: .85rem; white-space: nowrap; }
@@ -56,7 +58,7 @@
   <!-- Stoppuhr -->
   <section id="tab-sw" class="stack" role="tabpanel">
     <div class="card">
-      <div class="big-time" id="sw-time" aria-live="off">00:00<small>,00</small></div>
+      <div class="big-time ltr" id="sw-time" aria-live="off">00:00<small>,00</small></div>
       <div class="btn-row center">
         <button type="button" class="btn primary" id="sw-start" style="flex-basis:100%;min-height:60px;font-size:1.15rem">Start</button>
         <button type="button" class="btn" id="sw-lap" disabled>Runde</button>
@@ -117,10 +119,10 @@
     <div class="card" id="cd-run" hidden>
       <div class="center muted" id="cd-title" style="margin-bottom:10px"></div>
       <div class="stats" id="cd-stats" style="grid-template-columns:repeat(2,1fr)">
-        <div class="stat center"><div class="num" id="cd-d">0</div><div class="cap">Tage</div></div>
-        <div class="stat center"><div class="num" id="cd-h">0</div><div class="cap">Stunden</div></div>
-        <div class="stat center"><div class="num" id="cd-m">0</div><div class="cap">Minuten</div></div>
-        <div class="stat center"><div class="num" id="cd-s">0</div><div class="cap">Sekunden</div></div>
+        <div class="stat center"><div class="num ltr" id="cd-d">0</div><div class="cap">Tage</div></div>
+        <div class="stat center"><div class="num ltr" id="cd-h">0</div><div class="cap">Stunden</div></div>
+        <div class="stat center"><div class="num ltr" id="cd-m">0</div><div class="cap">Minuten</div></div>
+        <div class="stat center"><div class="num ltr" id="cd-s">0</div><div class="cap">Sekunden</div></div>
       </div>
       <div class="cd-reached" id="cd-reached" hidden>Ziel erreicht</div>
       <div class="btn-row" style="margin-top:16px"><button type="button" class="btn" id="cd-stop">Countdown beenden</button></div>

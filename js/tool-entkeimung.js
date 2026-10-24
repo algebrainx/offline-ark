@@ -16,7 +16,7 @@
     alt: OA.$('#alt'), mins: OA.$('#mins'), unit: OA.$('#minsUnit'), cap: OA.$('#minsCap'),
     clock: OA.$('#clock'), timerCap: OA.$('#timerCap'), start: OA.$('#start'), stop: OA.$('#stop')
   };
-  var IDLE_CAP = 'Zeit erst starten, wenn das Wasser durchgehend sprudelt (große Blasen).';
+  var IDLE_CAP = OA.t('Zeit erst starten, wenn das Wasser durchgehend sprudelt (große Blasen).');
 
   var tick = null, alarm = null, alarmStop = null, endAt = 0, running = false, ringing = false;
 
@@ -30,10 +30,10 @@
   function showRule() {
     var s = currentSeconds(), m = s / 60;
     el.mins.textContent = m;
-    el.unit.textContent = m === 1 ? 'Minute' : 'Minuten';
+    el.unit.textContent = OA.t(m === 1 ? 'Minute' : 'Minuten');
     el.cap.textContent = s > 60
-      ? 'sprudelnd kochen (ab 2000 m Höhe: 3 Minuten)'
-      : 'sprudelnd kochen, mindestens (bis 2000 m Höhe)';
+      ? OA.t('sprudelnd kochen (ab 2000 m Höhe: 3 Minuten)')
+      : OA.t('sprudelnd kochen, mindestens (bis 2000 m Höhe)');
     if (!running && !ringing) el.clock.textContent = mmss(s);
     OA.store.set('entkeimung', { alt: isNaN(OA.num(el.alt.value)) ? 0 : OA.num(el.alt.value) });
   }
@@ -56,8 +56,8 @@
     clearInterval(tick);
     el.clock.textContent = '00:00';
     el.clock.classList.add('done');
-    el.timerCap.textContent = 'Fertig! Herd ausmachen und das Wasser abkühlen lassen.';
-    el.start.hidden = true; el.stop.hidden = false; el.stop.textContent = 'Alarm aus';
+    el.timerCap.textContent = OA.t('Fertig! Herd ausmachen und das Wasser abkühlen lassen.');
+    el.start.hidden = true; el.stop.hidden = false; el.stop.textContent = OA.t('Alarm aus');
     var n = 0;
     function once() {
       OA.beep(880, 450);
@@ -79,8 +79,8 @@
     OA.wake(true);                 // Bildschirm anlassen, damit der Alarm nicht verschlafen wird
     endAt = Date.now() + currentSeconds() * 1000;
     running = true;
-    el.timerCap.textContent = 'Wasser sprudelnd kochen lassen …';
-    el.start.hidden = true; el.stop.hidden = false; el.stop.textContent = 'Abbrechen';
+    el.timerCap.textContent = OA.t('Wasser sprudelnd kochen lassen …');
+    el.start.hidden = true; el.stop.hidden = false; el.stop.textContent = OA.t('Abbrechen');
     update();
     tick = setInterval(update, 250);
   });

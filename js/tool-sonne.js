@@ -94,7 +94,7 @@
   var el = {
     place: OA.$('#place'), gps: OA.$('#gps'), gpsMsg: OA.$('#gpsMsg'), date: OA.$('#date'), today: OA.$('#today'),
     lat: OA.$('#lat'), lon: OA.$('#lon'), where: OA.$('#where'),
-    dur: OA.$('#dur'), durCap: OA.$('#durCap'), stats: OA.$('#stats'), tbody: OA.$('#week'), tz: OA.$('#tz')
+    dur: OA.$('#dur'), durCap: OA.$('#durCap'), stats: OA.$('#stats'), tbody: OA.$('#week'), tzNote: OA.$('#tzNote')
   };
 
   var pos = { lat: PLACES.waiblingen.lat, lon: PLACES.waiblingen.lon, name: 'Waiblingen' };
@@ -107,7 +107,7 @@
   }
   function hmDur(min) {
     var t = Math.round(min);
-    return Math.floor(t / 60) + ' Std ' + OA.pad(t % 60) + ' Min';
+    return OA.t('{0} Std {1} Min', [Math.floor(t / 60), OA.pad(t % 60)]);
   }
   function parseDate() {
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(el.date.value || '');
@@ -116,52 +116,64 @@
   }
   function zoneName(date) {
     try {
-      var parts = new Intl.DateTimeFormat('de-DE', { timeZoneName: 'short' }).formatToParts(date);
+      var parts = new Intl.DateTimeFormat(OA.locale, { timeZoneName: 'short' }).formatToParts(date);
       for (var i = 0; i < parts.length; i++) if (parts[i].type === 'timeZoneName') return parts[i].value;
     } catch (e) { /* ältere Browser */ }
     var off = -date.getTimezoneOffset() / 60;
     return 'UTC' + (off >= 0 ? '+' : '') + off;
   }
-  function stat(num, cap) { return '<div class="stat"><div class="num">' + num + '</div><div class="cap">' + cap + '</div></div>'; }
+  function stat(num, cap) { return '<div class="stat"><div class="num ltr">' + num + '</div><div class="cap">' + OA.esc(cap) + '</div></div>'; }
+  // Himmelsrichtungs-Buchstaben für Koordinaten: de N/S/O/W, es N/S/E/O, sonst N/S/E/W
+  function hem(lat, lon) {
+    var es = OA.lang === 'es', de = OA.lang === 'de';
+    return { ns: lat < 0 ? 'S' : 'N', ew: lon < 0 ? (es ? 'O' : 'W') : (de ? 'O' : 'E') };
+  }
 
   function render() {
     var D = parseDate();
     var r = compute(D.y, D.m, D.d, pos.lat, pos.lon);
     var prev = compute(D.y, D.m, D.d - 1, pos.lat, pos.lon);
 
-    el.where.textContent = pos.name + ' · ' + OA.fmt(pos.lat, 4) + '° N, ' + OA.fmt(pos.lon, 4) + '° O';
-    el.tz.textContent = zoneName(r.noon);
+    var h = hem(pos.lat, pos.lon);
+    el.where.textContent = OA.t(pos.name) + ' · \u2066' + OA.fmt(Math.abs(pos.lat), 4) + '° ' + h.ns + ', ' + OA.fmt(Math.abs(pos.lon), 4) + '° ' + h.ew + '\u2069';
+    el.tzNote.textContent = OA.t('Zeiten in der Ortszeit deines Geräts ({0}), einschließlich Sommerzeit. Berechnung auf etwa ±2 Minuten genau.', [zoneName(r.noon)]);
 
-    if (r.polar === 'day') { el.dur.textContent = '24 Std'; el.durCap.textContent = 'Polartag: Die Sonne geht nicht unter.'; }
-    else if (r.polar === 'night') { el.dur.textContent = '0 Std'; el.durCap.textContent = 'Polarnacht: Die Sonne geht nicht auf.'; }
+    if (r.polar === 'day') { el.dur.textContent = OA.t('{0} Std', [24]); el.durCap.textContent = OA.t('Polartag: Die Sonne geht nicht unter.'); }
+    else if (r.polar === 'night') { el.dur.textContent = OA.t('{0} Std', [0]); el.durCap.textContent = OA.t('Polarnacht: Die Sonne geht nicht auf.'); }
     else {
       el.dur.textContent = hmDur(r.daylightMinutes);
       var diff = (r.daylightMinutes - prev.daylightMinutes) * 60;     // Sekunden
       var ad = Math.abs(Math.round(diff));
-      var txt = ad < 5 ? 'etwa so lang wie gestern' :
-        (ad >= 60 ? Math.floor(ad / 60) + ' Min ' + (ad % 60) + ' Sek ' : ad + ' Sek ') + (diff > 0 ? 'länger als gestern' : 'kürzer als gestern');
-      el.durCap.textContent = 'Sonnenaufgang bis -untergang · ' + txt;
+      var txt;
+      if (ad < 5) txt = OA.t('etwa so lang wie gestern');
+      else {
+        var longer = diff > 0;
+        txt = ad >= 60
+          ? OA.t(longer ? '{0} Min {1} Sek länger als gestern' : '{0} Min {1} Sek kürzer als gestern', [Math.floor(ad / 60), ad % 60])
+          : OA.t(longer ? '{0} Sek länger als gestern' : '{0} Sek kürzer als gestern', [ad]);
+      }
+      el.durCap.textContent = OA.t('Sonnenaufgang bis -untergang · {0}', [txt]);
     }
 
-    var polarCap = r.polar === 'night' ? ' · Polarnacht' : ' · Polartag';
-    var civCap = function (what) {
-      return r.civilState === 'always' ? 'ganze Nacht hell genug' : r.civilState === 'never' ? 'bleibt zu dunkel' : what;
-    };
+    var civ = r.civilState;    // 'ok' | 'always' (nie richtig dunkel) | 'never' (nie hell genug)
+    var polarSuffix = r.polar === 'night' ? ' · Polarnacht' : ' · Polartag';
     el.stats.innerHTML = [
-      stat(hm(r.sunrise), 'Sonnenaufgang' + (r.polar ? polarCap : '')),
-      stat(hm(r.sunset), 'Sonnenuntergang' + (r.polar ? polarCap : '')),
-      stat(hm(r.civilBegin), 'Dämmerung beginnt · ' + civCap('es wird hell')),
-      stat(hm(r.civilEnd), 'Dämmerung endet · ' + civCap('es wird dunkel')),
-      stat(hm(r.noon), 'Höchststand · ' + (r.maxElevation < 0 ? 'Sonne bleibt ' + OA.fmt(-r.maxElevation, 0) + '° unter dem Horizont' : 'Sonne ' + OA.fmt(r.maxElevation, 0) + '° über dem Horizont'))
+      stat(hm(r.sunrise), r.polar ? OA.t('Sonnenaufgang' + polarSuffix) : OA.t('Sonnenaufgang')),
+      stat(hm(r.sunset), r.polar ? OA.t('Sonnenuntergang' + polarSuffix) : OA.t('Sonnenuntergang')),
+      stat(hm(r.civilBegin), civ === 'always' ? OA.t('Dämmerung beginnt · ganze Nacht hell genug') : civ === 'never' ? OA.t('Dämmerung beginnt · bleibt zu dunkel') : OA.t('Dämmerung beginnt · es wird hell')),
+      stat(hm(r.civilEnd), civ === 'always' ? OA.t('Dämmerung endet · ganze Nacht hell genug') : civ === 'never' ? OA.t('Dämmerung endet · bleibt zu dunkel') : OA.t('Dämmerung endet · es wird dunkel')),
+      stat(hm(r.noon), r.maxElevation < 0
+        ? OA.t('Höchststand · Sonne bleibt {0}° unter dem Horizont', [OA.fmt(-r.maxElevation, 0)])
+        : OA.t('Höchststand · Sonne {0}° über dem Horizont', [OA.fmt(r.maxElevation, 0)]))
     ].join('');
 
     var rows = '';
     for (var i = 0; i < 7; i++) {
       var day = new Date(D.y, D.m - 1, D.d + i);
       var c = compute(day.getFullYear(), day.getMonth() + 1, day.getDate(), pos.lat, pos.lon);
-      var label = day.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
-      rows += '<tr><td>' + OA.esc(label) + '</td><td class="num">' + hm(c.sunrise) + '</td><td class="num">' + hm(c.sunset) +
-        '</td><td class="num">' + (c.polar === 'day' ? '24 Std' : c.polar === 'night' ? '0 Std' : hmDur(c.daylightMinutes)) + '</td></tr>';
+      var label = day.toLocaleDateString(OA.locale, { weekday: 'short', day: '2-digit', month: '2-digit' });
+      rows += '<tr><td>' + OA.esc(label) + '</td><td class="num ltr">' + hm(c.sunrise) + '</td><td class="num ltr">' + hm(c.sunset) +
+        '</td><td class="num">' + (c.polar === 'day' ? OA.t('{0} Std', [24]) : c.polar === 'night' ? OA.t('{0} Std', [0]) : hmDur(c.daylightMinutes)) + '</td></tr>';
     }
     el.tbody.innerHTML = rows;
 
@@ -177,17 +189,17 @@
 
   /* GPS (funktioniert ohne Internet, braucht aber freien Himmel und Zeit) */
   function geoError(err) {
-    if (err && err.code === 1) return 'Standortzugriff wurde verweigert. Erlaube ihn in den Browser- oder Geräteeinstellungen oder gib die Koordinaten selbst ein.';
-    if (err && err.code === 3) return 'Zeitüberschreitung: Das GPS braucht draußen oft eine halbe Minute oder länger. Nochmal versuchen oder Koordinaten eingeben.';
-    return 'Position nicht verfügbar. Gehe ins Freie und versuche es erneut, oder gib die Koordinaten selbst ein.';
+    if (err && err.code === 1) return OA.t('Standortzugriff wurde verweigert. Erlaube ihn in den Browser- oder Geräteeinstellungen oder gib die Koordinaten selbst ein.');
+    if (err && err.code === 3) return OA.t('Zeitüberschreitung: Das GPS braucht draußen oft eine halbe Minute oder länger. Nochmal versuchen oder Koordinaten eingeben.');
+    return OA.t('Position nicht verfügbar. Gehe ins Freie und versuche es erneut, oder gib die Koordinaten selbst ein.');
   }
   el.gps.addEventListener('click', function () {
-    if (!navigator.geolocation) { el.gpsMsg.textContent = 'Dieses Gerät oder dieser Browser bietet keine Standortfunktion.'; return; }
+    if (!navigator.geolocation) { el.gpsMsg.textContent = OA.t('Dieses Gerät oder dieser Browser bietet keine Standortfunktion.'); return; }
     el.gps.disabled = true;
-    el.gpsMsg.textContent = 'Suche Position … Das funktioniert ohne Internet, kann draußen aber bis zu einer halben Minute dauern.';
+    el.gpsMsg.textContent = OA.t('Suche Position … Das funktioniert ohne Internet, kann draußen aber bis zu einer halben Minute dauern.');
     navigator.geolocation.getCurrentPosition(function (p) {
       el.gps.disabled = false;
-      el.gpsMsg.textContent = 'GPS-Position übernommen (Genauigkeit ca. ' + OA.fmt(p.coords.accuracy, 0) + ' m).';
+      el.gpsMsg.textContent = OA.t('GPS-Position übernommen (Genauigkeit ca. {0} m).', [OA.fmt(p.coords.accuracy, 0)]);
       setPos(p.coords.latitude, p.coords.longitude, 'GPS-Position', 'custom');
     }, function (err) {
       el.gps.disabled = false;
@@ -204,7 +216,7 @@
   function manual() {
     var lat = OA.num(el.lat.value), lon = OA.num(el.lon.value);
     if (isNaN(lat) || isNaN(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
-      el.gpsMsg.textContent = 'Breite muss zwischen -90 und 90, Länge zwischen -180 und 180 liegen.';
+      el.gpsMsg.textContent = OA.t('Breite muss zwischen -90 und 90, Länge zwischen -180 und 180 liegen.');
       return;
     }
     el.gpsMsg.textContent = '';

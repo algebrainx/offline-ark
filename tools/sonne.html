@@ -6,6 +6,7 @@
   <title>Sonne &amp; Tageslicht – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     [hidden] { display: none !important; }
@@ -14,7 +15,7 @@
     .where { color: var(--text-2); font-size: .9rem; margin: 0 0 12px 2px; }
     .date-row { display: flex; gap: 10px; align-items: stretch; }
     .date-row input { flex: 1; }
-    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
     .plain li { margin-bottom: .45em; }
     .stat .num { font-size: 1.6rem; }
   </style>
@@ -43,8 +44,8 @@
         <summary>Koordinaten selbst eingeben</summary>
         <div>
           <div class="form-grid">
-            <div class="field"><label for="lat">Breite (° Nord, Süden negativ)</label><input type="text" id="lat" inputmode="decimal" autocomplete="off"></div>
-            <div class="field"><label for="lon">Länge (° Ost, Westen negativ)</label><input type="text" id="lon" inputmode="decimal" autocomplete="off"></div>
+            <div class="field"><label for="lat">Breite (° Nord, Süden negativ)</label><input type="text" class="ltr" id="lat" inputmode="decimal" autocomplete="off"></div>
+            <div class="field"><label for="lon">Länge (° Ost, Westen negativ)</label><input type="text" class="ltr" id="lon" inputmode="decimal" autocomplete="off"></div>
           </div>
         </div>
       </details>
@@ -66,7 +67,7 @@
 
     <section class="card">
       <div class="stats" id="stats"></div>
-      <p class="hint" style="margin-bottom:0">Zeiten in der Ortszeit deines Geräts (<span id="tz">–</span>), einschließlich Sommerzeit. Berechnung auf etwa ±2 Minuten genau.</p>
+      <p class="hint" id="tzNote" style="margin-bottom:0"></p>
     </section>
 
     <section>
@@ -82,8 +83,8 @@
     <div class="callout info">
       <strong>Gut zu wissen</strong>
       <ul class="plain">
-        <li><strong>Bürgerliche Dämmerung:</strong> Die Sonne steht höchstens 6° unter dem Horizont. Draußen kann man dann noch gut sehen, ohne Lampe. Danach wird es schnell dunkel.</li>
-        <li><strong>Höchststand:</strong> Zu diesem Zeitpunkt steht die Sonne genau im Süden. Ein senkrechter Stock wirft dann einen Schatten nach Norden – praktisch für den Kompass.</li>
+        <li data-t=""><strong>Bürgerliche Dämmerung:</strong> Die Sonne steht höchstens 6° unter dem Horizont. Draußen kann man dann noch gut sehen, ohne Lampe. Danach wird es schnell dunkel.</li>
+        <li data-t=""><strong>Höchststand:</strong> Zu diesem Zeitpunkt steht die Sonne genau im Süden. Ein senkrechter Stock wirft dann einen Schatten nach Norden – praktisch für den Kompass.</li>
         <li>Berge, Wald und Wetter verkürzen das nutzbare Tageslicht. Plane Wege so, dass du vor Sonnenuntergang ankommst.</li>
         <li>Das GPS funktioniert auch ohne Internet, braucht aber freien Himmel und kann dauern. Alternativ die Koordinaten selbst eingeben.</li>
       </ul>

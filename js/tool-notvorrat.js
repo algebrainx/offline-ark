@@ -36,15 +36,15 @@
     OA.$('#groups').innerHTML = GROUPS.map(function (g) {
       var perDay = KCAL_PER_DAY * g.share / g.kcal * 100;   // g pro Person und Tag
       foodGrams += perDay * pd;
-      return '<tr><td>' + OA.esc(g.name) + '</td><td class="num">' + mass(perDay * pd) + '</td><td class="num">' + OA.fmt(Math.round(perDay / 5) * 5, 0) + ' g</td></tr>';
+      return '<tr><td>' + OA.esc(OA.t(g.name)) + '</td><td class="num">' + mass(perDay * pd) + '</td><td class="num">' + OA.fmt(Math.round(perDay / 5) * 5, 0) + ' g</td></tr>';
     }).join('');
 
     OA.$('#main-stats').innerHTML = [
-      [OA.fmt(water, 0) + ' l', 'Wasser (davon ' + OA.fmt(COOK_WATER * pd, 1) + ' l zum Kochen)'],
-      [OA.fmt(kcal, 0), 'Kilokalorien (kcal) insgesamt'],
-      [mass(foodGrams), 'Lebensmittel insgesamt (ca.)'],
-      [OA.fmt(Math.ceil(water / 1.5), 0), 'Flaschen à 1,5 Liter']
-    ].map(function (s) { return '<div class="stat"><div class="num">' + s[0] + '</div><div class="cap">' + s[1] + '</div></div>'; }).join('');
+      [OA.fmt(water, 0) + ' l', OA.t('Wasser (davon {0} l zum Kochen)', [OA.fmt(COOK_WATER * pd, 1)])],
+      [OA.fmt(kcal, 0), OA.t('Kilokalorien (kcal) insgesamt')],
+      [mass(foodGrams), OA.t('Lebensmittel insgesamt (ca.)')],
+      [OA.fmt(Math.ceil(water / 1.5), 0), OA.t('Flaschen à 1,5 Liter')]
+    ].map(function (s) { return '<div class="stat"><div class="num ltr">' + s[0] + '</div><div class="cap">' + s[1] + '</div></div>'; }).join('');
 
     OA.segSet(preset, ['3', '10', '14'].indexOf(String(d)) !== -1 ? d : '');
     OA.store.set('notvorrat', { persons: p, days: d });

@@ -28,17 +28,24 @@
     return d <= warnDays ? 'warn' : 'ok';
   }
 
-  /** Kurztext zur Fälligkeit, z. B. "seit 3 Tagen abgelaufen". */
-  function dueText(d) {
+  /** Kurztext zur Fälligkeit, z. B. "seit 3 Tagen abgelaufen". t = Übersetzer (OA.t); ohne t deutsch. */
+  function dueText(d, t) {
+    t = t || function (de, a) { return a ? de.replace(/\{(\d+)\}/g, function (m, i) { return a[i]; }) : de; };
     if (isNaN(d)) return '';
-    if (d < 0) return d === -1 ? 'seit gestern abgelaufen' : 'seit ' + (-d) + ' Tagen abgelaufen';
-    if (d === 0) return 'läuft heute ab';
-    if (d === 1) return 'läuft morgen ab';
-    return 'läuft in ' + d + ' Tagen ab';
+    if (d < 0) return d === -1 ? t('seit gestern abgelaufen') : t('seit {0} Tagen abgelaufen', [-d]);
+    if (d === 0) return t('läuft heute ab');
+    if (d === 1) return t('läuft morgen ab');
+    return t('läuft in {0} Tagen ab', [d]);
   }
 
   /** 'JJJJ-MM-TT' -> 'TT.MM.JJJJ' */
   function dateDE(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : ''; }
+  /** 'JJJJ-MM-TT' -> Datum im Format der Sprache (locale z. B. 'en-GB'); leer bei ungültigem Datum */
+  function dateLocal(s, locale) {
+    var ms = parseDate(s);
+    if (isNaN(ms)) return '';
+    return new Date(ms).toLocaleDateString(locale || 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).replace(/[\u200e\u200f]/g, '');   // Richtungsmarken stören die Ziffernfolge
+  }
 
   function summary(items, today, warnDays) {
     var out = { total: items.length, bad: 0, warn: 0 };
@@ -104,7 +111,7 @@
     });
   }
 
-  var api = { CATS: CATS, parseDate: parseDate, daysUntil: daysUntil, status: status, dueText: dueText, dateDE: dateDE,
+  var api = { CATS: CATS, parseDate: parseDate, daysUntil: daysUntil, status: status, dueText: dueText, dateDE: dateDE, dateLocal: dateLocal,
     summary: summary, newId: newId, sanitize: sanitize, parseImport: parseImport, merge: merge, sortItems: sortItems };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else window.OA_INVENTAR = api;

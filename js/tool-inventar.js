@@ -20,8 +20,17 @@
   };
   var editId = null, pending = null;   // pending = Import wartet auf Auswahl
 
-  el.fcat.innerHTML = '<option value="">Alle Kategorien</option>' + I.CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('');
-  el.fCat.innerHTML = I.CATS.map(function (c) { return '<option>' + c + '</option>'; }).join('');
+  function catOptions() {
+    return I.CATS.map(function (c) { return '<option value="' + OA.esc(c) + '">' + OA.esc(OA.t(c)) + '</option>'; }).join('');
+  }
+  el.fcat.innerHTML = '<option value="">' + OA.esc(OA.t('Alle Kategorien')) + '</option>' + catOptions();
+  el.fCat.innerHTML = catOptions();
+  // Vorschläge für die Einheit in der gewählten Sprache
+  $('#units').innerHTML = ['Stück', 'Packung', 'Dose', 'Flasche', 'Beutel', 'Liter', 'kg', 'g'].map(function (u) {
+    return '<option value="' + OA.esc(OA.t(u)) + '">';
+  }).join('');
+  // Die Übersetzungs-Engine überspringt <textarea>: Platzhalter hier selbst übersetzen
+  OA.$$('textarea[placeholder]').forEach(function (ta) { ta.placeholder = OA.t(ta.getAttribute('placeholder')); });
   OA.segSet(el.sort, state.sort);
   OA.segSet(el.warn, String(state.warn));
 
@@ -35,6 +44,8 @@
   function closeDlg(d) { if (d.close) d.close(); else d.removeAttribute('open'); }
 
   function qtyText(it) { return OA.fmt(it.qty, 3); }
+  function dateText(s) { return I.dateLocal(s, OA.locale); }
+  function dueText(d) { return I.dueText(d, OA.t); }
 
   /* ---------- Anzeige ---------- */
   function visibleItems() {
@@ -46,37 +57,38 @@
   }
 
   function chips(it, today) {
-    var s = I.status(it, today, state.warn), out = '<span class="chip">' + OA.esc(it.cat) + '</span>';
+    var s = I.status(it, today, state.warn), out = '<span class="chip">' + OA.esc(OA.t(it.cat)) + '</span>';
     if (s === 'none') return out;
     var d = I.daysUntil(it.exp, today);
     var cls = s === 'bad' ? ' bad' : s === 'warn' ? ' warn' : '';
-    return out + '<span class="chip' + cls + '">' + OA.esc(cls ? I.dueText(d) : 'bis ' + I.dateDE(it.exp)) + '</span>' +
-      (cls ? '<span class="chip">' + OA.esc(I.dateDE(it.exp)) + '</span>' : '');
+    return out + '<span class="chip' + cls + '">' + OA.esc(cls ? dueText(d) : OA.t('bis {0}', [dateText(it.exp)])) + '</span>' +
+      (cls ? '<span class="chip ltr">' + OA.esc(dateText(it.exp)) + '</span>' : '');
   }
 
   function render() {
     var today = OA.today(), sum = I.summary(state.items, today, state.warn);
     el.nBad.textContent = sum.bad; el.nWarn.textContent = sum.warn; el.nTotal.textContent = sum.total;
-    el.sumLine.textContent = !sum.total ? 'Noch nichts eingetragen.' :
-      (sum.bad || sum.warn) ? sum.bad + ' abgelaufen, ' + sum.warn + ' bald fällig (Warnung ab ' + state.warn + ' Tagen vor Ablauf)' : 'Alles in Ordnung: nichts läuft bald ab.';
+    el.sumLine.textContent = !sum.total ? OA.t('Noch nichts eingetragen.') :
+      (sum.bad || sum.warn) ? OA.t('{0} abgelaufen, {1} bald fällig (Warnung ab {2} Tagen vor Ablauf)', [sum.bad, sum.warn, state.warn]) :
+        OA.t('Alles in Ordnung: nichts läuft bald ab.');
 
     var items = visibleItems();
     if (!state.items.length) {
-      el.list.innerHTML = '<div class="empty">Noch keine Artikel.<br>Tippe auf „Artikel hinzufügen“.</div>';
+      el.list.innerHTML = '<div class="empty">' + OA.esc(OA.t('Noch keine Artikel.')) + '<br>' + OA.esc(OA.t('Tippe auf „Artikel hinzufügen“.')) + '</div>';
     } else if (!items.length) {
-      el.list.innerHTML = '<div class="empty">Nichts gefunden.</div>';
+      el.list.innerHTML = '<div class="empty">' + OA.esc(OA.t('Nichts gefunden.')) + '</div>';
     } else {
       el.list.innerHTML = items.map(function (it) {
         var s = I.status(it, today, state.warn), cls = s === 'bad' || s === 'warn' ? ' ' + s : '';
         return '<article class="inv' + cls + '" data-id="' + OA.esc(it.id) + '">' +
-          '<div class="inv-main"><div class="inv-name">' + OA.esc(it.name) + '</div>' +
+          '<div class="inv-main"><div class="inv-name" data-notranslate>' + OA.esc(it.name) + '</div>' +
           '<div class="inv-meta">' + chips(it, today) + '</div>' +
-          (it.note ? '<div class="inv-note small muted">' + OA.esc(it.note) + '</div>' : '') + '</div>' +
+          (it.note ? '<div class="inv-note small muted" data-notranslate>' + OA.esc(it.note) + '</div>' : '') + '</div>' +
           '<div class="inv-side"><div class="qty">' +
-          '<button type="button" data-act="minus" aria-label="Weniger: ' + OA.esc(it.name) + '">−</button>' +
-          '<div class="val" aria-live="polite">' + qtyText(it) + (it.unit ? '<small>' + OA.esc(it.unit) + '</small>' : '') + '</div>' +
-          '<button type="button" data-act="plus" aria-label="Mehr: ' + OA.esc(it.name) + '">+</button></div>' +
-          '<button type="button" class="btn sm" data-act="edit" aria-label="Bearbeiten: ' + OA.esc(it.name) + '">Bearbeiten</button></div>' +
+          '<button type="button" data-act="minus" aria-label="' + OA.esc(OA.t('Weniger: {0}', [it.name])) + '">−</button>' +
+          '<div class="val" aria-live="polite"><span class="ltr">' + qtyText(it) + '</span>' + (it.unit ? '<small data-notranslate>' + OA.esc(it.unit) + '</small>' : '') + '</div>' +
+          '<button type="button" data-act="plus" aria-label="' + OA.esc(OA.t('Mehr: {0}', [it.name])) + '">+</button></div>' +
+          '<button type="button" class="btn sm" data-act="edit" aria-label="' + OA.esc(OA.t('Bearbeiten: {0}', [it.name])) + '">' + OA.esc(OA.t('Bearbeiten')) + '</button></div>' +
           '</article>';
       }).join('');
     }
@@ -86,11 +98,12 @@
   function renderPrint(today) {
     var rows = I.sortItems(state.items, 'cat').map(function (it) {
       var d = I.daysUntil(it.exp, today), flag = I.status(it, today, state.warn);
-      return '<tr><td>' + OA.esc(it.name) + '</td><td>' + qtyText(it) + ' ' + OA.esc(it.unit) + '</td><td>' + OA.esc(it.cat) + '</td><td>' +
-        OA.esc(I.dateDE(it.exp)) + (flag === 'bad' || flag === 'warn' ? ' (' + OA.esc(I.dueText(d)) + ')' : '') + '</td><td>' + OA.esc(it.note) + '</td></tr>';
+      return '<tr><td data-notranslate>' + OA.esc(it.name) + '</td><td><span data-notranslate>' + qtyText(it) + ' ' + OA.esc(it.unit) + '</span></td><td>' + OA.esc(OA.t(it.cat)) + '</td><td>' +
+        OA.esc(dateText(it.exp)) + (flag === 'bad' || flag === 'warn' ? ' (' + OA.esc(dueText(d)) + ')' : '') + '</td><td data-notranslate>' + OA.esc(it.note) + '</td></tr>';
     }).join('');
-    el.printView.innerHTML = '<h1>Vorratsliste</h1><p>Stand: ' + OA.esc(I.dateDE(today)) + ' · ' + state.items.length + ' Artikel</p>' +
-      '<table><thead><tr><th>Artikel</th><th>Menge</th><th>Kategorie</th><th>Ablauf</th><th>Notiz</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    el.printView.innerHTML = '<h1>' + OA.esc(OA.t('Vorratsliste')) + '</h1><p>' + OA.esc(OA.t('Stand: {0} · {1} Artikel', [dateText(today), state.items.length])) + '</p>' +
+      '<table><thead><tr><th>' + OA.esc(OA.t('Artikel')) + '</th><th>' + OA.esc(OA.t('Menge')) + '</th><th>' + OA.esc(OA.t('Kategorie')) + '</th><th>' +
+      OA.esc(OA.t('Ablauf')) + '</th><th>' + OA.esc(OA.t('Notiz')) + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
   }
 
   /* ---------- Hinzufügen / Bearbeiten ---------- */
@@ -99,9 +112,9 @@
   function openForm(id) {
     var it = id ? state.items.filter(function (x) { return x.id === id; })[0] : null;
     editId = it ? it.id : null;
-    el.title.textContent = it ? 'Artikel bearbeiten' : 'Artikel hinzufügen';
+    el.title.textContent = OA.t(it ? 'Artikel bearbeiten' : 'Artikel hinzufügen');
     el.fName.value = it ? it.name : '';
-    el.fQty.value = it ? String(it.qty).replace('.', ',') : '1';
+    el.fQty.value = it ? (OA.lang === 'de' ? String(it.qty).replace('.', ',') : String(it.qty)) : '1';
     el.fUnit.value = it ? it.unit : '';
     el.fCat.value = it ? it.cat : (el.fcat.value || I.CATS[0]);
     el.fExp.value = it ? it.exp : '';
@@ -115,9 +128,9 @@
   el.form.addEventListener('submit', function (e) {
     e.preventDefault();
     var qty = OA.num(el.fQty.value);
-    if (!el.fName.value.trim()) { showError('Bitte einen Namen eingeben.'); el.fName.focus(); return; }
-    if (isNaN(qty) || qty < 0) { showError('Bitte eine Menge ab 0 eingeben.'); el.fQty.focus(); return; }
-    if (el.fExp.value && isNaN(I.parseDate(el.fExp.value))) { showError('Das Ablaufdatum ist ungültig.'); return; }
+    if (!el.fName.value.trim()) { showError(OA.t('Bitte einen Namen eingeben.')); el.fName.focus(); return; }
+    if (isNaN(qty) || qty < 0) { showError(OA.t('Bitte eine Menge ab 0 eingeben.')); el.fQty.focus(); return; }
+    if (el.fExp.value && isNaN(I.parseDate(el.fExp.value))) { showError(OA.t('Das Ablaufdatum ist ungültig.')); return; }
     var it = I.sanitize({ id: editId || I.newId(), name: el.fName.value, qty: qty, unit: el.fUnit.value, cat: el.fCat.value, exp: el.fExp.value, note: el.fNote.value });
     var pos = -1;
     state.items.forEach(function (x, i) { if (x.id === editId) pos = i; });
@@ -126,7 +139,7 @@
   });
   el.fDelete.addEventListener('click', function () {
     var it = state.items.filter(function (x) { return x.id === editId; })[0];
-    if (!it || !confirm('„' + it.name + '“ wirklich löschen?')) return;
+    if (!it || !confirm(OA.t('„{0}“ wirklich löschen?', [it.name]))) return;
     state.items = state.items.filter(function (x) { return x.id !== editId; });
     save(); closeDlg(el.dlg); render();
   });
@@ -159,25 +172,26 @@
   $('#export').addEventListener('click', function () {
     OA.download('vorratsliste-' + OA.today() + '.json',
       JSON.stringify({ app: 'offline-ark-inventar', version: 1, exported: OA.today(), items: state.items }, null, 2));
-    say('Export gestartet: ' + state.items.length + ' Artikel.');
+    say(OA.t('Export gestartet: {0} Artikel.', [state.items.length]));
   });
   $('#import').addEventListener('click', function () {
     OA.pickFile('.json,application/json', function (text) {
-      try { pending = I.parseImport(text); } catch (err) { pending = null; say('Import nicht möglich: ' + err.message); return; }
-      el.impText.textContent = pending.items.length + ' Artikel gefunden' + (pending.skipped ? ' (' + pending.skipped + ' ungültige übersprungen)' : '') +
-        '. Deine Liste hat jetzt ' + state.items.length + ' Artikel.';
+      try { pending = I.parseImport(text); } catch (err) { pending = null; say(OA.t('Import nicht möglich: {0}', [OA.t(err.message)])); return; }
+      el.impText.textContent = pending.skipped
+        ? OA.t('{0} Artikel gefunden ({2} ungültige übersprungen). Deine Liste hat jetzt {1} Artikel.', [pending.items.length, state.items.length, pending.skipped])
+        : OA.t('{0} Artikel gefunden. Deine Liste hat jetzt {1} Artikel.', [pending.items.length, state.items.length]);
       openDlg(el.impDlg);
     });
   });
   function finishImport(replace) {
     if (!pending) return;
     state.items = replace ? pending.items : I.merge(state.items, pending.items);
-    say(pending.items.length + ' Artikel ' + (replace ? 'übernommen (Liste ersetzt).' : 'zusammengeführt.'));
+    say(replace ? OA.t('{0} Artikel übernommen (Liste ersetzt).', [pending.items.length]) : OA.t('{0} Artikel zusammengeführt.', [pending.items.length]));
     pending = null; save(); closeDlg(el.impDlg); render();
   }
   $('#impMerge').addEventListener('click', function () { finishImport(false); });
   $('#impReplace').addEventListener('click', function () {
-    if (!state.items.length || confirm('Deine jetzige Liste wird ersetzt. Fortfahren?')) finishImport(true);
+    if (!state.items.length || confirm(OA.t('Deine jetzige Liste wird ersetzt. Fortfahren?'))) finishImport(true);
   });
   $('#impCancel').addEventListener('click', function () { pending = null; closeDlg(el.impDlg); });
   $('#print').addEventListener('click', function () { window.print(); });

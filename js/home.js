@@ -3,36 +3,41 @@
   'use strict';
   var OA = window.OA;
   var tools = window.OA_TOOLS || [], groups = window.OA_TOOL_GROUPS || [], wissen = window.OA_WISSEN || [];
-  var search = window.OA_SEARCH || [];
+  var search = (window.OA_SEARCH && (window.OA_SEARCH[OA.lang] || window.OA_SEARCH.de)) || [];
 
   /* ---------- Icons im Notfallbereich ---------- */
   OA.$('#ic-aid').innerHTML = OA.icon('aid');
   OA.$('#ic-power').innerHTML = OA.icon('boltoff');
   OA.$('#ic-water').innerHTML = OA.icon('drop');
+  // Notfall-Kacheln zeigen auf die Wissensseite in der gewählten Sprache
+  OA.$$('#emergency a').forEach(function (a) {
+    var id = a.getAttribute('href').replace(/^wissen\//, '');
+    a.setAttribute('href', OA.genUrl('wissen/' + id));
+  });
 
   /* ---------- Kacheln: Werkzeuge nach Gruppen ---------- */
   var html = '';
   groups.forEach(function (g) {
     var items = tools.filter(function (t) { return t.group === g.id; });
     if (!items.length) return;
-    html += '<h2 class="section-title">' + OA.esc(g.title) + '</h2><div class="tiles">' + items.map(function (t) {
+    html += '<h2 class="section-title">' + OA.esc(OA.t(g.title)) + '</h2><div class="tiles">' + items.map(function (t) {
       return '<a class="tile" href="tools/' + t.id + '.html">' + OA.icon(t.icon) +
-        '<span class="name">' + OA.esc(t.title) + '<span class="sub">' + OA.esc(t.sub) + '</span></span></a>';
+        '<span class="name">' + OA.esc(OA.t(t.title)) + '<span class="sub">' + OA.esc(OA.t(t.sub)) + '</span></span></a>';
     }).join('') + '</div>';
   });
   OA.$('#tool-groups').innerHTML = html;
 
   /* ---------- Wissensliste ---------- */
   OA.$('#wissen-list').innerHTML = wissen.map(function (w) {
-    return '<a href="wissen/' + w.id + '.html">' + OA.icon(w.icon) +
-      '<span class="name">' + OA.esc(w.title) + '<span class="sub">' + OA.esc(w.sub) + '</span></span>' + OA.icon('chev', 'chev') + '</a>';
+    return '<a href="' + OA.genUrl('wissen/' + w.id + '.html') + '">' + OA.icon(w.icon) +
+      '<span class="name">' + OA.esc(OA.t(w.title)) + '<span class="sub">' + OA.esc(OA.t(w.sub)) + '</span></span>' + OA.icon('chev', 'chev') + '</a>';
   }).join('');
 
   /* ---------- Uhr, Datum, Akku ---------- */
   function tick() {
     var d = new Date();
     OA.$('#clock').textContent = OA.pad(d.getHours()) + ':' + OA.pad(d.getMinutes());
-    OA.$('#date').textContent = d.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    OA.$('#date').textContent = d.toLocaleDateString(OA.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
   tick(); setInterval(tick, 1000);
 
@@ -41,7 +46,7 @@
       navigator.getBattery().then(function (b) {
         function show() {
           OA.$('#battery').hidden = false;
-          OA.$('#batval').textContent = Math.round(b.level * 100) + ' %' + (b.charging ? ' (lädt)' : '');
+          OA.$('#batval').textContent = Math.round(b.level * 100) + ' %' + (b.charging ? ' (' + OA.t('lädt') + ')' : '');
         }
         show(); b.addEventListener('levelchange', show); b.addEventListener('chargingchange', show);
       }).catch(function () {});
@@ -49,21 +54,23 @@
   } catch (e) { /* Akkuanzeige nicht verfügbar */ }
 
   /* ---------- Suche ---------- */
-  // Vereinfachen: klein, Umlaute weg, damit "waerme" und "wärme" beide treffen
+  // Vereinfachen: klein, Akzente/Umlaute weg ("waerme" = "wärme", "cómo" = "como"); arabische Vokalzeichen fallen weg
   function fold(s) {
-    return String(s).toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss')
+    return String(s).toLowerCase().replace(/ß/g, 'ss').normalize('NFD').replace(/\p{M}/gu, '')
       .replace(/ae/g, 'a').replace(/oe/g, 'o').replace(/ue/g, 'u');
   }
 
   var docs = [];
   tools.forEach(function (t) {
-    docs.push({ kind: 'Werkzeug', url: 'tools/' + t.id + '.html', icon: t.icon, title: t.title, desc: t.desc,
-      title_f: fold(t.title), kw_f: fold(t.kw || '') + ' ' + fold(t.sub), body_f: fold(t.desc) });
+    // Suchbar in der gewählten Sprache UND auf Deutsch (Schlagwörter, Titel)
+    docs.push({ kind: OA.t('Werkzeug'), url: 'tools/' + t.id + '.html', icon: t.icon, title: OA.t(t.title), desc: OA.t(t.desc),
+      title_f: fold(OA.t(t.title)) + ' ' + fold(t.title), kw_f: fold(OA.t(t.kw || '')) + ' ' + fold(t.kw || '') + ' ' + fold(OA.t(t.sub)), body_f: fold(OA.t(t.desc)) });
   });
   wissen.forEach(function (w) {
     var s = search.filter(function (x) { return x.id === w.id; })[0] || {};
-    docs.push({ kind: 'Wissen', url: 'wissen/' + w.id + '.html', icon: w.icon, title: w.title, desc: w.sub,
-      title_f: fold(w.title), kw_f: fold((s.headings || '') + ' ' + w.sub), body_f: fold(s.text || '') });
+    var title = s.title || OA.t(w.title);
+    docs.push({ kind: OA.t('Wissen'), url: OA.genUrl('wissen/' + w.id + '.html'), icon: w.icon, title: title, desc: OA.t(w.sub),
+      title_f: fold(title) + ' ' + fold(w.title), kw_f: fold((s.headings || '') + ' ' + OA.t(w.sub)), body_f: fold(s.text || '') });
   });
 
   function run(query) {
@@ -95,7 +102,7 @@
       return '<a href="' + d.url + '" role="option">' + OA.icon(d.icon) +
         '<span><span class="t">' + OA.esc(d.title) + '</span><br><span class="d">' + OA.esc(d.desc) + '</span></span>' +
         '<span class="kind">' + d.kind + '</span></a>';
-    }).join('') : '<div class="empty">Nichts gefunden. Versuche ein kürzeres Wort.</div>';
+    }).join('') : '<div class="empty">' + OA.esc(OA.t('Nichts gefunden. Versuche ein kürzeres Wort.')) + '</div>';
     box.classList.add('show');
   }
   input.addEventListener('input', render);

@@ -5,11 +5,11 @@
  * index.html funktioniert ohne Build-Schritt direkt per Doppelklick.
  *
  * Was es tut (Node.js ≥ 16, keine Pakete nötig):
- *   1. liest content/*.md (eigene Texte mit Quellenangaben im Kopfbereich)
- *   2. erzeugt wissen/<id>.html  (reines HTML, druckfreundlich)
- *   3. erzeugt wissen/quellen.html (zentrale Seite "Quellen & Lizenzen")
- *   4. erzeugt data/search-index.js (Volltext für die Offline-Suche)
- *   5. erzeugt bibliothek/index.html aus scripts/library.json
+ *   1. liest content/*.md (Deutsch) und content/<en|es|ar>/*.md (Übersetzungen)
+ *   2. erzeugt wissen/<id>.html und wissen/<sprache>/<id>.html (reines HTML, druckfreundlich)
+ *   3. erzeugt wissen/**/quellen.html (zentrale Seite "Quellen & Lizenzen")
+ *   4. erzeugt data/search-index.js (Volltext je Sprache für die Offline-Suche)
+ *   5. erzeugt bibliothek/**/index.html aus scripts/library.json
  *
  * Aufruf:  node scripts/build.js
  */
@@ -52,9 +52,13 @@ function markdown(md) {
   let i = 0;
   const headings = [];
 
+  const usedIds = {};
   function slug(t) {
-    return t.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
-      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    let s = t.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+      .normalize('NFD').replace(/\p{M}/gu, '')            // Akzente weg (á -> a); arabische Zeichen bleiben
+      .replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'abschnitt';
+    usedIds[s] = (usedIds[s] || 0) + 1;
+    return usedIds[s] > 1 ? `${s}-${usedIds[s]}` : s;
   }
 
   function parseBlocks(stop) {
@@ -70,7 +74,7 @@ function markdown(md) {
         i++;
         const inner = parseBlocks(':::');
         if (m[1] === 'original') {
-          html.push(`<details><summary>${inline(m[2] || 'Original anzeigen')}</summary><div lang="en">${inner}</div></details>`);
+          html.push(`<details><summary>${inline(m[2] || 'Original anzeigen')}</summary><div lang="en" dir="ltr">${inner}</div></details>`);
         } else {
           html.push(`<div class="callout ${m[1]}">${m[2] ? `<strong>${inline(m[2])}</strong>` : ''}${inner}</div>`);
         }
@@ -141,29 +145,88 @@ function frontMatter(raw, file) {
   return { meta, body: m[2] };
 }
 
+/* ---------- Sprachen und feste Texte der erzeugten Seiten ---------- */
+const LANGS = ['de', 'en', 'es', 'ar'];
+const STR = {
+  de: {
+    disclaimer: '<strong>Ersetzt keine Ausbildung.</strong> Im Notfall zuerst <strong>112</strong> anrufen bzw. immer wieder versuchen. Diese Seite nennt bewusst keine Medikamenten-Dosierungen – dafür Ärztin, Arzt oder Apotheke fragen.',
+    plant: '⚠ Nur essen, wenn 100&nbsp;% sicher bestimmt. Viele giftige Pflanzen sehen essbaren zum Verwechseln ähnlich. Im Zweifel stehen lassen. Bei Verdacht auf Vergiftung: 112 bzw. Giftnotruf.',
+    translation: '',
+    toc: 'Inhalt', sources: 'Quellen', license: 'Lizenz',
+    sourcesNote: 'Links öffnen sich nur mit Internet. Alle Inhalte dieser Seite sind eigene, zusammengefasste Texte nach den genannten Quellen.',
+    quellenTitle: 'Quellen & Lizenzen', quellenLead: 'Woher die Inhalte stammen und unter welcher Lizenz sie stehen.',
+    allSources: 'Alle verwendeten Quellen', allSourcesToc: 'Alle Quellen', colSource: 'Quelle', colLicense: 'Lizenz', colUsed: 'Verwendet auf',
+    libTitle: 'Bibliothek', libLead: 'Gemeinfreie Handbücher als PDF – komplett offline lesbar.',
+    libNone: 'Noch keine PDFs vorhanden. Mit <code>update-content.sh</code> laden (Internet nötig).',
+    libFoot: 'Quellen und Lizenzen: siehe <a href="quellen.html">Quellen &amp; Lizenzen</a>. Die Originale sind englisch.', libLang: 'Englisch'
+  },
+  en: {
+    disclaimer: '<strong>Does not replace training.</strong> In an emergency, call <strong>112</strong> first, or keep trying. This page deliberately gives no medication doses – ask a doctor or pharmacist.',
+    plant: '⚠ Only eat if you are 100&nbsp;% certain of the identification. Many poisonous plants look confusingly similar to edible ones. When in doubt, leave it. If you suspect poisoning: 112 or the poison information centre.',
+    translation: 'Translation of the German page. If anything differs, the German version applies. Emergency numbers and rules refer to Germany.',
+    toc: 'Contents', sources: 'Sources', license: 'License',
+    sourcesNote: 'Links only open with internet. All content on this page is our own summary based on the sources named.',
+    quellenTitle: 'Sources & Licenses', quellenLead: 'Where the content comes from and under which license it is published.',
+    allSources: 'All sources used', allSourcesToc: 'All sources', colSource: 'Source', colLicense: 'License', colUsed: 'Used on',
+    libTitle: 'Library', libLead: 'Public-domain manuals as PDF – readable completely offline.',
+    libNone: 'No PDFs yet. Download them with <code>update-content.sh</code> (internet required).',
+    libFoot: 'Sources and licenses: see <a href="quellen.html">Sources &amp; Licenses</a>. The originals are in English.', libLang: 'English'
+  },
+  es: {
+    disclaimer: '<strong>No sustituye a una formación.</strong> En una emergencia, llama primero al <strong>112</strong> o sigue intentándolo. Esta página no indica dosis de medicamentos a propósito: consulta a un médico o a un farmacéutico.',
+    plant: '⚠ Come solo si estás 100&nbsp;% seguro de la identificación. Muchas plantas venenosas se parecen mucho a las comestibles. Si tienes dudas, déjala. Si sospechas una intoxicación: 112 o el centro de información toxicológica.',
+    translation: 'Traducción de la página alemana. Si hay diferencias, vale la versión alemana. Los números de emergencia y las normas se refieren a Alemania.',
+    toc: 'Contenido', sources: 'Fuentes', license: 'Licencia',
+    sourcesNote: 'Los enlaces solo se abren con internet. Todo el contenido de esta página es un resumen propio basado en las fuentes indicadas.',
+    quellenTitle: 'Fuentes y licencias', quellenLead: 'De dónde proviene el contenido y con qué licencia se publica.',
+    allSources: 'Todas las fuentes utilizadas', allSourcesToc: 'Todas las fuentes', colSource: 'Fuente', colLicense: 'Licencia', colUsed: 'Usada en',
+    libTitle: 'Biblioteca', libLead: 'Manuales de dominio público en PDF: se leen completamente sin conexión.',
+    libNone: 'Todavía no hay PDF. Descárgalos con <code>update-content.sh</code> (se necesita internet).',
+    libFoot: 'Fuentes y licencias: consulta <a href="quellen.html">Fuentes y licencias</a>. Los originales están en inglés.', libLang: 'Inglés'
+  },
+  ar: {
+    disclaimer: '<strong>لا يغني عن التدريب.</strong> في حالة الطوارئ اتصل أولاً بالرقم <strong>112</strong> أو واصل المحاولة. لا تذكر هذه الصفحة جرعات الأدوية عمداً – اسأل طبيباً أو صيدلياً.',
+    plant: '⚠ لا تأكل إلا إذا كنت متأكداً 100&nbsp;% من التعرف على النبات. كثير من النباتات السامة تشبه الصالحة للأكل بشكل مضلل. عند الشك اتركه. عند الاشتباه بتسمم: 112 أو مركز معلومات السموم.',
+    translation: 'ترجمة للصفحة الألمانية. عند أي اختلاف تُعتمد النسخة الألمانية. أرقام الطوارئ والقواعد تخص ألمانيا.',
+    toc: 'المحتويات', sources: 'المصادر', license: 'الترخيص',
+    sourcesNote: 'الروابط لا تُفتح إلا مع الإنترنت. كل محتوى هذه الصفحة هو تلخيص خاص مبني على المصادر المذكورة.',
+    quellenTitle: 'المصادر والتراخيص', quellenLead: 'من أين جاء المحتوى وبأي ترخيص يُنشر.',
+    allSources: 'جميع المصادر المستخدمة', allSourcesToc: 'جميع المصادر', colSource: 'المصدر', colLicense: 'الترخيص', colUsed: 'مستخدم في',
+    libTitle: 'المكتبة', libLead: 'كتيبات في الملك العام بصيغة PDF – تُقرأ دون إنترنت بالكامل.',
+    libNone: 'لا توجد ملفات PDF بعد. حمّلها عبر <code>update-content.sh</code> (يلزم الإنترنت).',
+    libFoot: 'المصادر والتراخيص: انظر <a href="quellen.html">المصادر والتراخيص</a>. النسخ الأصلية بالإنجليزية.', libLang: 'الإنجليزية'
+  }
+};
+
 /* ---------- Seitenvorlage ---------- */
-function page({ title, lead, bodyHtml, toc, sourcesHtml, plant, disclaimer, depth = '../' }) {
+function page({ lang, genPath, title, lead, bodyHtml, toc, sourcesHtml, plant, disclaimer, translated }) {
+  const s = STR[lang];
+  const depth = lang === 'de' ? '../' : '../../';
   return `<!DOCTYPE html>
-<html lang="de">
+<html lang="${lang}" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(title)} – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
+  <meta name="oa-gen" content="${genPath}">
+  <meta name="oa-lang" content="${lang}">
   <script src="${depth}js/theme.js"></script>
+  <script src="${depth}js/i18n.js"></script>
   <link rel="stylesheet" href="${depth}css/style.css">
 </head>
 <body data-root="${depth}" data-page="wissen">
-<!-- Diese Datei wird von scripts/build.js erzeugt. Bitte Texte in content/*.md ändern. -->
+<!-- Diese Datei wird von scripts/build.js erzeugt. Bitte Texte in content/ ändern. -->
 <main class="container">
   <header class="page-head">
     <h1>${esc(title)}</h1>
     ${lead ? `<p class="lead">${inline(lead)}</p>` : ''}
   </header>
   <article class="prose">
-${disclaimer ? `    <div class="callout warn disclaimer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg><div><strong>Ersetzt keine Ausbildung.</strong> Im Notfall zuerst <strong>112</strong> anrufen bzw. immer wieder versuchen. Diese Seite nennt bewusst keine Medikamenten-Dosierungen – dafür Ärztin, Arzt oder Apotheke fragen.</div></div>` : ''}
-${plant ? `    <div class="plant-warning" role="alert">⚠ Nur essen, wenn 100&nbsp;% sicher bestimmt. Viele giftige Pflanzen sehen essbaren zum Verwechseln ähnlich. Im Zweifel stehen lassen. Bei Verdacht auf Vergiftung: 112 bzw. Giftnotruf.</div>` : ''}
-${toc.length > 2 ? `    <nav class="toc no-print" aria-label="Inhalt">${toc.map((h) => `<a href="#${h.id}">${esc(h.text)}</a>`).join('')}</nav>` : ''}
+${disclaimer ? `    <div class="callout warn disclaimer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg><div>${s.disclaimer}</div></div>` : ''}
+${plant ? `    <div class="plant-warning" role="alert">${s.plant}</div>` : ''}
+${lang !== 'de' && translated !== false && disclaimer ? `    <p class="small muted">${s.translation}</p>` : ''}
+${toc.length > 2 ? `    <nav class="toc no-print" aria-label="${esc(s.toc)}">${toc.map((h) => `<a href="#${h.id}">${esc(h.text)}</a>`).join('')}</nav>` : ''}
 ${bodyHtml}
 ${sourcesHtml}
   </article>
@@ -175,80 +238,105 @@ ${sourcesHtml}
 `;
 }
 
-function sourcesBlock(sources) {
+function sourcesBlock(sources, lang) {
   if (!sources.length) return '';
-  return '<section class="sources"><h2>Quellen</h2><ul>' + sources.map((s) =>
-    `<li><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.name)}</a> – Lizenz: ${esc(s.license)}${s.note ? ` · ${esc(s.note)}` : ''}</li>`).join('') +
-    '</ul><p class="small muted">Links öffnen sich nur mit Internet. Alle Inhalte dieser Seite sind eigene, zusammengefasste Texte nach den genannten Quellen.</p></section>';
+  const s = STR[lang];
+  return `<section class="sources"><h2>${s.sources}</h2><ul>` + sources.map((x) =>
+    `<li><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" dir="auto">${esc(x.name)}</a> – ${s.license}: ${esc(x.license)}${x.note ? ` · ${esc(x.note)}` : ''}</li>`).join('') +
+    `</ul><p class="small muted">${s.sourcesNote}</p></section>`;
 }
+
+/** Inhaltsdatei einer Sprache; fehlt sie, wird die deutsche genutzt (und die Seite entsprechend markiert). */
+function contentFile(lang, name) {
+  const own = path.join(CONTENT, lang === 'de' ? '' : lang, `${name}.md`);
+  if (fs.existsSync(own)) return { file: own, translated: true };
+  return { file: path.join(CONTENT, `${name}.md`), translated: lang === 'de' };
+}
+/** Interne Links ../tools/… müssen in Unterordnern eine Ebene weiter hoch. */
+function fixLinks(md, lang) { return lang === 'de' ? md : md.replace(/\]\(\.\.\//g, '](../../'); }
+
+function outDir(lang) { return lang === 'de' ? OUT : path.join(OUT, lang); }
 
 /* ---------- Hauptlauf ---------- */
 function main() {
   const registry = loadRegistry();
-  const search = [];
-  const allSources = new Map();   // url -> { ..., pages: [] }
+  const search = {};
+  const sourcesByLang = {};
 
-  fs.mkdirSync(OUT, { recursive: true });
+  LANGS.forEach((lang) => {
+    fs.mkdirSync(outDir(lang), { recursive: true });
+    search[lang] = [];
+    const allSources = sourcesByLang[lang] = new Map();   // url -> { ..., pages: [] }
 
-  registry.forEach((w) => {
-    const file = path.join(CONTENT, `${w.id}.md`);
-    if (!fs.existsSync(file)) { console.warn(`! content/${w.id}.md fehlt – Seite wird übersprungen`); return; }
-    const { meta, body } = frontMatter(fs.readFileSync(file, 'utf8'), file);
-    const { html, headings } = markdown(body);
-    fs.writeFileSync(path.join(OUT, `${w.id}.html`), page({
-      title: meta.title || w.title, lead: meta.lead, bodyHtml: html, toc: headings,
-      sourcesHtml: sourcesBlock(meta.sources), plant: meta.plant === 'true', disclaimer: true
-    }));
-    const plain = body.replace(/[#*`>|:\[\]()_-]/g, ' ').replace(/\s+/g, ' ');
-    search.push({ id: w.id, headings: headings.map((h) => h.text).join(' · '), text: plain });
-    meta.sources.forEach((s) => {
-      const e = allSources.get(s.url) || Object.assign({}, s, { pages: [] });
-      e.pages.push({ id: w.id, title: meta.title || w.title });
-      allSources.set(s.url, e);
+    registry.forEach((w) => {
+      const { file, translated } = contentFile(lang, w.id);
+      if (!fs.existsSync(file)) { console.warn(`! ${path.relative(ROOT, file)} fehlt – Seite wird übersprungen`); return; }
+      if (!translated) console.warn(`! ${lang}/${w.id}: keine Übersetzung, deutscher Text wird verwendet`);
+      const { meta, body } = frontMatter(fs.readFileSync(file, 'utf8'), file);
+      const { html, headings } = markdown(fixLinks(body, lang));
+      fs.writeFileSync(path.join(outDir(lang), `${w.id}.html`), page({
+        lang, genPath: `wissen/${w.id}.html`, title: meta.title || w.title, lead: meta.lead, bodyHtml: html, toc: headings,
+        sourcesHtml: sourcesBlock(meta.sources, lang), plant: meta.plant === 'true', disclaimer: true, translated
+      }));
+      const plain = body.replace(/[#*`>|:\[\]()_-]/g, ' ').replace(/\s+/g, ' ');
+      search[lang].push({ id: w.id, title: meta.title || w.title, headings: headings.map((h) => h.text).join(' · '), text: plain });
+      meta.sources.forEach((s) => {
+        const e = allSources.get(s.url) || Object.assign({}, s, { pages: [] });
+        e.pages.push({ id: w.id, title: meta.title || w.title });
+        allSources.set(s.url, e);
+      });
     });
-    console.log(`✓ wissen/${w.id}.html`);
+    console.log(`✓ wissen/${lang === 'de' ? '' : lang + '/'}*.html`);
   });
 
   fs.writeFileSync(path.join(ROOT, 'data', 'search-index.js'),
     '/* Erzeugt von scripts/build.js – nicht von Hand bearbeiten. */\nwindow.OA_SEARCH = ' + JSON.stringify(search) + ';\n');
   console.log('✓ data/search-index.js');
 
-  /* Zentrale Seite: Quellen & Lizenzen */
-  const introFile = path.join(CONTENT, '_quellen.md');
-  let intro = '', introHeadings = [];
-  if (fs.existsSync(introFile)) {
-    const parsed = frontMatter(fs.readFileSync(introFile, 'utf8'), introFile);
-    const r = markdown(parsed.body); intro = r.html; introHeadings = r.headings;
-  }
-  const list = Array.from(allSources.values()).sort((a, b) => a.name.localeCompare(b.name, 'de'));
-  const table = '<h2 id="verwendete-quellen">Alle verwendeten Quellen</h2><div class="table-wrap"><table><thead><tr><th>Quelle</th><th>Lizenz</th><th>Verwendet auf</th></tr></thead><tbody>' +
-    list.map((s) => `<tr><td><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.name)}</a>${s.note ? `<br><span class="small muted">${esc(s.note)}</span>` : ''}</td><td>${esc(s.license)}</td><td>${s.pages.map((p) => `<a href="${p.id}.html">${esc(p.title)}</a>`).join(', ')}</td></tr>`).join('') +
-    '</tbody></table></div>';
-  fs.writeFileSync(path.join(OUT, 'quellen.html'), page({
-    title: 'Quellen & Lizenzen', lead: 'Woher die Inhalte stammen und unter welcher Lizenz sie stehen.',
-    bodyHtml: intro + table, toc: introHeadings.concat([{ id: 'verwendete-quellen', text: 'Alle Quellen' }]), sourcesHtml: '', disclaimer: false
-  }));
-  console.log('✓ wissen/quellen.html');
+  /* Zentrale Seite: Quellen & Lizenzen (je Sprache) */
+  LANGS.forEach((lang) => {
+    const s = STR[lang];
+    const { file: introFile, translated } = contentFile(lang, '_quellen');
+    let intro = '', introHeadings = [];
+    if (fs.existsSync(introFile)) {
+      const parsed = frontMatter(fs.readFileSync(introFile, 'utf8'), introFile);
+      const r = markdown(fixLinks(parsed.body, lang)); intro = r.html; introHeadings = r.headings;
+    }
+    const list = Array.from(sourcesByLang[lang].values()).sort((a, b) => a.name.localeCompare(b.name, 'de'));
+    const table = `<h2 id="verwendete-quellen">${s.allSources}</h2><div class="table-wrap"><table><thead><tr><th>${s.colSource}</th><th>${s.colLicense}</th><th>${s.colUsed}</th></tr></thead><tbody>` +
+      list.map((x) => `<tr><td><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" dir="auto">${esc(x.name)}</a>${x.note ? `<br><span class="small muted">${esc(x.note)}</span>` : ''}</td><td>${esc(x.license)}</td><td>${x.pages.map((p) => `<a href="${p.id}.html">${esc(p.title)}</a>`).join(', ')}</td></tr>`).join('') +
+      '</tbody></table></div>';
+    fs.writeFileSync(path.join(outDir(lang), 'quellen.html'), page({
+      lang, genPath: 'wissen/quellen.html', title: s.quellenTitle, lead: s.quellenLead,
+      bodyHtml: intro + table, toc: introHeadings.concat([{ id: 'verwendete-quellen', text: s.allSourcesToc }]), sourcesHtml: '', disclaimer: false, translated
+    }));
+  });
+  console.log('✓ wissen/**/quellen.html');
 
-  /* Bibliothek aus scripts/library.json */
+  /* Bibliothek aus scripts/library.json (je Sprache; title/desc dürfen Texte oder {de,en,es,ar} sein) */
   const libFile = path.join(__dirname, 'library.json');
   const lib = fs.existsSync(libFile) ? JSON.parse(fs.readFileSync(libFile, 'utf8')) : [];
   const present = lib.filter((l) => fs.existsSync(path.join(ROOT, 'bibliothek', l.file)));
-  const libHtml = present.length
-    ? '<div class="list">' + present.map((l) => {
-        const kb = fs.statSync(path.join(ROOT, 'bibliothek', l.file)).size;
-        const size = kb > 1048576 ? (kb / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.round(kb / 1024) + ' KB';
-        return `<a href="${esc(l.file)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg><span class="name">${esc(l.title)}<span class="sub">${esc(l.desc)} · ${esc(l.lang)} · ${size} · Lizenz: ${esc(l.license)}</span></span></a>`;
-      }).join('') + '</div>'
-    : '<p>Noch keine PDFs vorhanden. Mit <code>update-content.sh</code> laden (Internet nötig).</p>';
-  const libPage = page({
-    title: 'Bibliothek', lead: 'Gemeinfreie Handbücher als PDF – komplett offline lesbar.',
-    bodyHtml: libHtml + '<p class="small muted" style="margin-top:16px">Quellen und Lizenzen: siehe <a href="../wissen/quellen.html">Quellen &amp; Lizenzen</a>. Die Originale sind englisch.</p>',
-    toc: [], sourcesHtml: '', disclaimer: false, depth: '../'
+  const pick = (v, lang) => (v && typeof v === 'object') ? (v[lang] || v.de) : v;
+  LANGS.forEach((lang) => {
+    const s = STR[lang];
+    const libHtml = present.length
+      ? '<div class="list">' + present.map((l) => {
+          const bytes = fs.statSync(path.join(ROOT, 'bibliothek', l.file)).size;
+          const size = bytes > 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.round(bytes / 1024) + ' KB';
+          const href = (lang === 'de' ? '' : '../') + esc(l.file);
+          return `<a href="${href}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg><span class="name">${esc(pick(l.title, lang))}<span class="sub">${esc(pick(l.desc, lang))} · ${s.libLang} · <span class="ltr">${size}</span> · ${s.license}: ${esc(pick(l.license, lang))}</span></span></a>`;
+        }).join('') + '</div>'
+      : `<p>${s.libNone}</p>`;
+    const dir = lang === 'de' ? path.join(ROOT, 'bibliothek') : path.join(ROOT, 'bibliothek', lang);
+    fs.mkdirSync(dir, { recursive: true });
+    const foot = s.libFoot.replace('href="quellen.html"', `href="${lang === 'de' ? '../wissen/quellen.html' : '../../wissen/' + lang + '/quellen.html'}"`);
+    fs.writeFileSync(path.join(dir, 'index.html'), page({
+      lang, genPath: 'bibliothek/index.html', title: s.libTitle, lead: s.libLead,
+      bodyHtml: libHtml + `<p class="small muted" style="margin-top:16px">${foot}</p>`, toc: [], sourcesHtml: '', disclaimer: false
+    }));
   });
-  fs.mkdirSync(path.join(ROOT, 'bibliothek'), { recursive: true });
-  fs.writeFileSync(path.join(ROOT, 'bibliothek', 'index.html'), libPage);
-  console.log('✓ bibliothek/index.html (' + present.length + ' PDFs)');
+  console.log('✓ bibliothek/**/index.html (' + present.length + ' PDFs)');
 }
 
 main();

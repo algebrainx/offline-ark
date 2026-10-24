@@ -1,0 +1,83 @@
+/* Offline-Ark – Wörterbuch für tools/einheiten.html (Schlüssel = deutscher Text). */
+OA.i18n.add({
+  "Einheiten": { en: "Units", es: "Unidades", ar: "الوحدات" },
+  "Länge, Gewicht, Volumen, Temperatur, Fläche, Geschwindigkeit, Energie.": {
+    en: "Length, weight, volume, temperature, area, speed, energy.",
+    es: "Longitud, peso, volumen, temperatura, superficie, velocidad, energía.",
+    ar: "الطول، الوزن، الحجم، درجة الحرارة، المساحة، السرعة، الطاقة." },
+  "Kategorie": { en: "Category", es: "Categoría", ar: "الفئة" },
+  "Wert": { en: "Value", es: "Valor", ar: "القيمة" },
+  "Spannung des Akkus in Volt (V)": { en: "Battery voltage in volts (V)", es: "Tensión de la batería en voltios (V)", ar: "جهد البطارية بالفولت (V)" },
+  "Handy, Powerbank, Kamera: meist 3,7 V. Die Angabe steht auf dem Akku.": {
+    en: "Phone, power bank, camera: usually 3.7 V. The value is printed on the battery.",
+    es: "Móvil, batería externa, cámara: normalmente 3,7 V. El dato está impreso en la batería.",
+    ar: "الهاتف، الشاحن المحمول، الكاميرا: غالبًا 3.7 V. القيمة مكتوبة على البطارية." },
+  "Von": { en: "From", es: "De", ar: "من" },
+  "Nach": { en: "To", es: "A", ar: "إلى" },
+  "⇄ Tauschen": { en: "⇄ Swap", es: "⇄ Intercambiar", ar: "⇄ تبديل" },
+  "Einheiten tauschen": { en: "Swap units", es: "Intercambiar unidades", ar: "تبديل الوحدات" },
+  "Alle Einheiten dieser Kategorie": { en: "All units in this category", es: "Todas las unidades de esta categoría", ar: "جميع وحدات هذه الفئة" },
+  "Bitte eine Zahl eingeben.": { en: "Please enter a number.", es: "Introduce un número.", ar: "الرجاء إدخال رقم." },
+  "Bitte eine Spannung größer als 0 eintragen.": {
+    en: "Please enter a voltage greater than 0.", es: "Introduce una tensión mayor que 0.", ar: "الرجاء إدخال جهد أكبر من 0." },
+  "(bei {0} V)": { en: "(at {0} V)", es: "(a {0} V)", ar: "(عند {0} V)" },
+
+  "Länge": { en: "Length", es: "Longitud", ar: "الطول" },
+  "Gewicht": { en: "Weight", es: "Peso", ar: "الوزن" },
+  "Volumen": { en: "Volume", es: "Volumen", ar: "الحجم" },
+  "Temperatur": { en: "Temperature", es: "Temperatura", ar: "درجة الحرارة" },
+  "Fläche": { en: "Area", es: "Superficie", ar: "المساحة" },
+  "Geschwindigkeit": { en: "Speed", es: "Velocidad", ar: "السرعة" },
+  "Energie": { en: "Energy", es: "Energía", ar: "الطاقة" },
+  "Akku: mAh ↔ Wh": { en: "Battery: mAh ↔ Wh", es: "Batería: mAh ↔ Wh", ar: "البطارية: mAh ↔ Wh" },
+
+  "Millimeter": { en: "Millimetre", es: "Milímetro", ar: "مليمتر" },
+  "Zentimeter": { en: "Centimetre", es: "Centímetro", ar: "سنتيمتر" },
+  "Meter": { en: "Metre", es: "Metro", ar: "متر" },
+  "Kilometer": { en: "Kilometre", es: "Kilómetro", ar: "كيلومتر" },
+  "Zoll": { en: "Inch", es: "Pulgada", ar: "بوصة" },
+  "Fuß": { en: "Foot", es: "Pie", ar: "قدم" },
+  "Yard": { en: "Yard", es: "Yarda", ar: "ياردة" },
+  "Meile": { en: "Mile", es: "Milla", ar: "ميل" },
+  "Seemeile": { en: "Nautical mile", es: "Milla náutica", ar: "ميل بحري" },
+  "sm": { en: "nmi", es: "M", ar: "nmi" },
+
+  "Gramm": { en: "Gram", es: "Gramo", ar: "غرام" },
+  "Kilogramm": { en: "Kilogram", es: "Kilogramo", ar: "كيلوغرام" },
+  "Tonne": { en: "Tonne", es: "Tonelada", ar: "طن" },
+  "Unze": { en: "Ounce", es: "Onza", ar: "أونصة" },
+  "Pfund (englisch)": { en: "Pound (imperial)", es: "Libra (inglesa)", ar: "رطل (إنجليزي)" },
+
+  "Milliliter": { en: "Millilitre", es: "Mililitro", ar: "مليلتر" },
+  "Liter": { en: "Litre", es: "Litro", ar: "لتر" },
+  "Kubikmeter": { en: "Cubic metre", es: "Metro cúbico", ar: "متر مكعب" },
+  "Gallone (US)": { en: "Gallon (US)", es: "Galón (EE. UU.)", ar: "غالون (أمريكي)" },
+  "Gallone (UK)": { en: "Gallon (UK)", es: "Galón (Reino Unido)", ar: "غالون (بريطاني)" },
+  "Flüssigunze (US)": { en: "Fluid ounce (US)", es: "Onza líquida (EE. UU.)", ar: "أونصة سائلة (أمريكية)" },
+  "Tasse (US)": { en: "Cup (US)", es: "Taza (EE. UU.)", ar: "كوب (أمريكي)" },
+  "Tasse": { en: "cup", es: "taza", ar: "cup" },
+
+  "Grad Celsius": { en: "Degrees Celsius", es: "Grados Celsius", ar: "درجة مئوية" },
+  "Grad Fahrenheit": { en: "Degrees Fahrenheit", es: "Grados Fahrenheit", ar: "درجة فهرنهايت" },
+  "Kelvin": { en: "Kelvin", es: "Kelvin", ar: "كلفن" },
+
+  "Quadratzentimeter": { en: "Square centimetre", es: "Centímetro cuadrado", ar: "سنتيمتر مربع" },
+  "Quadratmeter": { en: "Square metre", es: "Metro cuadrado", ar: "متر مربع" },
+  "Hektar": { en: "Hectare", es: "Hectárea", ar: "هكتار" },
+  "Quadratkilometer": { en: "Square kilometre", es: "Kilómetro cuadrado", ar: "كيلومتر مربع" },
+  "Quadratfuß": { en: "Square foot", es: "Pie cuadrado", ar: "قدم مربعة" },
+  "Acre": { en: "Acre", es: "Acre", ar: "أكر" },
+
+  "Meter pro Sekunde": { en: "Metres per second", es: "Metros por segundo", ar: "متر في الثانية" },
+  "Kilometer pro Stunde": { en: "Kilometres per hour", es: "Kilómetros por hora", ar: "كيلومتر في الساعة" },
+  "Meilen pro Stunde": { en: "Miles per hour", es: "Millas por hora", ar: "ميل في الساعة" },
+  "Knoten": { en: "Knots", es: "Nudos", ar: "عقدة" },
+
+  "Joule": { en: "Joule", es: "Julio", ar: "جول" },
+  "Kilojoule": { en: "Kilojoule", es: "Kilojulio", ar: "كيلوجول" },
+  "Kilokalorie": { en: "Kilocalorie", es: "Kilocaloría", ar: "كيلوكالوري" },
+  "Wattstunde": { en: "Watt-hour", es: "Vatio-hora", ar: "واط ساعة" },
+  "Kilowattstunde": { en: "Kilowatt-hour", es: "Kilovatio-hora", ar: "كيلوواط ساعة" },
+  "Milliamperestunde": { en: "Milliamp-hour", es: "Miliamperio-hora", ar: "ميلي أمبير ساعة" },
+  "Amperestunde": { en: "Amp-hour", es: "Amperio-hora", ar: "أمبير ساعة" }
+});

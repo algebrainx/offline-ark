@@ -6,9 +6,11 @@
   <title>Koordinaten &amp; GPS – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     [hidden] { display: none !important; }
+    .result .unit { margin-left: 0; margin-inline-start: 4px; }
     .status { color: var(--text-2); font-size: .9rem; margin-top: 10px; min-height: 1.4em; }
     .err { color: var(--danger); font-size: .9rem; margin: 2px 2px 0; min-height: 1.3em; }
     .dms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -17,6 +19,7 @@
     .fmtrow:first-child { padding-top: 0; }
     .fmtrow .k { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); font-weight: 600; }
     .fmtrow .v { font-size: 1.15rem; font-weight: 650; font-variant-numeric: tabular-nums; word-break: break-word; }
+    html[dir="rtl"] .fmtrow .v, html[dir="rtl"] .wp .co { text-align: right; }
     .arrow { width: 84px; height: 84px; display: block; margin: 0 auto 6px; }
     .arrow .ring { fill: var(--surface-2); stroke: var(--line); stroke-width: 2; }
     .arrow .n { fill: var(--text-2); font: 700 12px var(--font); text-anchor: middle; }
@@ -28,7 +31,7 @@
     .wp .co { color: var(--text-2); font-size: .85rem; font-variant-numeric: tabular-nums; }
     .save-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .save-row input { flex: 1 1 160px; }
-    .plain { margin: 6px 0 0; padding-left: 1.2em; }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
     .plain li { margin-bottom: .45em; }
   </style>
 </head>
@@ -56,8 +59,8 @@
 
       <div id="panDez">
         <div class="form-grid">
-          <div class="field"><label for="latDez">Breite (N, Süden mit −)</label><input type="text" id="latDez" inputmode="decimal" placeholder="z. B. 48,8310" autocomplete="off"></div>
-          <div class="field"><label for="lonDez">Länge (O, Westen mit −)</label><input type="text" id="lonDez" inputmode="decimal" placeholder="z. B. 9,3160" autocomplete="off"></div>
+          <div class="field"><label for="latDez">Breite (N, Süden mit −)</label><input type="text" class="ltr" id="latDez" inputmode="decimal" placeholder="z. B. 48,8310" autocomplete="off"></div>
+          <div class="field"><label for="lonDez">Länge (O, Westen mit −)</label><input type="text" class="ltr" id="lonDez" inputmode="decimal" placeholder="z. B. 9,3160" autocomplete="off"></div>
         </div>
       </div>
 
@@ -65,18 +68,18 @@
         <div class="form-grid">
           <div class="field"><span class="label">Breite</span>
             <div class="dms">
-              <input type="text" id="latD" inputmode="numeric" placeholder="Grad" aria-label="Breite Grad" autocomplete="off">
-              <input type="text" id="latM" inputmode="numeric" placeholder="Min" aria-label="Breite Minuten" autocomplete="off">
-              <input type="text" id="latS" inputmode="decimal" placeholder="Sek" aria-label="Breite Sekunden" autocomplete="off">
+              <input type="text" class="ltr" id="latD" inputmode="numeric" placeholder="Grad" aria-label="Breite Grad" autocomplete="off">
+              <input type="text" class="ltr" id="latM" inputmode="numeric" placeholder="Min" aria-label="Breite Minuten" autocomplete="off">
+              <input type="text" class="ltr" id="latS" inputmode="decimal" placeholder="Sek" aria-label="Breite Sekunden" autocomplete="off">
             </div>
             <div class="seg" data-local id="latH" style="margin-top:8px" role="group" aria-label="Nord oder Süd">
               <button type="button" data-v="N" aria-pressed="true">Nord</button><button type="button" data-v="S" aria-pressed="false">Süd</button>
             </div></div>
           <div class="field"><span class="label">Länge</span>
             <div class="dms">
-              <input type="text" id="lonD" inputmode="numeric" placeholder="Grad" aria-label="Länge Grad" autocomplete="off">
-              <input type="text" id="lonM" inputmode="numeric" placeholder="Min" aria-label="Länge Minuten" autocomplete="off">
-              <input type="text" id="lonS" inputmode="decimal" placeholder="Sek" aria-label="Länge Sekunden" autocomplete="off">
+              <input type="text" class="ltr" id="lonD" inputmode="numeric" placeholder="Grad" aria-label="Länge Grad" autocomplete="off">
+              <input type="text" class="ltr" id="lonM" inputmode="numeric" placeholder="Min" aria-label="Länge Minuten" autocomplete="off">
+              <input type="text" class="ltr" id="lonS" inputmode="decimal" placeholder="Sek" aria-label="Länge Sekunden" autocomplete="off">
             </div>
             <div class="seg" data-local id="lonH" style="margin-top:8px" role="group" aria-label="Ost oder West">
               <button type="button" data-v="E" aria-pressed="true">Ost</button><button type="button" data-v="W" aria-pressed="false">West</button>
@@ -86,9 +89,9 @@
 
       <div id="panUtm" hidden>
         <div class="form-grid">
-          <div class="field"><label for="zoneBand">Zone und Band</label><input type="text" id="zoneBand" inputmode="text" placeholder="z. B. 32U" autocapitalize="characters" autocomplete="off"></div>
-          <div class="field"><label for="utmE">Ostwert (E, Meter)</label><input type="text" id="utmE" inputmode="decimal" placeholder="z. B. 523191" autocomplete="off"></div>
-          <div class="field"><label for="utmN">Nordwert (N, Meter)</label><input type="text" id="utmN" inputmode="decimal" placeholder="z. B. 5408717" autocomplete="off"></div>
+          <div class="field"><label for="zoneBand">Zone und Band</label><input type="text" class="ltr" id="zoneBand" inputmode="text" placeholder="z. B. 32U" autocapitalize="characters" autocomplete="off"></div>
+          <div class="field"><label for="utmE">Ostwert (E, Meter)</label><input type="text" class="ltr" id="utmE" inputmode="decimal" placeholder="z. B. 523191" autocomplete="off"></div>
+          <div class="field"><label for="utmN">Nordwert (N, Meter)</label><input type="text" class="ltr" id="utmN" inputmode="decimal" placeholder="z. B. 5408717" autocomplete="off"></div>
         </div>
         <div class="hint" style="margin-top:-6px">Ganze Angabe wie „32U 523191 5408717“ einfügen geht auch im ersten Feld. Bezug: WGS84.</div>
       </div>
@@ -103,14 +106,14 @@
     <!-- Entfernung und Richtung -->
     <section class="card">
       <div class="field" style="margin-bottom:0"><label for="target">Ziel (Koordinaten oder Wegpunkt unten wählen)</label>
-        <input type="text" id="target" inputmode="text" placeholder="z. B. 48,7758 9,1829 oder 32U 513000 5402000" autocomplete="off">
+        <input type="text" class="ltr" id="target" inputmode="text" placeholder="z. B. 48,7758 9,1829 oder 32U 513000 5402000" autocomplete="off">
         <div class="hint" id="targetMsg">Start ist die Position oben. Das Ziel in Dezimalgrad, Grad Min Sek oder UTM eingeben.</div></div>
     </section>
 
     <section class="card result" aria-live="polite">
       <svg class="arrow" viewBox="0 0 100 100" role="img" aria-label="Richtung zum Ziel" id="arrowWrap">
         <circle class="ring" cx="50" cy="50" r="46"/>
-        <text class="n" x="50" y="17">N</text>
+        <text class="n" id="arrowN" data-notranslate x="50" y="17">N</text>
         <g id="arrow"><path class="pt" d="M50 24 L61 58 L50 52 L39 58 Z"/></g>
       </svg>
       <div><span class="num" id="distNum">–</span><span class="unit" id="distUnit"></span></div>
@@ -136,9 +139,9 @@
         <summary>Was bedeuten die Formate?</summary>
         <div>
           <ul class="plain">
-            <li><strong>Dezimalgrad:</strong> z. B. 48,8310° N, 9,3160° O. Haben die meisten Karten-Apps und GPS-Geräte.</li>
-            <li><strong>Grad, Minuten, Sekunden:</strong> 1 Grad = 60 Minuten, 1 Minute = 60 Sekunden.</li>
-            <li><strong>UTM:</strong> Gitter in Metern (WGS84). Zone (Zahl) und Band (Buchstabe) geben das Feld an. Deutschland liegt in den Zonen 32 und 33 (31 ganz im Westen), Bänder U und T. Ostwert (E) und Nordwert (N) sind Meter, damit lassen sich Abstände auf Karten leicht messen.</li>
+            <li data-t=""><strong>Dezimalgrad:</strong> z. B. 48,8310° N, 9,3160° O. Haben die meisten Karten-Apps und GPS-Geräte.</li>
+            <li data-t=""><strong>Grad, Minuten, Sekunden:</strong> 1 Grad = 60 Minuten, 1 Minute = 60 Sekunden.</li>
+            <li data-t=""><strong>UTM:</strong> Gitter in Metern (WGS84). Zone (Zahl) und Band (Buchstabe) geben das Feld an. Deutschland liegt in den Zonen 32 und 33 (31 ganz im Westen), Bänder U und T. Ostwert (E) und Nordwert (N) sind Meter, damit lassen sich Abstände auf Karten leicht messen.</li>
           </ul>
         </div>
       </details>
@@ -146,10 +149,10 @@
         <summary>Hinweise zu GPS, Entfernung und Richtung</summary>
         <div>
           <ul class="plain">
-            <li>GPS funktioniert <strong>ohne Internet</strong>, das Handy empfängt die Satelliten direkt. Draußen, mit freiem Blick zum Himmel, dauert die erste Ortung oft 30–60 Sekunden. In Gebäuden und Tälern klappt es schlecht.</li>
+            <li data-t="">GPS funktioniert <strong>ohne Internet</strong>, das Handy empfängt die Satelliten direkt. Draußen, mit freiem Blick zum Himmel, dauert die erste Ortung oft 30–60 Sekunden. In Gebäuden und Tälern klappt es schlecht.</li>
             <li>Die Genauigkeit wird in Metern angezeigt. Je kleiner, desto besser. Unter ca. 20 m ist gut.</li>
-            <li>Die Entfernung ist die <strong>Luftlinie</strong> (Richtwert). Der echte Weg ist länger.</li>
-            <li>Die Richtung ist die <strong>Peilung</strong> in Grad von Norden aus (0° Nord, 90° Ost, 180° Süd, 270° West). Sie bezieht sich auf geografisch Nord. Ein Magnetkompass zeigt in Deutschland wenige Grad daneben.</li>
+            <li data-t="">Die Entfernung ist die <strong>Luftlinie</strong> (Richtwert). Der echte Weg ist länger.</li>
+            <li data-t="">Die Richtung ist die <strong>Peilung</strong> in Grad von Norden aus (0° Nord, 90° Ost, 180° Süd, 270° West). Sie bezieht sich auf geografisch Nord. Ein Magnetkompass zeigt in Deutschland wenige Grad daneben.</li>
             <li>Wegpunkte sind nur auf diesem Gerät im Browser gespeichert. Sichere sie als Datei, wenn sie wichtig sind.</li>
             <li>Beim Notruf zuerst den Ort beschreiben. Koordinaten helfen zusätzlich, besonders in Dezimalgrad oder UTM mit Zone und Band.</li>
           </ul>

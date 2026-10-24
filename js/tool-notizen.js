@@ -18,6 +18,9 @@
   var cur = null;        // { type: 'notizen'|'tagebuch', item: {...}, isNew: bool }
   var timer = null;
 
+  // Die Übersetzungs-Engine überspringt <textarea>: Platzhalter hier selbst übersetzen
+  OA.$$('textarea[placeholder]').forEach(function (ta) { ta.placeholder = OA.t(ta.getAttribute('placeholder')); });
+
   function mode() { return OA.segVal(el.mode); }
 
   function persist(key) {
@@ -35,14 +38,16 @@
     items = items.filter(function (it) { return !q || ((it.title || '') + ' ' + it.text).toLowerCase().indexOf(q) >= 0; });
 
     if (!items.length) {
-      el.list.innerHTML = '<div class="empty">' + (q ? 'Nichts gefunden.' : m === 'notizen' ? 'Noch keine Notizen.' : 'Noch keine Einträge.<br>Tippe auf „Heute schreiben“.') + '</div>';
+      el.list.innerHTML = '<div class="empty">' + (q ? OA.esc(OA.t('Nichts gefunden.')) : m === 'notizen' ? OA.esc(OA.t('Noch keine Notizen.')) :
+        OA.esc(OA.t('Noch keine Einträge.')) + '<br>' + OA.esc(OA.t('Tippe auf „Heute schreiben“.'))) + '</div>';
     } else {
       el.list.innerHTML = items.map(function (it) {
-        var title = m === 'notizen' ? (it.title || snippet(it.text).slice(0, 60) || '(ohne Titel)') : N.dateLong(it.date) + (it.date === today ? ' · heute' : '');
-        var sub = m === 'notizen' ? N.dateTime(it.updated) : '';
-        return '<button type="button" class="entry" data-id="' + OA.esc(it.id) + '"><div class="t">' + OA.esc(title) + '</div>' +
-          (sub ? '<div class="d">' + OA.esc(sub) + '</div>' : '') +
-          '<div class="s">' + OA.esc(snippet(it.text)) + '</div></button>';
+        var title = m === 'notizen' ? (it.title || snippet(it.text).slice(0, 60) || OA.t('(ohne Titel)'))
+          : (it.date === today ? OA.t('{0} · heute', [N.dateLong(it.date, OA.locale)]) : N.dateLong(it.date, OA.locale));
+        var sub = m === 'notizen' ? N.dateTime(it.updated, OA.locale) : '';
+        return '<button type="button" class="entry" data-id="' + OA.esc(it.id) + '"><div class="t" data-notranslate>' + OA.esc(title) + '</div>' +
+          (sub ? '<div class="d" data-notranslate>' + OA.esc(sub) + '</div>' : '') +
+          '<div class="s" data-notranslate>' + OA.esc(snippet(it.text)) + '</div></button>';
       }).join('');
     }
     renderPrint(m);
@@ -50,19 +55,19 @@
 
   function applyMode() {
     var m = mode();
-    el.newBtn.textContent = m === 'notizen' ? 'Neue Notiz' : 'Heute schreiben';
-    el.q.placeholder = m === 'notizen' ? 'Notizen durchsuchen' : 'Tagebuch durchsuchen';
+    el.newBtn.textContent = OA.t(m === 'notizen' ? 'Neue Notiz' : 'Heute schreiben');
+    el.q.placeholder = OA.t(m === 'notizen' ? 'Notizen durchsuchen' : 'Tagebuch durchsuchen');
     el.otherDay.hidden = m !== 'tagebuch';
-    el.printBtn.textContent = m === 'notizen' ? 'Notizen drucken' : 'Tagebuch drucken';
+    el.printBtn.textContent = OA.t(m === 'notizen' ? 'Notizen drucken' : 'Tagebuch drucken');
     renderList();
   }
 
   function renderPrint(m) {
     var items = m === 'notizen' ? N.sortNotes(data.notizen) : N.sortEntries(data.tagebuch);
-    el.printView.innerHTML = '<h1>' + (m === 'notizen' ? 'Notizen' : 'Tagebuch') + '</h1><p>Gedruckt am ' + OA.esc(N.dateLong(OA.today())) + '</p>' +
+    el.printView.innerHTML = '<h1>' + OA.esc(OA.t(m === 'notizen' ? 'Notizen' : 'Tagebuch')) + '</h1><p>' + OA.esc(OA.t('Gedruckt am {0}', [N.dateLong(OA.today(), OA.locale)])) + '</p>' +
       items.map(function (it) {
-        var head = m === 'notizen' ? (it.title || '(ohne Titel)') + ' · ' + N.dateTime(it.updated) : N.dateLong(it.date);
-        return '<div class="p-item"><h2>' + OA.esc(head) + '</h2><p class="p-text">' + OA.esc(it.text) + '</p></div>';
+        var head = m === 'notizen' ? (it.title || OA.t('(ohne Titel)')) + ' · ' + N.dateTime(it.updated, OA.locale) : N.dateLong(it.date, OA.locale);
+        return '<div class="p-item"><h2 data-notranslate>' + OA.esc(head) + '</h2><p class="p-text" data-notranslate>' + OA.esc(it.text) + '</p></div>';
       }).join('');
   }
 
@@ -75,7 +80,7 @@
       ? { id: N.newId(), title: '', text: '', created: now, updated: now }
       : { id: date, date: date, text: '', created: now, updated: now };
     cur = { type: type, item: item, isNew: isNew };
-    el.edHead.textContent = type === 'notizen' ? (isNew ? 'Neue Notiz' : 'Notiz') : N.dateLong(item.date);
+    el.edHead.textContent = type === 'notizen' ? OA.t(isNew ? 'Neue Notiz' : 'Notiz') : N.dateLong(item.date, OA.locale);
     el.titleField.hidden = type !== 'notizen';
     el.edTitle.value = item.title || '';
     el.edText.value = item.text;
@@ -102,12 +107,12 @@
     cur.isNew = false;
     var ok = persist(cur.type);
     el.saveState.className = 'save-state' + (ok ? '' : ' err');
-    el.saveState.textContent = ok ? 'Gespeichert ✓ ' + N.dateTime(Date.now()).slice(11) + ' Uhr'
-      : 'Speicher blockiert, bitte Export nutzen.';
+    el.saveState.textContent = ok ? OA.t('Gespeichert ✓ {0} Uhr', [N.timeOf(Date.now())])
+      : OA.t('Speicher blockiert, bitte Export nutzen.');
   }
 
   function scheduleSave() {
-    el.saveState.className = 'save-state'; el.saveState.textContent = 'Speichern …';
+    el.saveState.className = 'save-state'; el.saveState.textContent = OA.t('Speichern …');
     clearTimeout(timer); timer = setTimeout(saveNow, 600);
   }
 
@@ -138,8 +143,9 @@
   });
   $('#delBtn').addEventListener('click', function () {
     if (!cur) return;
-    var label = cur.type === 'notizen' ? 'Diese Notiz' : 'Dieser Tagebucheintrag';
-    if (!confirm(label + ' wirklich löschen? Das kann nicht rückgängig gemacht werden.')) return;
+    var key = cur.type === 'notizen' ? 'Diese Notiz wirklich löschen? Das kann nicht rückgängig gemacht werden.'
+      : 'Dieser Tagebucheintrag wirklich löschen? Das kann nicht rückgängig gemacht werden.';
+    if (!confirm(OA.t(key))) return;
     clearTimeout(timer);
     if (!cur.isNew) removeCurrent();
     cur = null;
@@ -171,20 +177,21 @@
   $('#expJson').addEventListener('click', function () {
     OA.download('notizen-' + OA.today() + '.json',
       JSON.stringify({ app: 'offline-ark-notizen', version: 1, exported: OA.today(), notizen: data.notizen, tagebuch: data.tagebuch }, null, 2));
-    say('Export gestartet (.json).');
+    say(OA.t('Export gestartet (.json).'));
   });
   $('#expTxt').addEventListener('click', function () {
-    OA.download('notizen-' + OA.today() + '.txt', '\ufeff' + N.toText(data.notizen, data.tagebuch, OA.today()), 'text/plain;charset=utf-8');
-    say('Export gestartet (.txt).');
+    OA.download('notizen-' + OA.today() + '.txt', '\ufeff' + N.toText(data.notizen, data.tagebuch, OA.today(), { t: OA.t, locale: OA.locale }), 'text/plain;charset=utf-8');
+    say(OA.t('Export gestartet (.txt).'));
   });
   $('#impJson').addEventListener('click', function () {
     OA.pickFile('.json,application/json', function (text) {
       var r;
-      try { r = N.parseImport(text); } catch (err) { say('Import nicht möglich: ' + err.message); return; }
+      try { r = N.parseImport(text); } catch (err) { say(OA.t('Import nicht möglich: {0}', [OA.t(err.message)])); return; }
       data.notizen = N.mergeById(data.notizen, r.notizen);
       data.tagebuch = N.mergeById(data.tagebuch, r.tagebuch);
       persist('notizen'); persist('tagebuch');
-      say(r.notizen.length + ' Notizen und ' + r.tagebuch.length + ' Tagebucheinträge übernommen' + (r.skipped ? ' (' + r.skipped + ' ungültige übersprungen).' : '.'));
+      say(r.skipped ? OA.t('{0} Notizen und {1} Tagebucheinträge übernommen ({2} ungültige übersprungen).', [r.notizen.length, r.tagebuch.length, r.skipped])
+        : OA.t('{0} Notizen und {1} Tagebucheinträge übernommen.', [r.notizen.length, r.tagebuch.length]));
       renderList();
     });
   });

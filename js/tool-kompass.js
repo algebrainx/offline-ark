@@ -8,8 +8,18 @@
               ['S', 'Süden'], ['SW', 'Südwesten'], ['W', 'Westen'], ['NW', 'Nordwesten']];
 
   function norm(d) { return ((d % 360) + 360) % 360; }
-  /** Himmelsrichtung (8 Sektoren) für eine Gradzahl. */
-  function dirName(deg) { return DIRS[Math.round(norm(deg) / 45) % 8]; }
+  function dirIndex(deg) { return Math.round(norm(deg) / 45) % 8; }
+  /** Himmelsrichtung (8 Sektoren, deutsch) für eine Gradzahl: [Kürzel, Name]. */
+  function dirName(deg) { return DIRS[dirIndex(deg)]; }
+
+  /* Kürzel je Sprache (gleiche Reihenfolge wie DIRS); Arabisch zeigt nur den ausgeschriebenen Namen */
+  var SHORT = {
+    de: ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'],
+    en: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+    es: ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'],
+    ar: ['', '', '', '', '', '', '', '']
+  };
+  var ROSE = { de: ['N', 'O', 'S', 'W'], en: ['N', 'E', 'S', 'W'], es: ['N', 'E', 'S', 'O'], ar: ['ش', 'ق', 'ج', 'غ'] };
 
   /* Kompasskurs aus Alpha/Beta/Gamma. Liegt das Gerät eher flach, zeigt die Oberkante des Geräts die Richtung;
    * steht es eher aufrecht, die Rückseite (Kamera). So bleibt die Anzeige in beiden Haltungen stabil. */
@@ -27,7 +37,7 @@
     return norm(Math.atan2(east, north) / r);
   }
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = { dirName: dirName, headingFromEuler: headingFromEuler, norm: norm };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { dirName: dirName, dirIndex: dirIndex, headingFromEuler: headingFromEuler, norm: norm };
   if (typeof document === 'undefined') return;
 
   var OA = window.OA;
@@ -43,16 +53,18 @@
       var major = a % 30 === 0;
       svg += '<line class="tick' + (major ? ' major' : '') + '" x1="120" y1="' + (major ? 20 : 24) + '" x2="120" y2="30" transform="rotate(' + a + ' 120 120)"/>';
     }
-    [['N', 0], ['O', 90], ['S', 180], ['W', 270]].forEach(function (l) {
+    var letters = ROSE[OA.lang] || ROSE.de;
+    [[letters[0], 0, 'n'], [letters[1], 90, ''], [letters[2], 180, ''], [letters[3], 270, '']].forEach(function (l) {
       var rad = l[1] * Math.PI / 180, x = 120 + 76 * Math.sin(rad), y = 120 - 76 * Math.cos(rad);
-      svg += '<text class="' + (l[0] === 'N' ? 'n' : '') + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" transform="rotate(' + l[1] + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' + l[0] + '</text>';
+      svg += '<text data-notranslate class="' + l[2] + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" transform="rotate(' + l[1] + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' + l[0] + '</text>';
     });
     el.ticks.innerHTML = svg;
   })();
 
   var active = false, gotAbs = false, smooth = null, raf = 0, timeout = 0, accuracy = null;
 
-  function showMsg(text) { el.msg.hidden = !text; if (text) el.msg.innerHTML = '<strong>Hinweis</strong>' + text; }
+  function showMsg(text) { el.msg.hidden = !text; if (text) el.msg.innerHTML = '<strong>' + OA.esc(OA.t('Hinweis')) + '</strong>' + text; }
+  function para(key) { return '<p style="margin:2px 0 0">' + OA.esc(OA.t(key)) + '</p>'; }
 
   function screenAngle() {
     if (screen.orientation && typeof screen.orientation.angle === 'number') return screen.orientation.angle;
@@ -63,10 +75,10 @@
     raf = 0;
     if (smooth === null) return;
     el.rose.setAttribute('transform', 'rotate(' + (-smooth).toFixed(1) + ' 120 120)');
-    var d = Math.round(smooth) % 360, n = dirName(smooth);
+    var d = Math.round(smooth) % 360, i = dirIndex(smooth), short = (SHORT[OA.lang] || SHORT.de)[i];
     el.deg.textContent = d;
-    el.dir.textContent = '° ' + n[0];
-    el.name.textContent = n[1] + (accuracy !== null && (accuracy < 0 || accuracy > 25) ? ' · ungenau – bitte kalibrieren (Acht schwenken)' : '');
+    el.dir.textContent = short ? '° ' + short : '°';
+    el.name.textContent = OA.t(DIRS[i][1]) + (accuracy !== null && (accuracy < 0 || accuracy > 25) ? ' ' + OA.t('· ungenau – bitte kalibrieren (Acht schwenken)') : '');
   }
 
   function onHeading(h, acc) {
@@ -75,7 +87,7 @@
     accuracy = typeof acc === 'number' && !isNaN(acc) ? acc : null;
     h = norm(h + screenAngle());
     if (smooth === null) smooth = h;
-    else     smooth = norm(smooth + (((h - smooth + 540) % 360) - 180) * 0.25);   // glätten, ohne bei 0°/360° zu springen
+    else smooth = norm(smooth + (((h - smooth + 540) % 360) - 180) * 0.25);   // glätten, ohne bei 0°/360° zu springen
     if (!raf) raf = requestAnimationFrame(render);
   }
 
@@ -96,14 +108,14 @@
     window.addEventListener('deviceorientationabsolute', onAbs, true);
     window.addEventListener('deviceorientation', onOri, true);
     active = true;
-    el.go.textContent = 'Kompass stoppen';
+    el.go.textContent = OA.t('Kompass stoppen');
     el.go.classList.remove('primary');
-    el.name.textContent = 'Warte auf Sensor …';
+    el.name.textContent = OA.t('Warte auf Sensor …');
     // Kommt nach einigen Sekunden nichts an, gibt es keinen Sensor (z. B. Laptop)
     timeout = setTimeout(function () {
       stop();
-      showMsg('<p style="margin:2px 0 0">Auf diesem Gerät kommen keine Kompassdaten an. Das ist z. B. bei Laptops und PCs normal. Manche Browser sperren den Sensor bei lokalen Dateien oder fragen nach einer Erlaubnis. Nutze am Handy einen anderen Browser oder die Anleitungen ohne Kompass unten.</p>');
-      el.name.textContent = 'Kein Sensor verfügbar.';
+      showMsg(para('Auf diesem Gerät kommen keine Kompassdaten an. Das ist z. B. bei Laptops und PCs normal. Manche Browser sperren den Sensor bei lokalen Dateien oder fragen nach einer Erlaubnis. Nutze am Handy einen anderen Browser oder die Anleitungen ohne Kompass unten.'));
+      el.name.textContent = OA.t('Kein Sensor verfügbar.');
     }, 3500);
   }
 
@@ -112,17 +124,17 @@
     window.removeEventListener('deviceorientation', onOri, true);
     clearTimeout(timeout);
     active = false; gotAbs = false;
-    el.go.textContent = 'Kompass starten';
+    el.go.textContent = OA.t('Kompass starten');
     el.go.classList.add('primary');
   }
 
   el.go.addEventListener('click', function () {
-    if (active) { stop(); el.name.textContent = 'Kompass gestoppt.'; return; }
+    if (active) { stop(); el.name.textContent = OA.t('Kompass gestoppt.'); return; }
     showMsg('');
     smooth = null;
     if (typeof window.DeviceOrientationEvent === 'undefined') {
-      showMsg('<p style="margin:2px 0 0">Dieser Browser unterstützt keine Orientierungssensoren. Nutze die Anleitungen ohne Kompass unten.</p>');
-      el.name.textContent = 'Kein Sensor verfügbar.';
+      showMsg(para('Dieser Browser unterstützt keine Orientierungssensoren. Nutze die Anleitungen ohne Kompass unten.'));
+      el.name.textContent = OA.t('Kein Sensor verfügbar.');
       return;
     }
     var DOE = window.DeviceOrientationEvent;
@@ -130,11 +142,11 @@
       DOE.requestPermission().then(function (state) {
         if (state === 'granted') listen();
         else {
-          showMsg('<p style="margin:2px 0 0">Zugriff auf Bewegungssensoren wurde abgelehnt. In den Browser-Einstellungen „Bewegung und Ausrichtung“ erlauben, dann die Seite neu laden.</p>');
-          el.name.textContent = 'Zugriff abgelehnt.';
+          showMsg(para('Zugriff auf Bewegungssensoren wurde abgelehnt. In den Browser-Einstellungen „Bewegung und Ausrichtung“ erlauben, dann die Seite neu laden.'));
+          el.name.textContent = OA.t('Zugriff abgelehnt.');
         }
       }).catch(function () {
-        showMsg('<p style="margin:2px 0 0">Der Sensor konnte nicht freigeschaltet werden. Seite neu laden und erneut versuchen.</p>');
+        showMsg(para('Der Sensor konnte nicht freigeschaltet werden. Seite neu laden und erneut versuchen.'));
       });
     } else {
       listen();

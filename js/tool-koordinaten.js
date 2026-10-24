@@ -88,7 +88,29 @@
   }
   var DIRS = [['N', 'Norden'], ['NO', 'Nordosten'], ['O', 'Osten'], ['SO', 'Südosten'],
               ['S', 'Süden'], ['SW', 'Südwesten'], ['W', 'Westen'], ['NW', 'Nordwesten']];
-  function dirName(deg) { return DIRS[Math.round((((deg % 360) + 360) % 360) / 45) % 8]; }
+  function dirIndex(deg) { return Math.round((((deg % 360) + 360) % 360) / 45) % 8; }
+  function dirName(deg) { return DIRS[dirIndex(deg)]; }
+
+  /* ---------- Sprache (nur für Anzeige und Buchstaben-Eingabe) ---------- */
+  function lang() { return (typeof window !== 'undefined' && window.OA && window.OA.lang) || 'de'; }
+  function locale() { return (typeof window !== 'undefined' && window.OA && window.OA.locale) || 'de-DE'; }
+  /** Anzeigebuchstabe für N, S, E (Ost) oder W (West): de N/S/O/W, es N/S/E/O, sonst N/S/E/W */
+  function hemLetter(h) {
+    var l = lang();
+    if (h === 'E') return l === 'de' ? 'O' : 'E';
+    if (h === 'W') return l === 'es' ? 'O' : 'W';
+    return h;
+  }
+  /** Eingegebenen Buchstaben als 'N', 'S', 'E', 'W' deuten (O = Ost, im Spanischen aber Oeste = West). */
+  function hemFromLetter(ch) {
+    var c = String(ch).toUpperCase();
+    if (c === 'N' || c === 'ش') return 'N';
+    if (c === 'S' || c === 'ج') return 'S';
+    if (c === 'E' || c === 'ق') return 'E';
+    if (c === 'W' || c === 'غ') return 'W';
+    if (c === 'O') return lang() === 'es' ? 'W' : 'E';
+    return null;
+  }
 
   /* ---------- Formate ---------- */
   function toDMS(value) {
@@ -97,16 +119,19 @@
     var d = Math.floor(total / 3600), m = Math.floor((total - d * 3600) / 60), s = Math.round((total - d * 3600 - m * 60) * 10) / 10;
     return { deg: d, min: m, sec: s, neg: value < 0 };
   }
-  function comma(x, digits) { return x.toFixed(digits).replace('.', ','); }
+  /** Zahl mit fester Nachkommastellenzahl im Dezimalformat der Sprache (ohne Tausendertrenner). */
+  function comma(x, digits) {
+    return x.toLocaleString(locale(), { minimumFractionDigits: digits, maximumFractionDigits: digits, useGrouping: false });
+  }
   function fmtDecimal(lat, lon) {
-    return comma(Math.abs(lat), 5) + '° ' + (lat < 0 ? 'S' : 'N') + ' · ' + comma(Math.abs(lon), 5) + '° ' + (lon < 0 ? 'W' : 'O');
+    return comma(Math.abs(lat), 5) + '° ' + hemLetter(lat < 0 ? 'S' : 'N') + ' · ' + comma(Math.abs(lon), 5) + '° ' + hemLetter(lon < 0 ? 'W' : 'E');
   }
   function fmtDMS(lat, lon) {
     function one(v, pos, neg) {
       var p = toDMS(v);
-      return p.deg + '° ' + p.min + '′ ' + comma(p.sec, 1) + '″ ' + (p.neg ? neg : pos);
+      return p.deg + '° ' + p.min + '′ ' + comma(p.sec, 1) + '″ ' + hemLetter(p.neg ? neg : pos);
     }
-    return one(lat, 'N', 'S') + ' · ' + one(lon, 'O', 'W');
+    return one(lat, 'N', 'S') + ' · ' + one(lon, 'E', 'W');
   }
   function fmtUTM(lat, lon) {
     var u = toUTM(lat, lon);
@@ -122,12 +147,13 @@
   /** Einzelne Dezimalzahl mit optionalem Vorzeichen/Hemisphärenbuchstaben. isLat: N/S, sonst O/E/W. */
   function parseDecimalPart(text, isLat) {
     var s = String(text == null ? '' : text).trim().toUpperCase().replace(/[−–]/g, '-').replace('°', '');
-    var m = /^([NSEOW])?\s*(-?\s*\d+(?:[.,]\d+)?)\s*([NSEOW])?$/.exec(s);
+    var m = /^([NSEOWشجقغ])?\s*(-?\s*\d+(?:[.,]\d+)?)\s*([NSEOWشجقغ])?$/.exec(s);
     if (!m) return NaN;
     var letter = m[1] || m[3] || '', v = num(m[2]);
-    if (isLat && (letter === 'E' || letter === 'O' || letter === 'W')) return NaN;
-    if (!isLat && (letter === 'N' || letter === 'S')) return NaN;
-    if (letter === 'S' || letter === 'W') v = -Math.abs(v);
+    var h = letter ? hemFromLetter(letter) : null;
+    if (isLat && (h === 'E' || h === 'W')) return NaN;
+    if (!isLat && (h === 'N' || h === 'S')) return NaN;
+    if (h === 'S' || h === 'W') v = -Math.abs(v);
     return v;
   }
   function validLatLon(lat, lon) {
@@ -159,8 +185,12 @@
     }
     var nums = [], starts = [], re = /\d+(?:[.,]\d+)?/g, mm;
     while ((mm = re.exec(s))) { nums.push(mm[0]); starts.push(mm.index); }
-    var up = s.toUpperCase().replace(/SEK/g, '');
-    var south = /S/.test(up), west = /W/.test(up);
+    var up = s.toUpperCase().replace(/SEK|SEC/g, '');
+    var south = false, west = false;
+    (up.match(/[NSEOWشجقغ]/g) || []).forEach(function (ch) {
+      var h = hemFromLetter(ch);
+      if (h === 'S') south = true; else if (h === 'W') west = true;
+    });
     var parts = null, k = nums.length, second = k / 2;
     if (k === 2) parts = [[nums[0]], [nums[1]]];
     else if (k === 4) parts = [nums.slice(0, 2), nums.slice(2)];
@@ -267,25 +297,25 @@
     return utmToPoint(zb.zone, zb.band, e, nn);
   }
 
-  function row(k, v) { return '<div class="fmtrow"><div class="k">' + OA.esc(k) + '</div><div class="v">' + OA.esc(v) + '</div></div>'; }
+  function row(k, v) { return '<div class="fmtrow"><div class="k">' + OA.esc(k) + '</div><div class="v ltr" data-notranslate>' + OA.esc(v) + '</div></div>'; }
 
   function renderOut() {
     if (!current) {
-      el.out.innerHTML = '<p class="muted" style="margin:0">Position eingeben oder per GPS holen. Dann erscheint sie hier in allen Formaten.</p>';
+      el.out.innerHTML = '<p class="muted" style="margin:0">' + OA.esc(OA.t('Position eingeben oder per GPS holen. Dann erscheint sie hier in allen Formaten.')) + '</p>';
       return;
     }
     var utm = fmtUTM(current.lat, current.lon);
     el.out.innerHTML =
-      row('Dezimalgrad', fmtDecimal(current.lat, current.lon)) +
-      row('Grad, Minuten, Sekunden', fmtDMS(current.lat, current.lon)) +
-      row('UTM (WGS84)', utm || 'nicht möglich (UTM gilt von 80° S bis 84° N)') +
+      row(OA.t('Dezimalgrad'), fmtDecimal(current.lat, current.lon)) +
+      row(OA.t('Grad, Minuten, Sekunden'), fmtDMS(current.lat, current.lon)) +
+      row(OA.t('UTM (WGS84)'), utm || OA.t('nicht möglich (UTM gilt von 80° S bis 84° N)')) +
       (gpsInfo ? '<div class="hint">' + OA.esc(gpsInfo) + '</div>' : '');
   }
 
   function distText(m) {
-    if (m < 1000) return [OA.fmt(Math.round(m), 0), 'Meter'];
-    if (m < 100000) return [OA.fmt(m / 1000, 1), 'Kilometer'];
-    return [OA.fmt(Math.round(m / 1000), 0), 'Kilometer'];
+    if (m < 1000) return [OA.fmt(Math.round(m), 0), OA.t('Meter')];
+    if (m < 100000) return [OA.fmt(m / 1000, 1), OA.t('Kilometer')];
+    return [OA.fmt(Math.round(m / 1000), 0), OA.t('Kilometer')];
   }
 
   function renderTarget() {
@@ -294,22 +324,22 @@
     el.arrow.setAttribute('transform', 'rotate(0 50 50)');
     if (!txt || (t && t.error)) {
       el.distNum.textContent = '–'; el.distUnit.textContent = '';
-      el.targetMsg.textContent = t && t.error ? t.error : 'Start ist die Position oben. Das Ziel in Dezimalgrad, Grad Min Sek oder UTM eingeben.';
-      el.distCap.textContent = 'Start und Ziel eingeben.';
+      el.targetMsg.textContent = OA.t(t && t.error ? t.error : 'Start ist die Position oben. Das Ziel in Dezimalgrad, Grad Min Sek oder UTM eingeben.');
+      el.distCap.textContent = OA.t('Start und Ziel eingeben.');
       return;
     }
-    el.targetMsg.textContent = 'Ziel: ' + fmtDecimal(t.lat, t.lon);
+    el.targetMsg.textContent = OA.t('Ziel: {0}', ['\u2066' + fmtDecimal(t.lat, t.lon) + '\u2069']);   // LTR-Isolat: Koordinaten bleiben im arabischen Satz heil
     if (!current) {
       el.distNum.textContent = '–'; el.distUnit.textContent = '';
-      el.distCap.textContent = 'Startposition fehlt: oben Position eingeben oder GPS holen.';
+      el.distCap.textContent = OA.t('Startposition fehlt: oben Position eingeben oder GPS holen.');
       return;
     }
     var m = distance(current.lat, current.lon, t.lat, t.lon);
     var b = bearing(current.lat, current.lon, t.lat, t.lon), d = dirName(b);
     var dt = distText(m);
     el.distNum.textContent = dt[0]; el.distUnit.textContent = dt[1];
-    if (m < 1) { el.distCap.textContent = 'Du bist am Ziel.'; return; }
-    el.distCap.textContent = 'Richtung ' + Math.round(b) % 360 + '° (' + d[0] + ', ' + d[1] + ') · Luftlinie, Richtwert';
+    if (m < 1) { el.distCap.textContent = OA.t('Du bist am Ziel.'); return; }
+    el.distCap.textContent = OA.t('Richtung {0}° ({1}) · Luftlinie, Richtwert', [Math.round(b) % 360, OA.t(d[1])]);
     el.arrow.setAttribute('transform', 'rotate(' + b.toFixed(1) + ' 50 50)');
   }
 
@@ -322,7 +352,7 @@
 
   function onInput() {
     var f = OA.segVal(el.fmt), r = readInput();
-    el.inErr.textContent = r.error || '';
+    el.inErr.textContent = r.error ? OA.t(r.error) : '';
     gpsInfo = '';
     setCurrent(r.error || r.empty ? null : r, f);
   }
@@ -350,20 +380,22 @@
 
   /* ---------- GPS ---------- */
   function geoError(err) {
-    if (err && err.code === 1) return 'Standortzugriff verweigert. Erlaube ihn in den Browser- oder Geräteeinstellungen für diese Seite – oder gib die Position oben selbst ein.';
-    if (err && err.code === 3) return 'Zeitüberschreitung: Noch keine Position gefunden. Gehe ins Freie mit freiem Blick zum Himmel und versuche es erneut. Das kann eine Minute dauern.';
-    return 'Position nicht verfügbar. GPS braucht freien Himmel (nicht im Gebäude). Versuche es draußen noch einmal oder gib die Position selbst ein.';
+    if (err && err.code === 1) return OA.t('Standortzugriff verweigert. Erlaube ihn in den Browser- oder Geräteeinstellungen für diese Seite – oder gib die Position oben selbst ein.');
+    if (err && err.code === 3) return OA.t('Zeitüberschreitung: Noch keine Position gefunden. Gehe ins Freie mit freiem Blick zum Himmel und versuche es erneut. Das kann eine Minute dauern.');
+    return OA.t('Position nicht verfügbar. GPS braucht freien Himmel (nicht im Gebäude). Versuche es draußen noch einmal oder gib die Position selbst ein.');
   }
   el.go.addEventListener('click', function () {
-    if (!navigator.geolocation) { el.gpsMsg.textContent = 'Dieses Gerät oder dieser Browser bietet keine Standortfunktion. Position bitte selbst eingeben.'; return; }
+    if (!navigator.geolocation) { el.gpsMsg.textContent = OA.t('Dieses Gerät oder dieser Browser bietet keine Standortfunktion. Position bitte selbst eingeben.'); return; }
     el.go.disabled = true;
-    el.gpsMsg.textContent = 'Suche Position … funktioniert ohne Internet, kann draußen aber bis zu einer Minute dauern.';
+    el.gpsMsg.textContent = OA.t('Suche Position … funktioniert ohne Internet, kann draußen aber bis zu einer Minute dauern.');
     navigator.geolocation.getCurrentPosition(function (p) {
       el.go.disabled = false;
       var c = p.coords, now = new Date();
-      gpsInfo = 'GPS-Position um ' + OA.pad(now.getHours()) + ':' + OA.pad(now.getMinutes()) + ' Uhr, Genauigkeit ±' + OA.fmt(c.accuracy, 0) + ' m' +
-        (c.altitude != null && isFinite(c.altitude) ? ', Höhe ca. ' + OA.fmt(c.altitude, 0) + ' m' : '') + '.';
-      el.gpsMsg.textContent = c.accuracy > 100 ? 'Position gefunden, aber ungenau (±' + OA.fmt(c.accuracy, 0) + ' m). Ins Freie gehen und erneut versuchen.' : 'Position gefunden.';
+      var time = OA.pad(now.getHours()) + ':' + OA.pad(now.getMinutes());
+      gpsInfo = c.altitude != null && isFinite(c.altitude)
+        ? OA.t('GPS-Position um {0} Uhr, Genauigkeit ±{1} m, Höhe ca. {2} m.', [time, OA.fmt(c.accuracy, 0), OA.fmt(c.altitude, 0)])
+        : OA.t('GPS-Position um {0} Uhr, Genauigkeit ±{1} m.', [time, OA.fmt(c.accuracy, 0)]);
+      el.gpsMsg.textContent = c.accuracy > 100 ? OA.t('Position gefunden, aber ungenau (±{0} m). Ins Freie gehen und erneut versuchen.', [OA.fmt(c.accuracy, 0)]) : OA.t('Position gefunden.');
       el.inErr.textContent = '';
       setCurrent({ lat: c.latitude, lon: c.longitude });
     }, function (err) {
@@ -379,21 +411,21 @@
   if (!Array.isArray(wps)) wps = [];
 
   function renderWps() {
-    if (!wps.length) { el.wpList.innerHTML = '<p class="muted" style="margin:12px 0 0">Noch keine Wegpunkte gespeichert.</p>'; el.wpExport.disabled = true; return; }
+    if (!wps.length) { el.wpList.innerHTML = '<p class="muted" style="margin:12px 0 0">' + OA.esc(OA.t('Noch keine Wegpunkte gespeichert.')) + '</p>'; el.wpExport.disabled = true; return; }
     el.wpExport.disabled = false;
     el.wpList.innerHTML = wps.map(function (w, i) {
-      return '<div class="wp"><div class="info"><div class="name">' + OA.esc(w.name) + '</div><div class="co">' +
-        OA.esc(fmtDecimal(w.lat, w.lon)) + '</div><div class="co">UTM ' + OA.esc(fmtUTM(w.lat, w.lon) || '–') + '</div></div>' +
-        '<button type="button" class="btn sm" data-act="target" data-i="' + i + '">Als Ziel</button>' +
-        '<button type="button" class="btn sm danger" data-act="del" data-i="' + i + '" aria-label="' + OA.esc(w.name) + ' löschen">Löschen</button></div>';
+      return '<div class="wp"><div class="info"><div class="name" data-notranslate>' + OA.esc(w.name) + '</div><div class="co ltr" data-notranslate>' +
+        OA.esc(fmtDecimal(w.lat, w.lon)) + '</div><div class="co ltr" data-notranslate>UTM ' + OA.esc(fmtUTM(w.lat, w.lon) || '–') + '</div></div>' +
+        '<button type="button" class="btn sm" data-act="target" data-i="' + i + '">' + OA.esc(OA.t('Als Ziel')) + '</button>' +
+        '<button type="button" class="btn sm danger" data-act="del" data-i="' + i + '" aria-label="' + OA.esc(OA.t('{0} löschen', [w.name])) + '">' + OA.esc(OA.t('Löschen')) + '</button></div>';
     }).join('');
   }
   function saveWps() { OA.store.set('wegpunkte', wps); }
 
   el.wpSave.addEventListener('click', function () {
-    if (!current) { el.wpErr.textContent = 'Zuerst oben eine Position eingeben oder per GPS holen.'; return; }
+    if (!current) { el.wpErr.textContent = OA.t('Zuerst oben eine Position eingeben oder per GPS holen.'); return; }
     el.wpErr.textContent = '';
-    var name = el.wpName.value.trim() || 'Wegpunkt ' + (wps.length + 1);
+    var name = el.wpName.value.trim() || OA.t('Wegpunkt {0}', [wps.length + 1]);
     wps.push({ id: Date.now().toString(36), name: name, lat: current.lat, lon: current.lon, t: new Date().toISOString() });
     saveWps(); renderWps();
     el.wpName.value = '';
@@ -406,7 +438,7 @@
       el.target.value = comma(w.lat, 5) + '; ' + comma(w.lon, 5);
       renderTarget(); save();
       el.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else if (confirm('Wegpunkt „' + w.name + '“ löschen?')) {
+    } else if (confirm(OA.t('Wegpunkt „{0}“ löschen?', [w.name]))) {
       wps.splice(i, 1); saveWps(); renderWps();
     }
   });
@@ -415,6 +447,7 @@
   });
 
   /* ---------- Start ---------- */
+  if (OA.lang === 'ar') $('#arrowN').textContent = 'ش';   // Norden-Buchstabe der Pfeil-Rose
   var s = OA.store.get('koordinaten', null);
   if (s) {
     if (s.tab) OA.segSet(el.fmt, s.tab);

@@ -51,7 +51,8 @@
     flash: '<path d="M7 3h10l-1 6H8zM8 9v12h8V9M12 12v3"/>',
     play: '<path d="M7 4l13 8-13 8z"/>',
     stop: '<rect x="6" y="6" width="12" height="12" rx="1"/>',
-    ark: '<path d="M3 15l2 4h14l2-4zM12 15V6M12 6l5 4h-5M7 15V12h10v3"/>'
+    ark: '<path d="M3 15l2 4h14l2-4zM12 15V6M12 6l5 4h-5M7 15V12h10v3"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
   };
 
   /** Liefert ein Inline-SVG; aria-hidden, weil Icons nur Dekoration sind. */

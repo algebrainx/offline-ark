@@ -1,10 +1,24 @@
 [
   {
     "file": "fm-4-25-11-first-aid.pdf",
-    "title": "FM 4-25.11 First Aid (US-Armee, Erste-Hilfe-Handbuch)",
-    "desc": "Umfassendes Erste-Hilfe-Handbuch, 227 Seiten",
-    "lang": "Englisch",
-    "license": "Gemeinfrei (US-Regierungswerk, \"Approved for public release\")",
+    "title": {
+      "de": "FM 4-25.11 First Aid (US-Armee, Erste-Hilfe-Handbuch)",
+      "en": "FM 4-25.11 First Aid (US Army first aid manual)",
+      "es": "FM 4-25.11 First Aid (manual de primeros auxilios del Ejército de EE. UU.)",
+      "ar": "FM 4-25.11 First Aid (دليل الإسعافات الأولية للجيش الأمريكي)"
+    },
+    "desc": {
+      "de": "Umfassendes Erste-Hilfe-Handbuch, 227 Seiten",
+      "en": "Comprehensive first aid manual, 227 pages",
+      "es": "Manual completo de primeros auxilios, 227 páginas",
+      "ar": "دليل شامل للإسعافات الأولية، 227 صفحة"
+    },
+    "license": {
+      "de": "Gemeinfrei (US-Regierungswerk, \"Approved for public release\")",
+      "en": "Public domain (US government work, \"Approved for public release\")",
+      "es": "Dominio público (obra del gobierno de EE. UU., «Approved for public release»)",
+      "ar": "ملك عام (عمل حكومي أمريكي، «Approved for public release»)"
+    },
     "url": "https://archive.org/download/fm-4-25-11-first-aid-c-1-2004/FM%204-25-11%20First%20Aid%20%28C1%29%20%282004%29.pdf",
     "source_page": "https://archive.org/details/fm-4-25-11-first-aid-c-1-2004"
   }

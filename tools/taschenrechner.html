@@ -6,10 +6,11 @@
   <title>Taschenrechner – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .calc { max-width: 460px; margin: 0 auto; }
-    .calc-display { text-align: right; padding: 6px 4px 14px; min-height: 108px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; }
+    /* Rechneranzeige bleibt wie ein echter Rechner rechtsbündig und links-nach-rechts, auch auf Arabisch */`r`n    .calc-display { direction: ltr; text-align: right; padding: 6px 4px 14px; min-height: 108px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; }
     .calc-flags { display: flex; gap: 6px; justify-content: flex-start; min-height: 26px; }
     .calc-expr { color: var(--text-2); font-size: 1.05rem; min-height: 1.6em; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
     .calc-out { font-size: clamp(2.2rem, 10vw, 3.1rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; min-height: 1.1em; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
@@ -33,7 +34,7 @@
     .key.eq:hover { background: var(--accent-press); filter: none; }
     .key.clear { color: var(--danger); font-weight: 600; }
     .calc-more { display: flex; justify-content: center; margin-bottom: 12px; }
-    .hist-item { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; min-height: 48px; padding: 8px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; cursor: pointer; text-align: left; }
+    .hist-item { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; min-height: 48px; padding: 8px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); font: inherit; cursor: pointer; text-align: start; }
     .hist-item:last-child { border-bottom: 0; }
     .hist-item span { overflow-wrap: anywhere; font-size: .95rem; }
     .hist-item strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -52,18 +53,18 @@
     <section class="card" aria-label="Rechner">
       <div class="calc-display" aria-live="polite">
         <div class="calc-flags">
-          <span class="chip" id="deg-chip">Grad</span>
+          <span class="chip" id="deg-chip" data-notranslate>Grad</span>
           <span class="chip" id="mem-chip" hidden>M</span>
         </div>
-        <div class="calc-expr" id="calc-expr">&nbsp;</div>
-        <div class="calc-out" id="calc-out">0</div>
+        <div class="calc-expr" id="calc-expr" dir="auto">&nbsp;</div>
+        <div class="calc-out" id="calc-out" dir="auto">0</div>
       </div>
 
       <div class="calc-more">
         <button type="button" class="btn sm" id="more-btn" aria-expanded="false" aria-controls="sci-panel">Mehr</button>
       </div>
 
-      <div class="calc-sci" id="sci-panel" hidden>
+      <div class="calc-sci" id="sci-panel" dir="ltr" hidden>
         <div class="seg" id="angle" data-local role="group" aria-label="Winkeleinheit">
           <button type="button" data-v="deg" aria-pressed="true">Grad (°)</button>
           <button type="button" data-v="rad" aria-pressed="false">Bogenmaß (rad)</button>
@@ -90,7 +91,7 @@
         <button type="button" class="key fn" data-k="mr" aria-label="Speicher abrufen">MR</button>
       </div>
 
-      <div class="calc-keys" id="calc-keys">
+      <div class="calc-keys" id="calc-keys" dir="ltr">
         <button type="button" class="key clear" data-k="clear" aria-label="Alles löschen">C</button>
         <button type="button" class="key op" data-k="open" aria-label="Klammer auf">(</button>
         <button type="button" class="key op" data-k="close" aria-label="Klammer zu">)</button>

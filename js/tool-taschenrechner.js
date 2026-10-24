@@ -266,6 +266,15 @@
     histClear: OA.$('#hist-clear')
   };
 
+  // Dezimalzeichen je Sprache (de/es: Komma, en/ar: Punkt); der Parser versteht beides
+  var DEC = (OA.lang === 'en' || OA.lang === 'ar') ? '.' : ',';
+  function loc(s) { return s.replace(/[.,]/g, DEC); }
+  function show(v) {
+    var s = fmtDisplay(v);                       // deutsch: 1.234,5
+    return DEC === ',' ? s : s.replace(/[.,]/g, function (c) { return c === '.' ? ',' : '.'; });
+  }
+  function inp(v) { return fmtInput(v).replace(',', DEC); }
+
   var saved = OA.store.get('taschenrechner', {}) || {};
   var S = {
     expr: '',                      // aktuelle Eingabe
@@ -290,27 +299,27 @@
     var big, preview = null;
     el.out.classList.toggle('err', !!S.error);
     if (S.error) {
-      big = S.error;
+      big = OA.t(S.error);
     } else if (S.fresh && S.result != null) {
-      big = fmtDisplay(S.result);
+      big = show(S.result);
     } else {
       preview = tryEval();
-      big = preview != null ? fmtDisplay(preview) : (S.expr ? '' : '0');
+      big = preview != null ? show(preview) : (S.expr ? '' : '0');
     }
     el.expr.textContent = S.expr ? S.expr + (S.fresh && !S.error ? ' =' : '') : '\u00a0';
     el.out.textContent = big || '\u00a0';
     el.out.classList.toggle('long', big.length > 11);
     el.out.classList.toggle('dim', !S.fresh && !S.error);
     el.mem.hidden = S.mem === 0;
-    el.deg.textContent = S.mode === 'deg' ? 'Grad' : 'Bogenmaß';
+    el.deg.textContent = OA.t(S.mode === 'deg' ? 'Grad' : 'Bogenmaß');
     // Tastatur-Leser: Ergebnis ansagen
-    el.out.setAttribute('aria-label', 'Ergebnis ' + big);
+    el.out.setAttribute('aria-label', OA.t('Ergebnis {0}', [big]));
   }
 
   function renderHist() {
     el.hist.innerHTML = S.hist.length ? S.hist.map(function (h, i) {
-      return '<button type="button" class="hist-item" data-i="' + i + '"><span class="muted">' + OA.esc(h.e) + ' =</span><strong>' + OA.esc(fmtDisplay(h.r)) + '</strong></button>';
-    }).join('') : '<p class="muted small" style="margin:0">Noch keine Rechnungen.</p>';
+      return '<button type="button" class="hist-item" data-i="' + i + '" data-notranslate><span class="muted ltr">' + OA.esc(loc(h.e)) + ' =</span><strong class="ltr">' + OA.esc(show(h.r)) + '</strong></button>';
+    }).join('') : '<p class="muted small" style="margin:0">' + OA.esc(OA.t('Noch keine Rechnungen.')) + '</p>';
     el.histClear.hidden = !S.hist.length;
   }
 
@@ -326,11 +335,11 @@
   /** Operator, Prozent … setzt nach „=“ mit dem Ergebnis fort. */
   function continueValue() {
     if (S.error) { S.expr = ''; S.fresh = false; S.error = ''; return; }
-    if (S.fresh) { S.expr = S.result < 0 ? '(' + fmtInput(S.result) + ')' : fmtInput(S.result); S.fresh = false; }
+    if (S.fresh) { S.expr = S.result < 0 ? '(' + inp(S.result) + ')' : inp(S.result); S.fresh = false; }
   }
   function appendValue(num) {          // MR, Verlauf
     startValue();
-    var s = fmtInput(num);
+    var s = inp(num);
     S.expr += num < 0 ? '(' + s + ')' : s;
   }
 
@@ -338,9 +347,9 @@
 
   function comma() {
     startValue();
-    var m = /[\d,]*$/.exec(S.expr)[0];
-    if (m.indexOf(',') >= 0) return;
-    S.expr += /\d$/.test(S.expr) ? ',' : '0,';
+    var m = /[\d.,]*$/.exec(S.expr)[0];
+    if (/[.,]/.test(m)) return;
+    S.expr += /\d$/.test(S.expr) ? DEC : '0' + DEC;
   }
 
   function operator(op) {
@@ -469,7 +478,7 @@
     var open = el.panel.hidden;
     el.panel.hidden = !open;
     el.more.setAttribute('aria-expanded', open ? 'true' : 'false');
-    el.more.textContent = open ? 'Weniger' : 'Mehr';
+    el.more.textContent = OA.t(open ? 'Weniger' : 'Mehr');
   });
 
   OA.segSet(el.angle, S.mode);
@@ -503,6 +512,7 @@
     press(action);
   });
 
+  OA.$('[data-k="comma"]').textContent = DEC;
   renderHist();
   render();
 })();

@@ -25,7 +25,7 @@
 
   function ui() {
     OA.$$('.mode', el.modes).forEach(function (b) { b.setAttribute('aria-checked', b.getAttribute('data-v') === mode ? 'true' : 'false'); });
-    el.brightVal.textContent = el.bright.value + ' %';
+    el.brightVal.textContent = OA.t('{0} %', [el.bright.value]);
     el.tempo.hidden = mode === 'white' || mode === 'red';
     el.warn.hidden = mode !== 'strobe';
     // Stroboskop startet nur nach ausdrücklicher Bestätigung (wird nicht gespeichert)
@@ -75,9 +75,9 @@
     var surface = document.createElement('div');
     surface.className = 'fullscreen-surface lamp-surface';
     surface.setAttribute('role', 'dialog');
-    surface.setAttribute('aria-label', 'Lampe an');
+    surface.setAttribute('aria-label', OA.t('Lampe an'));
     var close = document.createElement('button');
-    close.type = 'button'; close.className = 'lamp-close'; close.setAttribute('aria-label', 'Lampe ausschalten und schließen');
+    close.type = 'button'; close.className = 'lamp-close'; close.setAttribute('aria-label', OA.t('Lampe ausschalten und schließen'));
     close.innerHTML = OA.icon('close');
     surface.appendChild(close);
     document.body.appendChild(surface);

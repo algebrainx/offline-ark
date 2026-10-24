@@ -31,12 +31,12 @@
     var total = perPerson * persons * days;
 
     el.total.textContent = OA.fmt(total, 1);
-    el.perday.textContent = OA.fmt(perPerson, 1) + ' Liter pro Person und Tag · ' + OA.fmt(perPerson * persons, 1) + ' Liter pro Tag für alle';
+    el.perday.textContent = OA.t('{0} Liter pro Person und Tag · {1} Liter pro Tag für alle', [OA.fmt(perPerson, 1), OA.fmt(perPerson * persons, 1)]);
     el.containers.innerHTML = [
-      [Math.ceil(total / 1.5), 'Flaschen à 1,5 Liter'],
-      [Math.ceil(total / 5), 'Kanister à 5 Liter'],
-      [Math.ceil(total / 10), 'Kanister à 10 Liter'],
-      [Math.ceil(total / 20), 'Kanister à 20 Liter']
+      [Math.ceil(total / 1.5), OA.t('Flaschen à 1,5 Liter')],
+      [Math.ceil(total / 5), OA.t('Kanister à 5 Liter')],
+      [Math.ceil(total / 10), OA.t('Kanister à 10 Liter')],
+      [Math.ceil(total / 20), OA.t('Kanister à 20 Liter')]
     ].map(function (c) { return '<div class="stat"><div class="num">' + OA.fmt(c[0], 0) + '</div><div class="cap">' + c[1] + '</div></div>'; }).join('');
 
     OA.store.set('wasserbedarf', { persons: persons, days: days, climate: climate, activity: activity, hygiene: el.hygiene.checked });

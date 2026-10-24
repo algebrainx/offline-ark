@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var WEEKDAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  var WD_FALLBACK = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
 
@@ -14,17 +14,21 @@
     var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
     return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
   }
-  /** 'JJJJ-MM-TT' -> 'Mittwoch, 24.10.2026' */
-  function dateLong(s) {
+  /** 'JJJJ-MM-TT' -> 'Samstag, 24.10.2026' (Wochentag und Format je nach locale, Standard de-DE) */
+  function dateLong(s, locale) {
     if (!validDate(s)) return String(s || '');
-    var p = s.split('-'), wd = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2])).getUTCDay();
-    return WEEKDAYS[wd] + ', ' + p[2] + '.' + p[1] + '.' + p[0];
+    var p = s.split('-'), d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+    try {
+      return d.toLocaleDateString(locale || 'de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).replace(/[\u200e\u200f]/g, '');
+    } catch (e) { return WD_FALLBACK[d.getUTCDay()] + ', ' + p[2] + '.' + p[1] + '.' + p[0]; }
   }
-  /** Millisekunden -> 'TT.MM.JJJJ HH:MM' (Ortszeit) */
-  function dateTime(ms) {
+  /** Millisekunden -> 'TT.MM.JJJJ HH:MM' (Ortszeit, Datumsformat je nach locale) */
+  function dateTime(ms, locale) {
     var d = new Date(ms);
-    return pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    return d.toLocaleDateString(locale || 'de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/[\u200e\u200f]/g, '') + ' ' + timeOf(ms);
   }
+  /** Millisekunden -> 'HH:MM' (Ortszeit, 24 Stunden) */
+  function timeOf(ms) { var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
   function localDate(d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   /** Zeitstempel zum Einfügen: '[14:35] ' bzw. '[24.10.2026 14:35] ' */
   function stamp(d, withDate) {
@@ -84,19 +88,22 @@
   function sortNotes(list) { return list.slice().sort(function (a, b) { return b.updated - a.updated; }); }
   function sortEntries(list) { return list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; }); }
 
-  /** Alles als lesbarer Text (.txt-Export). */
-  function toText(notes, entries, todayStr) {
-    var out = ['OFFLINE-ARK – NOTIZEN UND TAGEBUCH', 'Exportiert am ' + dateLong(todayStr), ''];
-    out.push('=== NOTIZEN (' + notes.length + ') ===', '');
+  /** Alles als lesbarer Text (.txt-Export). opt: { t: Übersetzer (OA.t), locale } – ohne opt deutsch. */
+  function toText(notes, entries, todayStr, opt) {
+    opt = opt || {};
+    var t = opt.t || function (de, a) { return a ? de.replace(/\{(\d+)\}/g, function (m, i) { return a[i]; }) : de; };
+    var loc = opt.locale;
+    var out = [t('OFFLINE-ARK – NOTIZEN UND TAGEBUCH'), t('Exportiert am {0}', [dateLong(todayStr, loc)]), ''];
+    out.push(t('=== NOTIZEN ({0}) ===', [notes.length]), '');
     sortNotes(notes).forEach(function (n) {
-      out.push('--- ' + (n.title || '(ohne Titel)') + ' · ' + dateTime(n.updated) + ' ---', n.text.replace(/\r?\n/g, '\n'), '');
+      out.push('--- ' + (n.title || t('(ohne Titel)')) + ' · ' + dateTime(n.updated, loc) + ' ---', n.text.replace(/\r?\n/g, '\n'), '');
     });
-    out.push('=== TAGEBUCH (' + entries.length + ') ===', '');
-    sortEntries(entries).forEach(function (e) { out.push('--- ' + dateLong(e.date) + ' ---', e.text, ''); });
+    out.push(t('=== TAGEBUCH ({0}) ===', [entries.length]), '');
+    sortEntries(entries).forEach(function (e) { out.push('--- ' + dateLong(e.date, loc) + ' ---', e.text, ''); });
     return out.join('\r\n');
   }
 
-  var api = { validDate: validDate, dateLong: dateLong, dateTime: dateTime, localDate: localDate, stamp: stamp, insertAt: insertAt, newId: newId,
+  var api = { validDate: validDate, dateLong: dateLong, dateTime: dateTime, timeOf: timeOf, localDate: localDate, stamp: stamp, insertAt: insertAt, newId: newId,
     sanitizeNote: sanitizeNote, sanitizeEntry: sanitizeEntry, mergeById: mergeById, parseImport: parseImport,
     sortNotes: sortNotes, sortEntries: sortEntries, toText: toText };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

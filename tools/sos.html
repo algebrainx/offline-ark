@@ -6,11 +6,12 @@
   <title>SOS-Licht – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
   <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .modes { display: grid; gap: 8px; }
     .mode {
-      display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; padding: 8px 16px; text-align: left;
+      display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; padding: 8px 16px; text-align: start;
       border: 2px solid transparent; border-radius: var(--r); background: var(--surface-2); color: var(--text);
       font: 600 1rem var(--font); cursor: pointer;
     }
@@ -23,7 +24,7 @@
     .swatch.bl { background: linear-gradient(90deg, #fff 50%, #000 50%); }
     .swatch.rl { background: linear-gradient(90deg, #f00 50%, #000 50%); }
     .range-field { display: flex; justify-content: space-between; align-items: baseline; }
-    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0 0 0 2px; }
+    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0; }
     .range-field output { font-weight: 650; font-variant-numeric: tabular-nums; }
     .confirm-row { display: flex; align-items: center; gap: 14px; min-height: 52px; margin-top: 8px; cursor: pointer; }
     [hidden] { display: none !important; }
@@ -31,7 +32,7 @@
     /* Vollbild-Lampe: echtes Weiß/Rot/Schwarz ist hier gewollt */
     .lamp-surface { background: #000; touch-action: manipulation; overscroll-behavior: none; }
     .lamp-close {
-      position: absolute; top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+      position: absolute; top: max(16px, env(safe-area-inset-top)); inset-inline-end: max(16px, env(safe-area-inset-right));
       width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
       background: rgba(0, 0, 0, .45); color: #fff; border: 2px solid rgba(255, 255, 255, .85);
     }
@@ -56,14 +57,14 @@
       <div class="modes" id="modes" role="radiogroup" aria-label="Lichtart">
         <button type="button" class="mode" role="radio" aria-checked="true" data-v="white"><span class="swatch w"></span><span>Weiß dauerhaft<small>Als Lampe zum Sehen</small></span></button>
         <button type="button" class="mode" role="radio" aria-checked="false" data-v="red"><span class="swatch r"></span><span>Rot dauerhaft<small>Blendet weniger, schont die Nachtsicht</small></span></button>
-        <button type="button" class="mode" role="radio" aria-checked="false" data-v="sos"><span class="swatch bl"></span><span>SOS blinken, weiß<small>· · ·  − − −  · · ·</small></span></button>
-        <button type="button" class="mode" role="radio" aria-checked="false" data-v="sosred"><span class="swatch rl"></span><span>SOS blinken, rot<small>· · ·  − − −  · · ·</small></span></button>
+        <button type="button" class="mode" role="radio" aria-checked="false" data-v="sos"><span class="swatch bl"></span><span>SOS blinken, weiß<small class="ltr">· · ·  − − −  · · ·</small></span></button>
+        <button type="button" class="mode" role="radio" aria-checked="false" data-v="sosred"><span class="swatch rl"></span><span>SOS blinken, rot<small class="ltr">· · ·  − − −  · · ·</small></span></button>
         <button type="button" class="mode" role="radio" aria-checked="false" data-v="strobe"><span class="swatch bl"></span><span>Stroboskop<small>Schnelles Blinken, mit Warnung</small></span></button>
       </div>
     </section>
 
     <section class="card">
-      <div class="field"><div class="range-field"><label for="bright">Helligkeit</label><output id="bright-val" for="bright">100 %</output></div>
+      <div class="field"><div class="range-field"><label for="bright">Helligkeit</label><output id="bright-val" class="ltr" for="bright">100 %</output></div>
         <input type="range" id="bright" min="10" max="100" step="5" value="100"></div>
 
       <div class="field" id="tempo-field" style="margin-bottom:0"><span class="label">Tempo</span>
@@ -81,7 +82,7 @@
     </div>
 
     <button type="button" class="btn primary block" id="start" style="min-height:60px;font-size:1.15rem">Licht einschalten</button>
-    <p class="hint center">Schließen: Knopf oben rechts oder Esc. Der Bildschirm bleibt dabei an, solange das Gerät es erlaubt. Ein vollgeladener Akku hält so nur begrenzt lange.</p>
+    <p class="hint center">Schließen: X-Knopf oben in der Ecke oder Esc. Der Bildschirm bleibt dabei an, solange das Gerät es erlaubt. Ein vollgeladener Akku hält so nur begrenzt lange.</p>
   </div>
 </main>
 <script src="../js/icons.js"></script>

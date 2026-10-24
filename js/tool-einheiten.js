@@ -15,12 +15,12 @@
   var pairs = {};   // zuletzt gewählte Einheiten je Kategorie
 
   el.cats.innerHTML = E.cats.map(function (c) {
-    return '<button type="button" data-v="' + c.id + '" aria-pressed="false">' + OA.esc(c.name) + '</button>';
+    return '<button type="button" data-v="' + c.id + '" aria-pressed="false">' + OA.esc(OA.t(c.name)) + '</button>';
   }).join('');
 
   function fillSelects(cat) {
     var opts = cat.units.map(function (u) {
-      return '<option value="' + u.id + '">' + OA.esc(u.name) + ' (' + OA.esc(u.sym) + ')</option>';
+      return '<option value="' + u.id + '">' + OA.esc(OA.t(u.name)) + ' (' + OA.esc(OA.t(u.sym)) + ')</option>';
     }).join('');
     el.from.innerHTML = opts; el.to.innerHTML = opts;
     var p = pairs[cat.id] || DEFAULTS[cat.id];
@@ -45,19 +45,20 @@
 
     if (isNaN(x) || (cat.volt && !(volt > 0))) {
       el.resNum.textContent = '–'; el.resUnit.textContent = '';
-      el.resCap.textContent = cat.volt && !(volt > 0) ? 'Bitte eine Spannung größer als 0 eintragen.' : 'Bitte eine Zahl eingeben.';
+      el.resCap.textContent = cat.volt && !(volt > 0) ? OA.t('Bitte eine Spannung größer als 0 eintragen.') : OA.t('Bitte eine Zahl eingeben.');
       el.all.innerHTML = '';
       return;
     }
     var fmt = function (n) { return E.format(n, OA.fmt); };
     var r = E.convert(cat.id, from, to, x, volt);
     el.resNum.textContent = fmt(r);
-    el.resUnit.textContent = uTo.sym;
-    el.resCap.textContent = fmt(x) + ' ' + uFrom.sym + ' = ' + fmt(r) + ' ' + uTo.sym + (cat.volt ? ' (bei ' + OA.fmt(volt, 3) + ' V)' : '');
+    el.resUnit.textContent = OA.t(uTo.sym);
+    el.resCap.innerHTML = '<span class="ltr">' + OA.esc(fmt(x) + ' ' + OA.t(uFrom.sym) + ' = ' + fmt(r) + ' ' + OA.t(uTo.sym)) + '</span>' +
+      (cat.volt ? ' ' + OA.esc(OA.t('(bei {0} V)', [OA.fmt(volt, 3)])) : '');
 
     el.all.innerHTML = E.convertAll(cat.id, from, x, volt).map(function (row) {
-      return '<tr' + (row.unit.id === to ? ' class="is-target"' : '') + '><td>' + OA.esc(fmt(row.value)) + ' ' + OA.esc(row.unit.sym) +
-        '</td><td class="muted">' + OA.esc(row.unit.name) + '</td></tr>';
+      return '<tr' + (row.unit.id === to ? ' class="is-target"' : '') +       '><td><span class="ltr">' + OA.esc(fmt(row.value) + ' ' + OA.t(row.unit.sym)) +
+              '</span></td><td class="muted">' + OA.esc(OA.t(row.unit.name)) + '</td></tr>';
     }).join('');
 
     OA.store.set('einheiten', { cat: cat.id, val: el.val.value, volt: el.volt.value, pairs: pairs });
@@ -66,6 +67,7 @@
   // Gespeicherte Eingaben wiederherstellen
   var saved = OA.store.get('einheiten', null);
   var startCat = E.cats[0].id;
+  el.volt.value = OA.fmt(3.7, 1);   // Standardspannung im Zahlenformat der Sprache
   if (saved && E.cat(saved.cat)) {
     startCat = saved.cat;
     if (saved.val != null) el.val.value = saved.val;

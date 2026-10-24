@@ -6,7 +6,9 @@
   'use strict';
   var OA = window.OA;
   var MAX_TIMERS = 3, MAX_LAPS = 99;
-  var BASE_TITLE = document.title;
+  var BASE_TITLE = OA.t('Stoppuhr & Timer') + ' – Offline-Ark';
+  // Dezimalzeichen der Hundertstel (de/es Komma, en/ar Punkt)
+  var DEC = (OA.lang === 'en' || OA.lang === 'ar') ? '.' : ',';
 
   var el = {
     tabs: OA.$('#tabs'), alarm: OA.$('#alarm'), alarmText: OA.$('#alarm-text'), alarmAck: OA.$('#alarm-ack'),
@@ -42,7 +44,7 @@
     var cs = Math.floor(ms / 10), sec = Math.floor(cs / 100);
     return { main: hms(sec), cs: OA.pad(cs % 100) };
   }
-  function swText(ms) { var p = swParts(ms); return p.main + ',' + p.cs; }
+  function swText(ms) { var p = swParts(ms); return p.main + DEC + p.cs; }
   function now() { return Date.now(); }
 
   /* ====================================================================
@@ -56,16 +58,17 @@
   function startAlarm() { if (alarmLoop) return; ring(); alarmLoop = setInterval(ring, 1800); }
   function stopAlarm() { if (!alarmLoop) return; clearInterval(alarmLoop); alarmLoop = 0; OA.vibrate(0); }
 
+  function timerName(t) { return t.name || OA.t('Timer {0}', [t.num || 1]); }
   function ringingNames() {
-    var n = S.timers.filter(function (t) { return t.state === 'ringing'; }).map(function (t) { return t.name; });
-    if (S.cd.state === 'ringing') n.push(S.cd.label || 'Countdown');
+    var n = S.timers.filter(function (t) { return t.state === 'ringing'; }).map(timerName);
+    if (S.cd.state === 'ringing') n.push(S.cd.label || OA.t('Countdown'));
     return n;
   }
   function reconcileAlarm() {
     var names = ringingNames();
     if (names.length) {
       el.alarm.hidden = false;
-      el.alarmText.textContent = names.join(', ');
+      el.alarmText.innerHTML = '<span data-notranslate>' + OA.esc(names.join(OA.lang === 'ar' ? '، ' : ', ')) + '</span>';
       startAlarm();
     } else { el.alarm.hidden = true; stopAlarm(); }
   }
@@ -95,8 +98,8 @@
 
   function renderSw() {
     var p = swParts(swElapsed());
-    el.swTime.innerHTML = OA.esc(p.main) + '<small>,' + p.cs + '</small>';
-    el.swStart.textContent = S.sw.running ? 'Stopp' : (S.sw.base > 0 ? 'Weiter' : 'Start');
+    el.swTime.innerHTML = OA.esc(p.main) + '<small>' + DEC + p.cs + '</small>';
+    el.swStart.textContent = OA.t(S.sw.running ? 'Stopp' : (S.sw.base > 0 ? 'Weiter' : 'Start'));
     el.swLap.disabled = !S.sw.running;
     el.swReset.disabled = S.sw.running || (S.sw.base === 0 && !S.sw.laps.length);
   }
@@ -104,7 +107,7 @@
     el.lapsWrap.hidden = !S.sw.laps.length;
     var n = S.sw.laps.length;
     el.laps.innerHTML = S.sw.laps.map(function (l, i) {
-      return '<tr><td>' + (n - i) + '</td><td class="num">' + swText(l.lap) + '</td><td class="num">' + swText(l.total) + '</td></tr>';
+      return '<tr><td>' + (n - i) + '</td><td class="num ltr">' + swText(l.lap) + '</td><td class="num ltr">' + swText(l.total) + '</td></tr>';
     }).join('');
   }
   el.swStart.addEventListener('click', function () {
@@ -138,28 +141,28 @@
     if (t.state === 'ringing') return 0;
     return t.left;
   }
-  var STATE_TEXT = { idle: 'Bereit', running: 'Läuft', paused: 'Pausiert', ringing: 'Abgelaufen' };
+  var STATE_KEY = { idle: 'Bereit', running: 'Läuft', paused: 'Pausiert', ringing: 'Abgelaufen' };
 
   function formUpdate() {
     var d = readDur();
     S.dur = { h: d.h, m: d.m, s: d.s };
     var full = S.timers.length >= MAX_TIMERS;
     el.tAdd.disabled = full || d.ms <= 0;
-    el.tHint.textContent = full ? 'Es laufen schon 3 Timer. Entferne einen, um einen neuen zu starten.'
-      : (d.ms <= 0 ? 'Bitte eine Dauer einstellen.' : 'Bis zu 3 Timer gleichzeitig.');
+    el.tHint.textContent = OA.t(full ? 'Es laufen schon 3 Timer. Entferne einen, um einen neuen zu starten.'
+      : (d.ms <= 0 ? 'Bitte eine Dauer einstellen.' : 'Bis zu 3 Timer gleichzeitig.'));
     save();
   }
 
   function renderTimers() {
     el.timers.innerHTML = S.timers.map(function (t) {
       var btns;
-      if (t.state === 'ringing') btns = '<button type="button" class="btn primary sm" data-a="ack">Quittieren</button>';
-      else if (t.state === 'running') btns = '<button type="button" class="btn sm" data-a="pause">Pause</button><button type="button" class="btn sm" data-a="remove">Entfernen</button>';
-      else if (t.state === 'paused') btns = '<button type="button" class="btn sm" data-a="resume">Weiter</button><button type="button" class="btn sm" data-a="reset">Zurücksetzen</button><button type="button" class="btn sm" data-a="remove">Entfernen</button>';
-      else btns = '<button type="button" class="btn sm" data-a="resume">Start</button><button type="button" class="btn sm" data-a="remove">Entfernen</button>';
+      if (t.state === 'ringing') btns = '<button type="button" class="btn primary sm" data-a="ack">' + OA.t('Quittieren') + '</button>';
+      else if (t.state === 'running') btns = '<button type="button" class="btn sm" data-a="pause">' + OA.t('Pause') + '</button><button type="button" class="btn sm" data-a="remove">' + OA.t('Entfernen') + '</button>';
+      else if (t.state === 'paused') btns = '<button type="button" class="btn sm" data-a="resume">' + OA.t('Weiter') + '</button><button type="button" class="btn sm" data-a="reset">' + OA.t('Zurücksetzen') + '</button><button type="button" class="btn sm" data-a="remove">' + OA.t('Entfernen') + '</button>';
+      else btns = '<button type="button" class="btn sm" data-a="resume">' + OA.t('Start') + '</button><button type="button" class="btn sm" data-a="remove">' + OA.t('Entfernen') + '</button>';
       return '<div class="card timer-card' + (t.state === 'ringing' ? ' ringing' : '') + '" data-id="' + OA.esc(t.id) + '">' +
-        '<div class="head"><span class="name">' + OA.esc(t.name) + '</span><span class="state">' + STATE_TEXT[t.state] + ' · ' + hms(Math.round(t.total / 1000)) + '</span></div>' +
-        '<div class="big-time sm" data-t="' + OA.esc(t.id) + '">' + hms(Math.ceil(timerLeft(t) / 1000)) + '</div>' +
+        '<div class="head"><span class="name" data-notranslate>' + OA.esc(timerName(t)) + '</span><span class="state">' + OA.esc(OA.t(STATE_KEY[t.state])) + ' · <span class="ltr">' + hms(Math.round(t.total / 1000)) + '</span></span></div>' +
+        '<div class="big-time sm ltr" data-t="' + OA.esc(t.id) + '">' + hms(Math.ceil(timerLeft(t) / 1000)) + '</div>' +
         '<div class="bar" aria-hidden="true"><span data-b="' + OA.esc(t.id) + '"></span></div>' +
         '<div class="btn-row">' + btns + '</div></div>';
     }).join('');
@@ -179,11 +182,11 @@
     var d = readDur();
     if (S.timers.length >= MAX_TIMERS || d.ms <= 0) return;
     OA.audio();                                         // Ton während der Bedienung freischalten
-    var used = S.timers.map(function (t) { return t.name; }), n = 1;
-    while (used.indexOf('Timer ' + n) >= 0) n++;
+    var used = S.timers.map(function (t) { return t.num; }), n = 1;
+    while (used.indexOf(n) >= 0) n++;
     S.timers.push({
       id: 't' + now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
-      name: el.tname.value.trim() || 'Timer ' + n, total: d.ms, left: d.ms, target: now() + d.ms, state: 'running'
+      name: el.tname.value.trim(), num: n, total: d.ms, left: d.ms, target: now() + d.ms, state: 'running'
     });
     el.tname.value = '';
     save(); renderTimers(); updateTitle();
@@ -227,16 +230,16 @@
     var t = readTarget();
     var ok = !isNaN(t) && t > now();
     el.cdStart.disabled = !ok;
-    el.cdHint.textContent = ok ? 'Ziel: ' + new Date(t).toLocaleString('de-DE', { dateStyle: 'full', timeStyle: 'short' }) : 'Bitte ein Ziel in der Zukunft wählen.';
+    el.cdHint.textContent = ok ? OA.t('Ziel: {0}', [new Date(t).toLocaleString(OA.locale, { dateStyle: 'full', timeStyle: 'short' })]) : OA.t('Bitte ein Ziel in der Zukunft wählen.');
     S.cdForm = { date: el.cdDate.value, time: el.cdTime.value, label: el.cdLabel.value };
     save();
   }
   function renderCd() {
     var active = S.cd.state !== 'idle';
     el.cdSetup.hidden = active; el.cdRun.hidden = !active;
-    el.cdTitle.textContent = active ? (S.cd.label ? S.cd.label + ' · ' : '') + new Date(S.cd.target).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+    el.cdTitle.textContent = active ? (S.cd.label ? S.cd.label + ' · ' : '') + new Date(S.cd.target).toLocaleString(OA.locale, { dateStyle: 'medium', timeStyle: 'short' }) : '';
     el.cdReached.hidden = !(S.cd.state === 'ringing' || S.cd.state === 'reached');
-    el.cdStop.textContent = S.cd.state === 'running' ? 'Countdown abbrechen' : 'Schließen';
+    el.cdStop.textContent = OA.t(S.cd.state === 'running' ? 'Countdown abbrechen' : 'Schließen');
     updateCd();
   }
   function updateCd() {
@@ -265,15 +268,15 @@
    * ==================================================================== */
   function updateTitle() {
     var t = now(), title = BASE_TITLE;
-    if (ringingNames().length) title = '⏰ Zeit abgelaufen! – ' + BASE_TITLE;
+    if (ringingNames().length) title = OA.t('⏰ Zeit abgelaufen!') + ' – ' + BASE_TITLE;
     else {
       var next = null;
       S.timers.forEach(function (x) { if (x.state === 'running' && (next === null || x.target < next.target)) next = x; });
-      if (next) title = hms(Math.ceil(Math.max(0, next.target - t) / 1000)) + ' ' + next.name;
-      else if (S.sw.running) title = hms(Math.floor(swElapsed() / 1000)) + ' Stoppuhr';
+      if (next) title = hms(Math.ceil(Math.max(0, next.target - t) / 1000)) + ' ' + timerName(next);
+      else if (S.sw.running) title = hms(Math.floor(swElapsed() / 1000)) + ' ' + OA.t('Stoppuhr');
       else if (S.cd.state === 'running') {
         var sec = Math.ceil((S.cd.target - t) / 1000), d = Math.floor(sec / 86400);
-        title = (d ? d + ' T ' : '') + hms(sec % 86400) + (S.cd.label ? ' ' + S.cd.label : ' Countdown');
+        title = (d ? d + ' T ' : '') + hms(sec % 86400) + (S.cd.label ? ' ' + S.cd.label : ' ' + OA.t('Countdown'));
       }
     }
     if (document.title !== title) document.title = title;
