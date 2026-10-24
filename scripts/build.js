@@ -10,8 +10,11 @@
  *   3. erzeugt die zentrale Seite "Quellen & Lizenzen" (je Sprache)
  *   4. erzeugt data/search-index.js (Volltext je Sprache für die Offline-Suche)
  *   5. erzeugt die Bibliothek-Seiten aus scripts/library.json
+ *   6. erzeugt data/print-pages.js (Wissensseiten für das Ausdruck-Paket)
+ *   7. ruft scripts/build-pwa.js auf (sw.js: Dateiliste + Version für die App-Installation)
  *
  * Aufruf:  node scripts/build.js
+ * Einzeldatei:  node scripts/build-single.js   (erzeugt dist/offline-ark.html, siehe README)
  */
 'use strict';
 const fs = require('fs');
@@ -158,8 +161,10 @@ const STR = {
     allSources: 'Alle verwendeten Quellen', allSourcesToc: 'Alle Quellen', colSource: 'Quelle', colLicense: 'Lizenz', colUsed: 'Verwendet auf',
     libTitle: 'Bibliothek', libLead: 'Gemeinfreie Handbücher als PDF – komplett offline lesbar.',
     libNone: 'Noch keine PDFs vorhanden. Mit <code>update-content.sh</code> laden (Internet nötig).',
-    libFoot: 'Quellen und Lizenzen: siehe <a href="quellen.html">Quellen &amp; Lizenzen</a>. Die Originale sind englisch.', libLang: 'Englisch'
-  },
+    libFoot: 'Quellen und Lizenzen: siehe <a href="quellen.html">Quellen &amp; Lizenzen</a>.     Die Originale sind englisch.', libLang: 'Englisch',
+        pdfBtn: 'PDFs auch offline speichern', pdfLead: 'Nur in der installierten App-Version: legt die PDFs zusätzlich im Speicher dieses Geräts ab (viel Speicherplatz).',
+        pdfBusy: 'Wird gespeichert …', pdfDone: 'Alle PDFs sind jetzt offline verfügbar.', pdfFail: 'Das hat nicht geklappt. Bitte mit Internet erneut versuchen.'
+      },
   en: {
     disclaimer: '<strong>Does not replace training.</strong> In an emergency, call <strong>112</strong> first, or keep trying. This page deliberately gives no medication doses – ask a doctor or pharmacist.',
     plant: '⚠ Only eat if you are 100&nbsp;% certain of the identification. Many poisonous plants look confusingly similar to edible ones. When in doubt, leave it. If you suspect poisoning: 112 or the poison information centre.',
@@ -170,8 +175,10 @@ const STR = {
     allSources: 'All sources used', allSourcesToc: 'All sources', colSource: 'Source', colLicense: 'License', colUsed: 'Used on',
     libTitle: 'Library', libLead: 'Public-domain manuals as PDF – readable completely offline.',
     libNone: 'No PDFs yet. Download them with <code>update-content.sh</code> (internet required).',
-    libFoot: 'Sources and licenses: see <a href="quellen.html">Sources &amp; Licenses</a>. The originals are in English.', libLang: 'English'
-  },
+    libFoot: 'Sources and licenses: see <a href="quellen.html">Sources &amp; Licenses</a>.     The originals are in English.', libLang: 'English',
+        pdfBtn: 'Also save PDFs offline', pdfLead: 'Installed app version only: also stores the PDFs in this device’s storage (needs a lot of space).',
+        pdfBusy: 'Saving …', pdfDone: 'All PDFs are now available offline.', pdfFail: 'That did not work. Please try again with internet.'
+      },
   es: {
     disclaimer: '<strong>No sustituye a una formación.</strong> En una emergencia, llama primero al <strong>112</strong> o sigue intentándolo. Esta página no indica dosis de medicamentos a propósito: consulta a un médico o a un farmacéutico.',
     plant: '⚠ Come solo si estás 100&nbsp;% seguro de la identificación. Muchas plantas venenosas se parecen mucho a las comestibles. Si tienes dudas, déjala. Si sospechas una intoxicación: 112 o el centro de información toxicológica.',
@@ -182,8 +189,10 @@ const STR = {
     allSources: 'Todas las fuentes utilizadas', allSourcesToc: 'Todas las fuentes', colSource: 'Fuente', colLicense: 'Licencia', colUsed: 'Usada en',
     libTitle: 'Biblioteca', libLead: 'Manuales de dominio público en PDF: se leen completamente sin conexión.',
     libNone: 'Todavía no hay PDF. Descárgalos con <code>update-content.sh</code> (se necesita internet).',
-    libFoot: 'Fuentes y licencias: consulta <a href="quellen.html">Fuentes y licencias</a>. Los originales están en inglés.', libLang: 'Inglés'
-  },
+    libFoot: 'Fuentes y licencias: consulta <a href="quellen.html">Fuentes y licencias</a>.     Los originales están en inglés.', libLang: 'Inglés',
+        pdfBtn: 'Guardar también los PDF sin conexión', pdfLead: 'Solo en la versión de aplicación instalada: guarda además los PDF en el almacenamiento del dispositivo (ocupa mucho espacio).',
+        pdfBusy: 'Guardando …', pdfDone: 'Todos los PDF están ahora disponibles sin conexión.', pdfFail: 'No ha funcionado. Inténtalo de nuevo con internet.'
+      },
   ar: {
     disclaimer: '<strong>لا يغني عن التدريب.</strong> في حالة الطوارئ اتصل أولاً بالرقم <strong>112</strong> أو واصل المحاولة. لا تذكر هذه الصفحة جرعات الأدوية عمداً – اسأل طبيباً أو صيدلياً.',
     plant: '⚠ لا تأكل إلا إذا كنت متأكداً 100&nbsp;% من التعرف على النبات. كثير من النباتات السامة تشبه الصالحة للأكل بشكل مضلل. عند الشك اتركه. عند الاشتباه بتسمم: 112 أو مركز معلومات السموم.',
@@ -194,11 +203,20 @@ const STR = {
     allSources: 'جميع المصادر المستخدمة', allSourcesToc: 'جميع المصادر', colSource: 'المصدر', colLicense: 'الترخيص', colUsed: 'مستخدم في',
     libTitle: 'المكتبة', libLead: 'كتيبات في الملك العام بصيغة PDF – تُقرأ دون إنترنت بالكامل.',
     libNone: 'لا توجد ملفات PDF بعد. حمّلها عبر <code>update-content.sh</code> (يلزم الإنترنت).',
-    libFoot: 'المصادر والتراخيص: انظر <a href="quellen.html">المصادر والتراخيص</a>. النسخ الأصلية بالإنجليزية.', libLang: 'الإنجليزية'
-  }
+    libFoot: 'المصادر والتراخيص: انظر <a href="quellen.html">المصادر والتراخيص</a>.     النسخ الأصلية بالإنجليزية.', libLang: 'الإنجليزية',
+        pdfBtn: 'حفظ ملفات PDF للاستخدام دون إنترنت', pdfLead: 'في نسخة التطبيق المثبّتة فقط: يحفظ ملفات PDF أيضاً في ذاكرة هذا الجهاز (يحتاج مساحة كبيرة).',
+        pdfBusy: 'جارٍ الحفظ …', pdfDone: 'جميع ملفات PDF متاحة الآن دون إنترنت.', pdfFail: 'لم تنجح العملية. حاول مرة أخرى مع الإنترنت.'
+      }
 };
 
 /* ---------- Seitenvorlage ---------- */
+/** Zeilen für die App-Installation (PWA); depth = Weg zurück zum Hauptordner ('', '../', '../../'). */
+function pwaHead(depth) {
+  return `  <meta name="theme-color" content="#0071e3">
+  <link rel="manifest" href="${depth}manifest.webmanifest">
+  <link rel="apple-touch-icon" href="${depth}icons/apple-touch-icon.png">`;
+}
+
 function page({ lang, genPath, title, lead, bodyHtml, toc, sourcesHtml, plant, disclaimer, translated }) {
   const s = STR[lang];
   const depth = lang === 'de' ? '../' : '../../';
@@ -209,6 +227,7 @@ function page({ lang, genPath, title, lead, bodyHtml, toc, sourcesHtml, plant, d
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(title)} – Offline-Ark</title>
   <meta name="color-scheme" content="light dark">
+${pwaHead(depth)}
   <meta name="oa-gen" content="${genPath}">
   <meta name="oa-lang" content="${lang}">
   <script src="${depth}js/theme.js"></script>
@@ -233,9 +252,29 @@ ${sourcesHtml}
 </main>
 <script src="${depth}js/icons.js"></script>
 <script src="${depth}js/common.js"></script>
+<script src="${depth}js/pwa.js"></script>
 </body>
 </html>
 `;
+}
+
+/** Auf Papier gibt es keine Links: Text bleibt, Web-Adressen werden ausgeschrieben, Sprungmarken und Aufklapper entfallen. */
+function printHtml(html) {
+  return html
+    .replace(/<a href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g, (m, url, text) => {
+      const plain = text.replace(/<[^>]+>/g, '');
+      if (!/^https?:/.test(url) || url === plain || url.replace(/^https?:\/\//, '') === plain) return text;
+      return `${text} <span class="url ltr">(${url.replace(/^https?:\/\//, '')})</span>`;
+    })
+    .replace(/ id="[^"]*"/g, '')
+    .replace(/<details><summary>([\s\S]*?)<\/summary>(<div [^>]*>)([\s\S]*?)<\/div><\/details>/g, '$2<strong>$1</strong>$3</div>');
+}
+
+function printSources(sources, lang) {
+  if (!sources.length) return '';
+  const s = STR[lang];
+  return `<div class="pp-sources"><h2>${s.sources}</h2><ul>` + sources.map((x) =>
+    `<li><span dir="auto">${esc(x.name)}</span> – ${s.license}: ${esc(x.license)} <span class="url ltr">${esc(x.url.replace(/^https?:\/\//, ''))}</span></li>`).join('') + '</ul></div>';
 }
 
 function sourcesBlock(sources, lang) {
@@ -262,10 +301,12 @@ function main() {
   const registry = loadRegistry();
   const search = {};
   const sourcesByLang = {};
+  const printPages = {};
 
   LANGS.forEach((lang) => {
     fs.mkdirSync(outDir(lang), { recursive: true });
     search[lang] = [];
+    printPages[lang] = {};
     const allSources = sourcesByLang[lang] = new Map();   // url -> { ..., pages: [] }
 
     registry.forEach((w) => {
@@ -279,6 +320,13 @@ function main() {
         sourcesHtml: sourcesBlock(meta.sources, lang), plant: meta.plant === 'true', disclaimer: true, translated
       }));
       const plain = body.replace(/[#*`>|:\[\]()_-]/g, ' ').replace(/\s+/g, ' ');
+      printPages[lang][w.id] = {
+        title: meta.title || w.title,
+        html: (meta.lead ? `<p class="lead">${printHtml(inline(meta.lead))}</p>` : '') +
+          `<div class="pp-disclaimer">${STR[lang].disclaimer}</div>` +
+          (meta.plant === 'true' ? `<div class="pp-plant">${STR[lang].plant}</div>` : '') +
+          printHtml(html) + printSources(meta.sources, lang)
+      };
       search[lang].push({ id: w.id, title: meta.title || w.title, headings: headings.map((h) => h.text).join(' · '), text: plain });
       meta.sources.forEach((s) => {
         const e = allSources.get(s.url) || Object.assign({}, s, { pages: [] });
@@ -292,6 +340,13 @@ function main() {
   fs.writeFileSync(path.join(ROOT, 'data', 'search-index.js'),
     '/* Erzeugt von scripts/build.js – nicht von Hand bearbeiten. */\nwindow.OA_SEARCH = ' + JSON.stringify(search) + ';\n');
   console.log('✓ data/search-index.js');
+
+  const ppFile = path.join(ROOT, 'data', 'print-pages.js');
+  fs.writeFileSync(ppFile,
+    '/* Erzeugt von scripts/build.js – nicht von Hand bearbeiten. Wissensseiten für das Ausdruck-Paket (ohne Kopf/Fuß/Inhalt). */\nwindow.OA_PRINT_PAGES = ' + JSON.stringify(printPages) + ';\n');
+  const ppKb = Math.round(fs.statSync(ppFile).size / 1024);
+  console.log(`✓ data/print-pages.js (${ppKb} KB)`);
+  if (ppKb > 1200) console.warn('! data/print-pages.js ist größer als 1,2 MB');
 
   /* Zentrale Seite: Quellen & Lizenzen (je Sprache) */
   LANGS.forEach((lang) => {
@@ -328,15 +383,21 @@ function main() {
           return `<a href="${href}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg><span class="name">${esc(pick(l.title, lang))}<span class="sub">${esc(pick(l.desc, lang))} · ${s.libLang} · <span class="ltr">${size}</span> · ${s.license}: ${esc(pick(l.license, lang))}</span></span></a>`;
         }).join('') + '</div>'
       : `<p>${s.libNone}</p>`;
+    const pdfCard = present.length
+      ? `<div class="card no-print" id="oa-pdf-offline" hidden style="margin-top:16px"><p class="small muted" style="margin-top:0">${s.pdfLead}</p><button class="btn" type="button" id="oa-pdf-btn" data-busy="${esc(s.pdfBusy)}" data-done="${esc(s.pdfDone)}" data-fail="${esc(s.pdfFail)}">${s.pdfBtn}</button><p class="small" id="oa-pdf-status" role="status" style="margin-bottom:0"></p></div>`
+      : '';
     const dir = lang === 'de' ? path.join(ROOT, 'bibliothek') : path.join(ROOT, 'bibliothek', lang);
     fs.mkdirSync(dir, { recursive: true });
     const foot = s.libFoot.replace('href="quellen.html"', `href="${lang === 'de' ? '../wissen/quellen.html' : '../../wissen/' + lang + '/quellen.html'}"`);
     fs.writeFileSync(path.join(dir, 'index.html'), page({
       lang, genPath: 'bibliothek/index.html', title: s.libTitle, lead: s.libLead,
-      bodyHtml: libHtml + `<p class="small muted" style="margin-top:16px">${foot}</p>`, toc: [], sourcesHtml: '', disclaimer: false
+      bodyHtml: libHtml + pdfCard + `<p class="small muted" style="margin-top:16px">${foot}</p>`, toc: [], sourcesHtml: '', disclaimer: false
     }));
   });
   console.log('✓ bibliothek/**/index.html (' + present.length + ' PDFs)');
+
+  /* App-Installation: Dateiliste und Version für sw.js (nach allen erzeugten Dateien) */
+  require('./build-pwa.js').run();
 }
 
 main();

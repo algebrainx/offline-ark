@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Haltbar machen – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
+    .plain li { margin-bottom: .4em; }
+    .tabs { margin-bottom: 4px; }
+    .rule { border-inline-start: 4px solid var(--accent); padding-inline-start: 14px; }
+    .rule.red { border-inline-color: var(--danger); }
+    .rule h3 { margin: 0 0 6px; font-size: 1.1rem; }
+    .stepsl { margin: 6px 0 0; padding-inline-start: 1.4em; }
+    .stepsl li { margin-bottom: .45em; }
+    .when { display: grid; gap: 4px; margin-top: 10px; }
+    .when .stat { background: var(--surface-2); }
+    .sources ul { padding-inline-start: 1.2em; }
+    .sources li { font-size: .92rem; color: var(--text-2); }
+    .ratio-hint { margin-top: 8px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Haltbar machen</h1>
+    <p class="lead">Rechner und Anleitungen für sicheres Haltbarmachen.</p>
+  </header>
+
+  <div class="stack">
+    <div class="callout danger">
+      <strong>Sicherheit zuerst: Bei Zweifeln nicht essen</strong>
+      <ul class="plain">
+        <li>Selbst Eingekochtes kann Botulismus auslösen, eine seltene, aber lebensgefährliche Vergiftung. Am meisten gefährdet sind Gemüse (vor allem Bohnen) und Fleisch aus dem Einmachglas.</li>
+        <li>Man sieht, riecht oder schmeckt das Gift nicht immer. Im Zweifel wegwerfen.</li>
+        <li>Alle Angaben hier sind Richtwerte. Sie ersetzen keine Anleitung deines Einkochgeräts. Es werden keine Gesundheitsversprechen gemacht.</li>
+      </ul>
+    </div>
+
+    <div class="seg tabs" data-local id="tab" role="group" aria-label="Verfahren wählen">
+      <button type="button" data-v="kochen" aria-pressed="true">Einkochen</button>
+      <button type="button" data-v="ferment" aria-pressed="false">Fermentieren</button>
+      <button type="button" data-v="trocknen" aria-pressed="false">Trocknen</button>
+    </div>
+
+    <!-- Einkochen -->
+    <div class="stack" id="paneKochen">
+      <section class="card">
+        <div class="field" style="margin-bottom:0"><label for="grp">Was möchtest du einkochen?</label>
+          <select id="grp">
+            <option value="sauer">Obst und Beeren</option>
+            <option value="jam">Marmelade und Konfitüre</option>
+            <option value="gemuese">Gemüse, Bohnen, Pilze</option>
+            <option value="fleisch">Fleisch und Fisch</option>
+            <option value="oel">In Öl eingelegtes Gemüse oder Kräuter</option>
+          </select></div>
+      </section>
+
+      <section class="card rule" id="rSauer">
+        <h3>Obst und Beeren</h3>
+        <p>Die meisten Früchte und Beeren sind sauer (pH-Wert unter 4,6). Dort vermehrt sich der Botulismus-Keim schlecht, das Risiko gilt als niedrig. Ausnahmen laut BfR sind vor allem Melonen, reife Mangos und eventuell Birnen.</p>
+        <ul class="stepsl">
+          <li>Früchte waschen, verlesen, Kerne und faule Stellen entfernen.</li>
+          <li>Temperatur und Dauer nach der Anleitung deines Einkochgeräts oder Rezepts wählen. Für empfindliches Obst ist 100 °C oft zu heiß (Wikipedia). Genaue Zeiten werden hier nicht genannt, weil keine amtliche Tabelle geprüft werden konnte.</li>
+          <li>Nach dem Einkochen auf Vakuum und Schimmel achten (siehe unten).</li>
+        </ul>
+      </section>
+
+      <section class="card rule" id="rJam" hidden>
+        <h3>Marmelade und Konfitüre</h3>
+        <p>Früchte mit Zucker und Geliermittel kochen, heiß abfüllen, sofort verschließen. Bei 15 bis 20 °C und dunkel gelagert hält sich ein Aufstrich laut BZfE etwa ein Jahr.</p>
+        <div class="form-grid">
+          <div class="field"><label for="fruit">Früchte (g)</label>
+            <input type="text" class="ltr" id="fruit" inputmode="decimal" value="1000" autocomplete="off"></div>
+          <div class="field"><span class="label">Gelierzucker-Verhältnis (Früchte : Zucker)</span>
+            <div class="seg" data-local id="ratio">
+              <button type="button" data-v="1" aria-pressed="true">1:1</button>
+              <button type="button" data-v="2" aria-pressed="false">2:1</button>
+              <button type="button" data-v="3" aria-pressed="false">3:1</button>
+            </div></div>
+        </div>
+        <div class="stat"><div class="num ltr" id="sugar">–</div><div class="cap">Gramm Gelierzucker (Richtwert)</div></div>
+        <div class="hint ratio-hint">Das Verhältnis steht auf der Packung des Gelierzuckers. Bei 2:1 oder 3:1 ist weniger Zucker enthalten, der Aufstrich schmeckt fruchtiger. Folge der Packungsanleitung für die Kochzeit.</div>
+      </section>
+
+      <section class="card rule red" id="rGemuese" hidden>
+        <h3>Gemüse, Bohnen, Pilze</h3>
+        <p>Diese Lebensmittel haben meist wenig Säure (pH über 4,6). Dort kann der Botulismus-Keim wachsen. Kochendes Wasser (100 °C) tötet seine Sporen nicht ab. Wähle deshalb eine dieser Möglichkeiten:</p>
+        <ol class="stepsl">
+          <li>Mit Druck auf 121 °C erhitzen (Druckeinkocher): Das ist die sicherste Methode und gilt in der Fabrik als Standard.</li>
+          <li>Zweimal auf 100 °C erhitzen, im Abstand von ein bis zwei Tagen. Dazwischen bei Raumtemperatur lagern. Die Temperatur muss im ganzen Glas erreicht werden.</li>
+          <li>Ansäuern (Essig oder Zitronensaft) so stark, dass ein gemessener pH-Wert unter 4,6 erreicht wird. Das geht nur mit einem pH-Messgerät.</li>
+        </ol>
+        <p style="margin-top:10px" data-t><strong>Immer:</strong> Direkt vor dem Essen alles vollständig auf 100 °C aufkochen. Das zerstört ein eventuell gebildetes Gift. Pilze hat das BfR nicht ausdrücklich genannt: Behandle sie vorsichtig wie Gemüse und sammle nur sicher bestimmte Pilze (siehe <a href="../wissen/nahrung.html">Nahrung</a>).</p>
+        <div class="field" style="margin-top:14px"><span class="label">Erste Erhitzung beendet am</span>
+          <div class="form-grid">
+            <input type="date" id="d1" aria-label="Datum der ersten Erhitzung">
+            <input type="time" id="t1" aria-label="Uhrzeit der ersten Erhitzung">
+          </div></div>
+        <div class="stat"><div class="num ltr" id="second">–</div><div class="cap">Zweite Erhitzung auf 100 °C in diesem Zeitfenster (Richtwert)</div></div>
+      </section>
+
+      <section class="card rule red" id="rFleisch" hidden>
+        <h3>Fleisch und Fisch</h3>
+        <p>Fleisch und Fisch haben wenig Säure. Für sie gelten dieselben Regeln wie für Gemüse: möglichst mit Druck auf 121 °C erhitzen. Wenn das nicht geht, zweimal im Abstand von ein bis zwei Tagen auf 100 °C erhitzen und vor dem Essen noch einmal aufkochen.</p>
+        <p>Gesalzenen, getrockneten Fisch vor dem Essen ausreichend erhitzen (mindestens 10 Minuten auf mindestens 85 °C).</p>
+        <p>Plane die zweite Erhitzung im Abschnitt Gemüse, Bohnen, Pilze.</p>
+      </section>
+
+      <section class="card rule red" id="rOel" hidden>
+        <h3>In Öl eingelegtes Gemüse oder Kräuter</h3>
+        <p>Das BfR rät davon ab, solche Produkte im Privathaushalt auf Vorrat herzustellen. Der Luftabschluss im Öl kann Botulismus-Keimen helfen. Wenn du sie machst: im Kühlschrank aufbewahren und spätestens am Tag nach der Herstellung essen.</p>
+      </section>
+
+      <section class="card prose">
+        <h2 style="margin-top:0">Gläser vorbereiten und füllen</h2>
+        <ol class="steps">
+          <li>Gläser, Deckel und Geräte spülen (Spülmaschine) oder mindestens fünf Minuten in kochendes Wasser legen. Auf einem sauberen Tuch abtropfen lassen und innen nicht abwischen.</li>
+          <li>Nur unbeschädigte Gläser und Deckel verwenden. Bei Gläsern mit Gummiring einen neuen oder einwandfreien Ring nehmen.</li>
+          <li>Im Einmachglas oben etwa 3 bis 4 cm frei lassen, damit nichts zwischen Deckel und Rand läuft.</li>
+          <li>Marmelade heiß einfüllen und sofort verschließen. Gläser nicht schütteln und nicht auf den Kopf stellen.</li>
+          <li>Abkühlen lassen. Dabei entsteht ein Unterdruck, der den Deckel festzieht.</li>
+          <li>Kühl und dunkel lagern, ein Datum auf das Glas schreiben.</li>
+        </ol>
+      </section>
+
+      <div class="callout info">
+        <strong>Nach dem Einkochen prüfen</strong>
+        <ul class="plain">
+          <li>Weckglas: Klammern abnehmen. Der Deckel muss fest sitzen.</li>
+          <li>Twist-off-Glas: Der Deckel darf sich nicht eindrücken lassen und beim Öffnen sollte es zischen.</li>
+          <li>Kein Vakuum entstanden? Mit neuem Deckel oder neuem Gummiring sofort noch einmal einkochen. Sonst den Inhalt nach vollständigem Aufkochen auf 100 °C spätestens am nächsten Tag essen.</li>
+        </ul>
+      </div>
+
+      <div class="callout danger">
+        <strong>Wann sofort wegwerfen</strong>
+        <ul class="plain">
+          <li>Deckel oder Dose sind nach außen gewölbt (Bombage): Nicht öffnen, sondern ungeöffnet wegwerfen. Beim Öffnen kann der Inhalt mit dem Gift herausspritzen.</li>
+          <li>Der Deckel hat sich von selbst gelöst, es zischt nicht, das Glas riecht ungewöhnlich oder zeigt Schimmel.</li>
+          <li>Manche Keime bilden Gift ohne Gas, Geruch oder Geschmack. Ob etwas gut aussieht, beweist also nichts. Bei Gemüse, Fleisch und Fisch vor dem Essen immer auf 100 °C erhitzen.</li>
+          <li>Im Zweifel weg.</li>
+        </ul>
+      </div>
+
+      <section class="card">
+        <h2 style="margin-top:0;font-size:1.1rem">Überblick nach Lebensmittelgruppe</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Gruppe</th><th>Risiko</th><th>Mindestens nötig</th></tr></thead>
+          <tbody>
+            <tr><td>Obst, Beeren</td><td>niedrig</td><td>Einkochen nach Gerätanleitung</td></tr>
+            <tr><td>Marmelade</td><td>niedrig</td><td>Kochen nach Rezept, heiß abfüllen</td></tr>
+            <tr><td>Gemüse, Bohnen, Pilze</td><td>hoch</td><td>121 °C unter Druck oder zweimal 100 °C oder ansäuern</td></tr>
+            <tr><td>Fleisch, Fisch</td><td>hoch</td><td>121 °C unter Druck oder zweimal 100 °C</td></tr>
+            <tr><td>Gemüse in Öl</td><td>hoch</td><td>Nicht auf Vorrat, Kühlschrank, nächster Tag</td></tr>
+          </tbody></table></div>
+      </section>
+    </div>
+
+    <!-- Fermentieren -->
+    <div class="stack" id="paneFerment" hidden>
+      <section class="card">
+        <div class="form-grid">
+          <div class="field"><label for="veg">Gewicht des Gemüses (g)</label>
+            <input type="text" class="ltr" id="veg" inputmode="decimal" value="1000" autocomplete="off"></div>
+          <div class="field"><span class="label">Salzanteil</span>
+            <div class="seg" data-local id="salt">
+              <button type="button" data-v="2" aria-pressed="true">2 %</button>
+              <button type="button" data-v="2.5" aria-pressed="false">2,5 %</button>
+              <button type="button" data-v="3" aria-pressed="false">3 %</button>
+            </div></div>
+        </div>
+      </section>
+      <section class="card result" aria-live="polite">
+        <div><span class="num ltr" id="saltOut">–</span><span class="unit">Gramm Salz</span></div>
+        <div class="cap" id="saltCap">Richtwert</div>
+      </section>
+      <div class="callout info">
+        <strong>Fermentieren, Schritt für Schritt</strong>
+        <ul class="plain">
+          <li>Für Sauerkraut gelten rund 2 % Salz vom Gewicht des Gemüses als üblich. Möglich sind höhere Mengen. Bei etwa 3,5 % werden die Milchsäurebakterien deutlich gehemmt.</li>
+          <li>Gemüse fein schneiden, mit dem Salz mischen, gut durchkneten und fest in ein sauberes Gefäß drücken. Das Salz zieht Saft: So entsteht die Lake.</li>
+          <li>Das Gemüse muss ganz unter der Lake bleiben. Beschwere es mit einem sauberen Gewicht. Ragt etwas heraus, können sich Hefen und Schimmel ansiedeln.</li>
+          <li>Gärdauer je nach Temperatur etwa 2 bis 6 Wochen: bei Raumtemperatur ungefähr 3 bis 4 Wochen, im kühlen Keller 5 bis 6 Wochen.</li>
+          <li>Gefäße, Gewicht und Geräte vorher gründlich reinigen und heiß spülen. Hände waschen.</li>
+        </ul>
+      </div>
+      <div class="callout danger">
+        <strong>Warnzeichen: wegwerfen</strong>
+        <ul class="plain">
+          <li>Schimmel (flauschige oder farbige Beläge) auf dem Gemüse.</li>
+          <li>Fauliger, stechender oder sonst übler Geruch, schmierige oder matschige Stellen.</li>
+          <li>Im Zweifel nicht essen. Fermentieren ersetzt kein sicheres Einkochen von Gemüse oder Fleisch im Glas.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Trocknen -->
+    <div class="stack" id="paneTrocknen" hidden>
+      <section class="card">
+        <h2 style="margin-top:0;font-size:1.1rem">Methoden und Richtwerte</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Methode</th><th>Geeignet für</th><th>Richtwert</th></tr></thead>
+          <tbody>
+            <tr><td>An der Luft</td><td>Kräuter</td><td>2 bis 3 Wochen, luftig, trocken, staubfrei</td></tr>
+            <tr><td>Dörrgerät oder Backofen</td><td>Obst, Gemüse, Pilze in Scheiben</td><td>30 bis 70 °C, etwa 6 bis 12 Stunden</td></tr>
+            <tr><td>Dörren von Körnern</td><td>Mais, Getreide, Nüsse</td><td>etwa 4 bis 6 Stunden</td></tr>
+          </tbody></table></div>
+        <p class="hint">Im Backofen die Tür einen Spalt offen lassen, damit die Feuchtigkeit entweicht. Temperatur je nach Obst- oder Gemüseart wählen und niedrig beginnen.</p>
+      </section>
+      <div class="callout info">
+        <strong>Gut trocknen und lagern</strong>
+        <ul class="plain">
+          <li>Dörrgut hat am Ende nur noch etwa 10 bis 15 % Restfeuchte. Viele Schimmelpilze wachsen noch bis rund 15 % Wassergehalt. Trockne daher lieber zu lange als zu kurz.</li>
+          <li>Unzureichende Trocknung und falsche Lagerung begünstigen Schimmel.</li>
+          <li>Luftdicht und feuchtigkeitsdicht verpacken, dunkel und kühl lagern.</li>
+          <li>Regelmäßig prüfen. Bei Schimmel, muffigem Geruch oder Klumpen wegwerfen.</li>
+        </ul>
+      </div>
+      <div class="callout warn">
+        <strong>Nur sicher Bestimmtes trocknen</strong>
+        <ul class="plain">
+          <li data-t>Pilze und Wildkräuter nur trocknen, wenn sie zu 100 % sicher bestimmt sind. Lies vorher die Warnung auf der Seite <a href="../wissen/nahrung.html">Nahrung</a>.</li>
+          <li>Als Anfänger gar keine Pilze sammeln. Pilzsachverständige bestimmen sie.</li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="sources">
+      <h2>Quellen</h2>
+      <ul id="sources"></ul>
+      <p class="small muted">Links öffnen sich nur mit Internet. Alle Aussagen sind eigene, zusammengefasste Texte nach den genannten Quellen.</p>
+    </section>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/einkochen.js"></script>
+<script src="../js/einkochen-core.js"></script>
+<script src="../js/tool-einkochen.js"></script>
+</body>
+</html>

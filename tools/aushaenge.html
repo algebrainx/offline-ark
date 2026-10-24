@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Aushänge – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script>
+    // Der Aushang kann in jeder Sprache gedruckt werden: das Wörterbuch wird deshalb auch bei Deutsch geladen
+    if (OA.lang === 'de') document.write('<script src="../data/i18n/tool-aushaenge.js"><\/script>');
+  </script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .ax-layout { display: grid; gap: 16px; grid-template-columns: 1fr; align-items: start; }
+    @media (min-width: 980px) { .ax-layout { grid-template-columns: minmax(340px, 440px) 1fr; } .ax-preview { position: sticky; top: 72px; } }
+    .tpl-grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .tpl-grid button { min-height: 56px; padding: 8px 12px; border-radius: var(--r-sm); border: 2px solid transparent; background: var(--surface-2); color: var(--text); font: 600 .95rem/1.25 var(--font); cursor: pointer; text-align: start; }
+    .tpl-grid button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface); }
+    .tpl-grid button:hover { filter: brightness(.97); }
+    .field .req { color: var(--danger); margin-inline-start: 4px; }
+    .photo-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .photo-row img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; }
+    input[type="file"] { min-height: 48px; width: 100%; padding: 10px 12px; font: inherit; color: var(--text); background: var(--surface-2); border-radius: 12px; border: 1px dashed var(--line); }
+    input[type="datetime-local"] { width: 100%; min-height: 48px; padding: 10px 14px; font: 400 1.05rem var(--font); color: var(--text); background: var(--surface-2); border: 1px solid transparent; border-radius: 12px; direction: ltr; text-align: start; }
+    .check-row { display: flex; align-items: center; gap: 12px; min-height: var(--hit); cursor: pointer; }
+    .opt-list > * + * { margin-top: 10px; }
+    .warn-fit { margin: 12px 0 0; }
+
+    /* ---- Vorschau: A4-Blatt, immer schwarz auf weiß (wie gedruckt), unabhängig vom Design ---- */
+    .pv-wrap { position: relative; width: 100%; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #fff; box-shadow: var(--shadow); }
+    .paper { position: absolute; top: 0; inset-inline-start: 0; width: 210mm; height: 297mm; transform-origin: top left; background: #fff; color: #000;
+      padding: 12mm; display: flex; flex-direction: column; overflow: hidden; font-family: Arial, "Helvetica Neue", "Segoe UI", Tahoma, sans-serif; line-height: 1.2; --k: 1; }
+    html[dir="rtl"] .paper { transform-origin: top right; }
+    .paper * { letter-spacing: 0 !important; }
+    html[data-theme="night"] .paper img { filter: none; }
+    .p-head { border-bottom: 4mm solid #000; padding-bottom: 4mm; margin-bottom: 5mm; }
+    .p-head h2 { margin: 0; font-weight: 900; text-transform: uppercase; line-height: 1.02; margin-top: 0; overflow-wrap: normal; word-break: normal; }
+    .p-head .h2 { margin-top: 2mm; font-weight: 800; }
+    .p-sub { font-size: calc(var(--k) * 18pt); font-weight: 700; margin: 0 0 4mm; }
+    .p-body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .p-main { display: flex; gap: 6mm; align-items: flex-start; }
+    .p-photo { flex: 0 0 52mm; }
+    .p-photo img { display: block; width: 52mm; max-height: 74mm; object-fit: cover; border: 2px solid #000; }
+    .p-rows { flex: 1 1 auto; min-width: 0; }
+    .p-row { margin: 0 0 calc(var(--k) * 4mm); break-inside: avoid; }
+    .p-row .lab { font-size: calc(var(--k) * 12pt); font-weight: 800; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 0.5mm; margin-bottom: 1mm; }
+    .p-row .val { font-size: calc(var(--k) * 26pt); font-weight: 700; line-height: 1.15; white-space: pre-line; overflow-wrap: anywhere; unicode-bidi: plaintext; text-align: start; }
+    .p-row .val.ph { color: #9a9a9a; font-weight: 400; font-style: italic; }
+    .p-row.contact .val { font-size: calc(var(--k) * 30pt); font-weight: 800; }
+    .p-row.contact .val .tel { display: block; direction: ltr; unicode-bidi: isolate; text-align: start; font-size: 1.25em; }
+    .p-row.contact .val .xtra { display: block; font-size: .65em; font-weight: 600; }
+    .p-stat { font-size: calc(var(--k) * 18pt); font-weight: 700; margin: 0 0 calc(var(--k) * 3mm); }
+    .p-stat.check { border: 3px solid #000; padding: 2mm 4mm; font-size: calc(var(--k) * 22pt); font-weight: 800; }
+    .p-meta { margin-top: 3mm; font-size: 11pt; font-weight: 600; display: flex; justify-content: space-between; gap: 8mm; border-top: 1px solid #000; padding-top: 2mm; }
+    .p-meta .ltr { font-weight: 800; }
+    .p-strips { display: grid; grid-template-columns: repeat(8, 1fr); height: 46mm; margin-top: 3mm; border-top: 1.5px dashed #000; direction: ltr; }
+    .p-strips .s { border-inline-end: 1.5px dashed #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .p-strips .s:last-child { border-inline-end: 0; }
+    .p-strips .s div { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: 800; font-size: 13pt; line-height: 1.15; max-height: 44mm; direction: ltr; unicode-bidi: plaintext; }
+    .p-strips .s div small { display: block; font-size: 8.5pt; font-weight: 600; }
+    .p-cut { font-size: 8pt; text-align: center; margin-top: 3mm; }
+
+    /* ---- Druck: nur der Aushang ---- */
+    @page { size: A4 portrait; margin: 0; }
+    @media print {
+      html, body { background: #fff !important; height: auto !important; min-height: 0 !important; }
+      body { display: block; }
+      body > .appbar, body > .footer, body > .sheet, body > .sheet-backdrop, body > p.print-only { display: none !important; }
+      main.container { max-width: none; padding: 0; margin: 0; }
+      main .page-head, main .callout, .ax-form, .ax-actions, .ax-preview > .no-print { display: none !important; }
+      .ax-layout { display: block; }
+      .ax-preview { position: static; }
+      .pv-wrap { height: auto !important; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+      .paper { position: static; transform: none !important; width: 210mm; height: 296mm; box-shadow: none; page-break-after: avoid; break-inside: avoid; }
+      .p-row .val.ph, .p-strips .ph { visibility: hidden; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Aushänge</h1>
+    <p class="lead">Hilfe gesucht, Vermisstenmeldung, Treffpunkt: Aushang ausfüllen und drucken.</p>
+  </header>
+
+  <div class="callout info">
+    <strong>Datenschutz</strong>
+    Alles bleibt auf diesem Gerät: Nichts wird gespeichert, hochgeladen oder gesendet. Ein Foto bleibt nur im Browser, bis du die Seite schließt. Namen, Fotos und Telefonnummern auf einem Aushang kann jeder lesen. Gib nur ein, was nötig ist, und denke besonders bei Kindern daran, wer den Aushang sieht.
+  </div>
+
+  <div class="ax-layout">
+    <div class="ax-form stack">
+      <section class="card">
+        <span class="label" style="display:block;font-size:.85rem;font-weight:600;color:var(--text-2);margin:0 2px 8px" id="tpl-label">Vorlage</span>
+        <div class="tpl-grid" id="tpl" role="group" aria-labelledby="tpl-label"></div>
+      </section>
+
+      <section class="card">
+        <div id="fields"></div>
+        <div class="field" id="fill-wrap" hidden><label for="fill-pick">Aus meinen Treffpunkten übernehmen</label>
+          <select id="fill-pick" data-notranslate></select></div>
+        <h3 style="margin:1.2em 0 .6em;font-size:1rem" id="contact-h">Kontakt auf dem Aushang</h3>
+        <div class="field" id="ct-wrap" hidden><label for="ct-pick">Aus meinen Kontakten übernehmen</label>
+          <select id="ct-pick" data-notranslate></select></div>
+        <div class="form-grid">
+          <div class="field"><label for="f-cname">Dein Name</label><input type="text" id="f-cname" dir="auto" maxlength="60" autocomplete="off" placeholder="Vorname Nachname"></div>
+          <div class="field"><label for="f-cphone">Telefon</label><input type="tel" id="f-cphone" maxlength="30" autocomplete="off" placeholder="+49 170 1234567"></div>
+        </div>
+        <div class="field"><label for="f-cextra">Weitere Erreichbarkeit (optional)</label><input type="text" id="f-cextra" dir="auto" maxlength="80" autocomplete="off" placeholder="z. B. Haus 4, Klingel Müller"></div>
+        <div class="field" style="margin-bottom:0"><label for="f-stand">Stand (Datum und Uhrzeit)</label><input type="datetime-local" id="f-stand"></div>
+      </section>
+
+      <section class="card opt-list">
+        <div class="field" style="margin-bottom:0"><span class="label">Sprache des Aushangs</span>
+          <div class="seg" data-local id="plang">
+            <button type="button" data-v="de" aria-pressed="false" lang="de" data-notranslate>Deutsch</button>
+            <button type="button" data-v="en" aria-pressed="false" lang="en" data-notranslate>English</button>
+            <button type="button" data-v="es" aria-pressed="false" lang="es" data-notranslate>Español</button>
+            <button type="button" data-v="ar" aria-pressed="false" lang="ar" data-notranslate>العربية</button>
+          </div></div>
+        <div class="switch-row" id="bi-row"><span id="bi-label">Zusätzlich auf Deutsch (Deutsch steht oben)</span>
+          <label class="switch"><input type="checkbox" id="bi" aria-labelledby="bi-label"><span></span></label></div>
+        <div class="switch-row"><span id="strips-label">Abreißzettel mit Telefonnummer</span>
+          <label class="switch"><input type="checkbox" id="strips" aria-labelledby="strips-label"><span></span></label></div>
+        <p class="hint" style="margin:0">Deutsch zusätzlich: Nachbarn in Deutschland lesen den Aushang dann auch. Die Abreißzettel unten am Blatt zeigen 8-mal Name und Telefonnummer.</p>
+      </section>
+    </div>
+
+    <div class="ax-preview">
+      <div class="pv-wrap" id="pv"><div class="paper" id="paper" data-notranslate></div></div>
+      <div class="callout warn warn-fit no-print" id="fit-warn" hidden role="alert">Der Text ist zu lang für eine Seite und wurde stark verkleinert. Kürze die Texte, damit der Aushang gut lesbar bleibt.</div>
+      <div class="ax-actions" style="margin-top:14px">
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="print">Aushang drucken</button>
+        </div>
+        <p class="hint">Gedruckt wird nur der Aushang, immer schwarz auf weiß, auf A4. Im Druckdialog kannst du auch „Als PDF speichern“ wählen.</p>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/aushaenge.js"></script>
+<script src="../js/tool-aushaenge.js"></script>
+</body>
+</html>

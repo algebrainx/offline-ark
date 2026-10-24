@@ -21,6 +21,14 @@ Die PDFs in der [Bibliothek](../bibliothek/index.html) sind gemeinfreie US-Regie
 
 Inhalte stehen meist unter CC BY-SA. Wir übernehmen keine Texte wörtlich, sondern nennen Wikipedia nur als Quelle für Fakten, die wir in eigenen Worten wiedergeben.
 
+## Karten, Fotos und Daten
+
+- **OpenStreetMap** (Krankenhäuser, Apotheken, Defibrillatoren, Feuerwehr, Wasserstellen, Grenzen in der Offline-Karte): © OpenStreetMap-Mitwirkende, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Nähere Angaben: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). Die Daten sind ein Stand vom Abrufdatum und können veraltet oder unvollständig sein.
+- **Natural Earth** (grobe Umrisse und Grenzen): [gemeinfrei](https://www.naturalearthdata.com/about/terms-of-use/).
+- **Fotos** (Pflanzen, Pilze, Wolken, Knoten): [Wikimedia Commons](https://commons.wikimedia.org/), jeweils unter CC0, gemeinfrei, CC BY oder CC BY-SA. Urheber und Lizenz stehen unter jedem Foto und in der Datei `bibliothek/bilder/ATTRIBUTION.md`. Die Bilder wurden verkleinert.
+- **QR-Codes:** eigener Encoder nach ISO/IEC 18004. „QR Code“ ist eine eingetragene Marke von DENSO WAVE.
+- Weitere Quellen (z. B. Sternkatalog, Gartentermine, Heizwerte) stehen unten auf der jeweiligen Werkzeugseite.
+
 ## Eigener Code
 
 HTML, CSS und JavaScript dieses Projekts stehen unter der **MIT-Lizenz** (siehe Datei `LICENSE`). Die Symbole sind selbst gezeichnet. Es werden keine Schriftarten, Bibliotheken oder Dienste von außen geladen.

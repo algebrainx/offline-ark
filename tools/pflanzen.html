@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pflanzen &amp; Pilze – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .pf-warning { display: flex; gap: 12px; align-items: flex-start; margin-top: 0; }
+    .pf-warning .icon { color: var(--danger); width: 24px; height: 24px; margin-top: 2px; }
+    .pf-warning p { margin: 0; }
+    .pf-hint { margin: 8px 2px 0; }
+    .pf-seg { margin-top: 14px; }
+    .pf-seg button { min-height: var(--hit); line-height: 1.2; }
+    .pf-sec { margin-top: 22px; }
+    .pf-sec > h2 { margin-top: 0; }
+    .pf-sec > h3 { margin-top: 1.6em; }
+    .pf-intro { color: var(--text-2); margin: 0 0 14px; max-width: 46em; }
+    .pf-latin { font-style: italic; color: var(--text-2); font-size: .85rem; overflow-wrap: anywhere; }
+
+    .pf-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px; border-radius: 999px; font-size: .82rem; font-weight: 650; border: 1.5px solid currentColor; background: var(--surface); }
+    .pf-chip .icon { width: 16px; height: 16px; }
+    .pf-chip.edible { color: var(--ok); }
+    .pf-chip.toxic { background: var(--danger); border-color: var(--danger); color: #fff; }
+    html[data-theme="night"] .pf-chip.toxic { color: #000; }
+    .pf-chip.inedible, .pf-chip.avoid { background: var(--warn-bg); border-color: var(--warn-line); color: var(--text); }
+    .pf-cond { font-size: .8rem; color: var(--text-2); font-weight: 600; }
+
+    .pf-pair h3 { margin: 0 0 14px; font-size: 1.2rem; line-height: 1.3; }
+    .pf-photos { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr)); align-items: start; }
+    .pf-fig { margin: 0; border: 2px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--surface-2); display: flex; flex-direction: column; min-width: 0; }
+    .pf-fig.edible { border-color: var(--ok); }
+    .pf-fig.toxic { border-color: var(--danger); }
+    .pf-fig.inedible, .pf-fig.avoid { border-color: var(--warn-line); }
+    .pf-open { display: block; width: 100%; min-height: var(--hit); padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+    .pf-open:hover .pf-name { text-decoration: underline; }
+    .pf-open img, .pf-fig > img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--surface-2); }
+    .pf-cap { padding: 10px 12px 2px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+    .pf-name { font-weight: 650; line-height: 1.25; overflow-wrap: break-word; max-width: 100%; }
+    .pf-credit { padding: 0 12px; font-size: .78rem; color: var(--text-2); line-height: 1.35; }
+    .pf-credit a { display: inline-block; padding-block: 14px; color: var(--text-2); text-decoration: underline; overflow-wrap: anywhere; }
+    .pf-body { padding: 0 12px 12px; font-size: .92rem; }
+    .pf-body ul { margin: 0 0 .6em; padding-inline-start: 1.2em; }
+    .pf-body p { margin: 0; }
+
+    .pf-h { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); font-weight: 650; margin: 18px 0 6px; }
+    .pf-list { margin: 0 0 12px; padding-inline-start: 1.2em; }
+    .pf-list li { margin-bottom: .4em; }
+    .pf-pair .callout { margin: 12px 0 0; }
+    .pf-pair .callout a, .callout.warn a { display: inline-flex; align-items: center; min-height: var(--hit); }
+
+    .pf-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr)); align-items: start; }
+    .pf-table td, .pf-table th { vertical-align: top; }
+    .pf-table .pf-fig { border-width: 2px; min-width: 120px; max-width: 220px; }
+    .pf-table ul { margin: 0; padding-inline-start: 1.1em; }
+    .pf-table li { margin-bottom: .35em; }
+    .pf-table .pf-cap { padding-bottom: 8px; }
+    @media (max-width: 700px) {
+      .pf-table thead { display: none; }
+      .pf-table, .pf-table tbody, .pf-table tr, .pf-table td { display: block; width: 100%; }
+      .pf-table tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
+      .pf-table tr:last-child { border-bottom: 0; }
+      .pf-table td { border: 0; padding: 6px 14px; }
+      .pf-table td::before { content: attr(data-label); display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); font-weight: 650; margin-bottom: 2px; }
+      .pf-table td:first-child::before { display: none; }
+      .pf-table .pf-fig { max-width: none; }
+    }
+
+    .pf-results { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .pf-res { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); color: var(--text); font: inherit; text-align: start; cursor: pointer; box-shadow: var(--shadow); }
+    .pf-res:hover { background: var(--surface-2); }
+    .pf-res img { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; flex: none; }
+    .pf-res .pf-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+    .pf-empty { text-align: center; color: var(--text-2); padding: 28px 12px; }
+
+    .pf-dialog { width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 24px); padding: 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); color: var(--text); overflow: auto; }
+    .pf-dialog::backdrop { background: rgba(0, 0, 0, .55); }
+    .pf-dialog .pf-dbody { padding: 18px; }
+    .pf-dialog .pf-fig { margin-bottom: 12px; }
+    .pf-dialog h2 { margin: 8px 0 2px; font-size: 1.4rem; }
+    .pf-dialog .callout { margin: 14px 0 0; }
+    .pf-dialog .btn-row { margin-top: 16px; }
+    .pf-also { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pf-also button { min-height: var(--hit); padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: 600 .9rem var(--font); cursor: pointer; }
+    .pf-more { margin-top: 24px; }
+    .pf-src li { overflow-wrap: anywhere; }
+    .pf-src a, #giz-note a, .pf-dbody p a { display: inline-flex; align-items: center; min-height: var(--hit); }
+
+    @media print {
+      .pf-sec[hidden] { display: block !important; }
+      #sec-search, .pf-dialog, .pf-seg, .pf-more { display: none !important; }
+      .pf-fig, .pf-pair, .pf-table tr { break-inside: avoid; }
+      .pf-open img { max-height: 160px; }
+      .pf-chip { border-color: #000; background: #fff; color: #000; }
+      .pf-chip.toxic { background: #000; color: #fff; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Pflanzen &amp; Pilze</h1>
+    <p class="lead">Bestimmungshilfe mit Fotos: giftige Doppelgänger essbarer Pflanzen und Pilze.</p>
+  </header>
+
+  <div class="plant-warning pf-warning" role="note">
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/></svg>
+    <p>Nur essen, wenn 100 % sicher bestimmt. Fotos ersetzen keine Bestimmung durch Fachleute. Bei Vergiftungsverdacht: 112 / Giftinformationszentrum.</p>
+  </div>
+
+  <div class="search" style="margin-top:20px">
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <label class="sr-only" for="q">Pflanze oder Pilz suchen</label>
+    <input type="search" id="q" placeholder="Name suchen, z. B. Bärlauch" autocomplete="off">
+  </div>
+  <p class="hint pf-hint">Die Suche kennt deutsche, englische, spanische, arabische und lateinische Namen.</p>
+
+  <div class="seg pf-seg" data-local id="seg" role="group" aria-label="Bereich wählen">
+    <button type="button" data-v="pairs" aria-pressed="true">Doppelgänger-Paare</button>
+    <button type="button" data-v="toxic" aria-pressed="false">Giftige Pflanzen</button>
+    <button type="button" data-v="fungi" aria-pressed="false">Pilze</button>
+  </div>
+
+  <section class="pf-sec" id="sec-search" aria-live="polite" hidden>
+    <h2>Suchergebnisse</h2>
+    <ul class="pf-results" id="results"></ul>
+    <p class="pf-empty" id="empty" hidden>Kein Treffer. Probiere einen anderen Namen.</p>
+  </section>
+
+  <section class="pf-sec" id="sec-pairs">
+    <h2>Doppelgänger-Paare</h2>
+    <p class="pf-intro">Essbar und giftig sehen sich oft zum Verwechseln ähnlich. Tippe auf ein Foto für Details.</p>
+    <div class="stack" id="pairs"></div>
+  </section>
+
+  <section class="pf-sec" id="sec-toxic" hidden>
+    <h2>Giftige Pflanzen</h2>
+    <p class="pf-intro">Diese Auswahl ist nicht vollständig. Viele weitere Pflanzen sind giftig, besonders gefährlich sind sie für Kinder.</p>
+    <h3>Giftige Doppelgänger essbarer Pflanzen</h3>
+    <div class="table-wrap"><table class="pf-table"><thead><tr><th>Pflanze</th><th>Merkmal</th><th>Gefahr</th></tr></thead><tbody id="tbl-twins"></tbody></table></div>
+    <h3>Weitere giftige Pflanzen</h3>
+    <div class="table-wrap"><table class="pf-table"><thead><tr><th>Pflanze</th><th>Merkmal</th><th>Gefahr</th></tr></thead><tbody id="tbl-more"></tbody></table></div>
+    <p class="small muted" style="margin-top:14px" id="giz-note"></p>
+  </section>
+
+  <section class="pf-sec" id="sec-fungi" hidden>
+    <h2>Pilze</h2>
+    <div class="callout danger" id="fungi-warn"></div>
+    <div class="pf-grid" id="fungi"></div>
+  </section>
+
+  <p class="btn-row pf-more no-print"><a class="btn primary" id="wissen" href="../wissen/nahrung.html">Mehr dazu: Wissensseite Nahrung</a></p>
+
+  <section class="sources" id="sources">
+    <h2>Quellen und Bildnachweis</h2>
+    <p class="small muted">Alle Fotos stammen von Wikimedia Commons und stehen unter freien Lizenzen (CC0, CC BY, CC BY-SA). Sie wurden verkleinert und auf das Format 4:3 zugeschnitten. Urheber und Lizenz stehen unter jedem Foto. Die Texte fassen die Quellen in eigenen Worten zusammen.</p>
+    <ul class="pf-src" id="src-list"></ul>
+  </section>
+</main>
+
+<dialog class="pf-dialog" id="detail" aria-labelledby="detail-title"><div class="pf-dbody" id="detail-body"></div></dialog>
+
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/pflanzen.js"></script>
+<script src="../js/tool-pflanzen.js"></script>
+</body>
+</html>

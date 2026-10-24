@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Stromausfall-Plan – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    input[type="datetime-local"] { width: 100%; min-height: 48px; padding: 10px 14px; font: 400 1.05rem var(--font); color: var(--text); background: var(--surface-2);
+      border: 1px solid transparent; border-radius: 12px; appearance: none; -webkit-appearance: none; direction: ltr; text-align: start; }
+    input[type="datetime-local"]:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    select { min-height: 48px; }
+
+    .kicker { margin: 0 0 4px; color: var(--text-2); font-size: .85rem; font-weight: 650; text-transform: uppercase; letter-spacing: .06em; }
+    .s-title { margin: 0 0 10px; font-size: 1.15rem; }
+    .big { font-size: clamp(2.1rem, 9vw, 3.2rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .phase-now { margin: 4px 0 14px; font-weight: 600; }
+    #status .muted { margin: 4px 0 8px; }
+    #status .btn-row { margin-top: 12px; }
+    details.chg { background: transparent; border: 0; padding: 0; margin: 0 0 4px; }
+    details.chg summary { min-height: var(--hit); color: var(--accent); font-weight: 600; }
+    details.chg summary::after { content: none; }
+    details.chg .field { margin: 4px 0 10px; }
+
+    .bar { height: 12px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 10px 0 0; }
+    .bar.sm { height: 8px; margin: 0 0 6px; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width .25s; }
+    .progress-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .progress-head .bigc { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+
+    .irow { display: flex; align-items: flex-start; border-bottom: 1px solid var(--line); }
+    .irow:last-child { border-bottom: 0; }
+    .irow .main { flex: 1; min-width: 0; }
+    .irow .check { border-bottom: 0; }
+    .irow .check span { overflow-wrap: anywhere; }
+    .irow .x { width: var(--hit); height: var(--hit); flex: none; margin-top: 4px; border: 0; border-radius: 50%; background: transparent; color: var(--text-2); font-size: 1.2rem; cursor: pointer; }
+    .irow .x:hover { background: var(--surface-2); color: var(--danger); }
+    .lnks { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 0 10px; padding-inline: 38px 4px; }
+    .lnk { display: inline-flex; align-items: center; min-height: var(--hit); padding: 0 16px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-size: .9rem; font-weight: 600; }
+    .lnk:hover { text-decoration: none; background: color-mix(in srgb, var(--accent) 12%, var(--surface-2)); }
+    .nrow { border-bottom: 1px solid var(--line); }
+    .nrow:last-child { border-bottom: 0; }
+    .nrow .irow { border-bottom: 0; }
+    .nrow .ph { margin: 0 0 12px 38px; }
+    html[dir="rtl"] .nrow .ph { margin: 0 38px 12px 0; }
+
+    .chip.on { background: var(--accent); color: var(--on-accent); }
+    #plan { display: grid; gap: 12px; }
+    details.phase { margin: 0; padding: 0 16px; border-radius: var(--r-lg); box-shadow: var(--shadow); }
+    details.phase.now { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+    details.phase summary { gap: 12px; min-height: 64px; padding-block: 8px; }
+    details.phase .ptitle { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; flex: 1; min-width: 0; }
+    details.phase .ptitle .muted { flex-basis: 100%; }
+    details.phase .pn { color: var(--text-2); font-variant-numeric: tabular-nums; direction: ltr; }
+    details.phase summary::after { margin-inline-start: 4px; }
+    details.phase > div { padding: 0; }
+    details.phase > .rows { padding-bottom: 8px; }
+
+    .add-row { display: grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 620px) { .add-row { grid-template-columns: 1fr 200px auto; } }
+
+    .print-view { display: none; }
+    @media print {
+      .print-view { display: block !important; }
+      main > .page-head, main > .screen { display: none !important; }
+      .print-view h1 { font-size: 18pt; margin-bottom: 2pt; }
+      .print-view h2 { font-size: 12pt; margin: 10pt 0 3pt; break-after: avoid; }
+      .print-view h2 small { font-weight: 400; color: #444; font-size: 9pt; }
+      .print-view ul { list-style: none; padding: 0; margin: 0; }
+      .print-view li { margin: 0 0 4pt; break-inside: avoid; padding-inline-start: 0; font-size: 11pt; }
+      .print-view .box { display: inline-block; width: 1.4em; font-size: 12pt; }
+      .print-view .src { margin-top: 12pt; font-size: 8.5pt; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Stromausfall-Plan</h1>
+    <p class="lead">Was wann zu tun ist: Stunde 1, Tag 1, Tag 3, Woche 1 zum Abhaken.</p>
+  </header>
+
+  <div class="stack screen">
+    <div class="callout warn" id="storeWarn" role="alert" hidden>
+      <strong>Speicher blockiert</strong>
+      Dein Browser erlaubt kein Speichern. Deine Häkchen und die Startzeit gehen beim Schließen der Seite verloren. Drucke den Plan bei Bedarf aus.
+    </div>
+
+    <section class="card" id="status"></section>
+
+    <section class="card" id="next" aria-live="polite"></section>
+
+    <section class="card" aria-live="polite">
+      <div class="progress-head">
+        <h2 class="s-title" style="margin:0">Gesamt</h2>
+        <span class="bigc" id="overallText"></span>
+      </div>
+      <div class="bar" role="progressbar" aria-label="Gesamt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="overallWrap"><i id="overallBar"></i></div>
+    </section>
+
+    <div id="plan"></div>
+
+    <section class="card">
+      <h2 class="s-title">Eigene Punkte</h2>
+      <form class="add-row" id="addForm" autocomplete="off">
+        <input type="text" id="addText" maxlength="120" placeholder="Eigenen Punkt eintragen" aria-label="Eigenen Punkt eintragen">
+        <select id="addPhase" aria-label="Phase wählen"></select>
+        <button type="submit" class="btn">Hinzufügen</button>
+      </form>
+    </section>
+
+    <section class="sources">
+      <h2>Quellen</h2>
+      <ul>
+        <li>Offline-Ark, Wissensseite „Stromausfall-Leitfaden“ (nach BBK und FEMA/ready.gov, in eigenen Worten zusammengefasst).</li>
+        <li><a href="../wissen/stromausfall.html">Stromausfall-Leitfaden</a></li>
+        <li>Der Plan ist eine Anregung und ersetzt keine Beratung. Im Notfall 112.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="print-view" id="printView" aria-hidden="true"></section>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/ablaufplan.js"></script>
+<script src="../js/tool-ablaufplan.js"></script>
+</body>
+</html>

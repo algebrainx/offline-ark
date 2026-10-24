@@ -52,7 +52,23 @@
     play: '<path d="M7 4l13 8-13 8z"/>',
     stop: '<rect x="6" y="6" width="12" height="12" rx="1"/>',
     ark: '<path d="M3 15l2 4h14l2-4zM12 15V6M12 6l5 4h-5M7 15V12h10v3"/>',
-    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    heart: '<path d="M12 20s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 5.8-8 11-8 11z"/>',
+    steps: '<path d="M4 18h5v-5h5V8h6"/><path d="M4 21h16"/>',
+    sign: '<rect x="4" y="3" width="16" height="13" rx="2"/><path d="M8 8h8M8 12h5M12 16v5M9 21h6"/>',
+    qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+    cloud: '<path d="M7 18a4 4 0 0 1-.5-8A5.5 5.5 0 0 1 17 8.5 4.5 4.5 0 0 1 17 18z"/>',
+    star: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    paw: '<ellipse cx="12" cy="16" rx="4.5" ry="3.5"/><circle cx="5.5" cy="11" r="1.8"/><circle cx="9.5" cy="6.5" r="1.8"/><circle cx="14.5" cy="6.5" r="1.8"/><circle cx="18.5" cy="11" r="1.8"/>',
+    sprout: '<path d="M12 21v-9M12 12c0-4 3-6 7-6 0 4-3 6-7 6zM12 15c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/>',
+    jar: '<path d="M8 3h8v3H8zM6 6h12v2l1 2v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-9l1-2z"/><path d="M9 13h6"/>',
+    log: '<ellipse cx="7" cy="12" rx="3" ry="5"/><path d="M7 7h11a3 5 0 0 1 0 10H7"/><path d="M7 11h.01"/>',
+    question: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>',
+    knot: '<path d="M4 8c5-4 8 4 12 0s4 4 4 4M4 16c5-4 8 4 12 0"/><path d="M8 4l2 4M14 20l2-4"/>',
+    idcard: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.5-2 5.5-2 6 0M14 10h4M14 13h3"/>',
+    smile: '<circle cx="12" cy="12" r="9"/><path d="M8 14c1 2 7 2 8 0M9 9.5h.01M15 9.5h.01"/>',
+    wrench: '<path d="M14.5 6.5a4 4 0 0 0-5 5L4 17l3 3 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z"/>'
   };
 
   /** Liefert ein Inline-SVG; aria-hidden, weil Icons nur Dekoration sind. */

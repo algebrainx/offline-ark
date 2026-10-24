@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wiederbelebungs-Takt – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .steps-card { padding: 16px 20px; }
+    .steps-card ol { margin: 0; padding-inline-start: 1.3em; }
+    .steps-card li { margin-bottom: .45em; }
+    .steps-card li::marker { color: var(--text-2); font-weight: 700; }
+
+    .metro { text-align: center; }
+    .metro-btn {
+      width: min(62vw, 230px); aspect-ratio: 1; min-width: 150px; border-radius: 50%; padding: 0; margin: 4px auto 18px;
+      display: grid; place-content: center; justify-items: center; gap: 6px;
+      font: 700 1.6rem var(--font); letter-spacing: 0; touch-action: manipulation;
+    }
+    .metro-btn .icon { width: 64px; height: 64px; stroke-width: 1.6; }
+    .metro-heart-wrap { display: grid; }
+    .metro-heart-wrap.beat { animation: heartbeat .32s ease-out; }
+    @keyframes heartbeat { 0% { transform: scale(1); } 25% { transform: scale(1.22); } 100% { transform: scale(1); } }
+    .metro-hint { margin: -6px 0 16px; color: var(--text-2); }
+
+    .bpm-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; }
+    .bpm-row .stepper { flex: 0 1 260px; }
+    .bpm-row .stepper input { font-size: 1.8rem; font-weight: 700; }
+    .bpm-unit { color: var(--text-2); font-size: .9rem; margin-bottom: 4px; }
+    .quick { display: flex; gap: 8px; justify-content: center; margin: 8px 0 4px; }
+    .quick .btn { flex: 1 1 0; max-width: 110px; }
+    .quick .btn.on { box-shadow: inset 0 0 0 2px var(--accent); }
+    .range-field { display: flex; justify-content: space-between; align-items: baseline; }
+    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0; }
+    .range-field output { font-weight: 650; font-variant-numeric: tabular-nums; }
+
+    .breath {
+      border: 2px solid var(--accent); border-radius: var(--r); padding: 16px; margin: 0 0 16px;
+      font: 700 clamp(1.8rem, 8vw, 2.6rem)/1.15 var(--font); animation: breath-pulse 1s ease-in-out infinite;
+    }
+    .breath small { display: block; font: 500 1rem var(--font); color: var(--text-2); margin-top: 4px; }
+    @keyframes breath-pulse { 50% { opacity: .6; } }
+    .counters { margin: 4px 0 18px; }
+    .counters .stat { text-align: center; }
+
+    /* Vollbild-Blinken: echtes Schwarz/Weiß für maximalen Kontrast (1,7 bis 2 Schläge pro Sekunde) */
+    .metro-flash { background: #000; display: grid; place-items: center; align-content: center; gap: 12px; }
+    .flash-count { font: 700 clamp(5rem, 36vw, 12rem)/1 var(--font); color: #fff; mix-blend-mode: difference; font-variant-numeric: tabular-nums; }
+    .flash-breath { text-align: center; font: 700 clamp(2rem, 9vw, 3.5rem)/1.2 var(--font); color: #fff; mix-blend-mode: difference; }
+    .flash-breath small { display: block; font: 500 1.2rem var(--font); }
+    .flash-close {
+      position: absolute; top: max(16px, env(safe-area-inset-top)); inset-inline-end: max(16px, env(safe-area-inset-right));
+      width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+      background: rgba(0, 0, 0, .45); color: #fff; border: 2px solid rgba(255, 255, 255, .85);
+    }
+    .flash-close .icon { width: 26px; height: 26px; stroke-width: 2.2; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Wiederbelebungs-Takt</h1>
+    <p class="lead">Der Takt hilft dir, gleichmäßig zu drücken: 100 bis 120 Mal pro Minute.</p>
+  </header>
+
+  <div class="stack">
+    <div class="callout danger">
+      <strong>Zuerst 112 rufen</strong>
+      Person reagiert nicht und atmet nicht normal? Ruf 112 an (Lautsprecher an) und drück sofort fest und schnell in die Mitte des Brustkorbs. Du kannst nichts falsch machen – außer nichts zu tun.
+    </div>
+
+    <details class="steps-card" open>
+      <summary>So drückst du in 5 Schritten</summary>
+      <div>
+        <ol>
+          <li>Knie dich neben die Person. Lege den Handballen in die Mitte des Brustkorbs, die zweite Hand darauf. Die Arme bleiben gestreckt, die Schultern senkrecht darüber.</li>
+          <li>Drücke 5 bis 6 cm tief, im Takt: 100 bis 120 Mal pro Minute.</li>
+          <li>Lass den Brustkorb nach jedem Druck ganz zurückfedern.</li>
+          <li>Hör nicht auf, bis Hilfe übernimmt oder die Person wieder normal atmet.</li>
+          <li>Ist ein AED (Defibrillator) da, lass ihn holen. Schalte ihn ein und folge den Sprachansagen. Dabei weiterdrücken, bis das Gerät analysiert.</li>
+        </ol>
+        <p class="small muted" style="margin:10px 0 0">Mehr zur Wiederbelebung, zu Kindern und Blutungen: <a id="link-eh" href="../wissen/erste-hilfe.html">Erste Hilfe</a></p>
+      </div>
+    </details>
+
+    <section class="card metro">
+      <button type="button" class="btn primary metro-btn" id="metro-btn" aria-pressed="false">
+        <span id="metro-heart" class="metro-heart-wrap" aria-hidden="true"></span>
+        <span id="metro-label">Start</span>
+      </button>
+      <p class="metro-hint" id="metro-hint">Tippe auf Start, sobald du anfängst zu drücken.</p>
+
+      <div class="breath" id="breath" role="alert" hidden>
+        <div>2 Beatmungen</div>
+        <small class="ltr" id="breath-sec" data-notranslate></small>
+      </div>
+
+      <div class="field" style="margin-bottom:6px"><span class="label">Tempo</span>
+        <div class="bpm-row">
+          <div class="stepper" data-min="100" data-max="120" data-step="1">
+            <button type="button" aria-label="Langsamer">−</button>
+            <input type="number" id="bpm" inputmode="numeric" min="100" max="120" value="110" aria-label="Druckungen pro Minute">
+            <button type="button" aria-label="Schneller">+</button>
+          </div>
+        </div>
+        <div class="bpm-unit">Druckungen pro Minute</div>
+        <input type="range" id="bpm-range" min="100" max="120" step="1" value="110" aria-label="Tempo einstellen">
+        <div class="quick" id="quick" aria-label="Schnellwahl">
+          <button type="button" class="btn sm" data-bpm="100">100</button>
+          <button type="button" class="btn sm" data-bpm="110">110</button>
+          <button type="button" class="btn sm" data-bpm="120">120</button>
+        </div>
+      </div>
+
+      <div class="field"><span class="label">Ablauf</span>
+        <div class="seg" id="mode" data-local role="group" aria-label="Ablauf">
+          <button type="button" data-v="comp" aria-pressed="true">Nur Drücken</button>
+          <button type="button" data-v="30:2" aria-pressed="false">30:2</button>
+        </div>
+        <p class="hint">Ohne Übung oder wenn du nicht beatmen willst: nur durchgehend drücken. Mit Übung: nach 30 Mal Drücken 2 Mal beatmen.</p>
+      </div>
+
+      <div class="stats counters">
+        <div class="stat"><div class="num ltr" id="st-comp">0</div><div class="cap">Druckungen</div></div>
+        <div class="stat" id="box-cycles" hidden><div class="num ltr" id="st-cycles">0</div><div class="cap">Zyklen</div></div>
+        <div class="stat"><div class="num ltr" id="st-time">00:00</div><div class="cap">Zeit</div></div>
+      </div>
+
+      <button type="button" class="btn" id="btn-full">Blinken im Vollbild</button>
+    </section>
+
+    <details>
+      <summary>Einstellungen</summary>
+      <div>
+        <div class="switch-row"><span>Ton</span>
+          <label class="switch"><input type="checkbox" id="opt-sound" aria-label="Ton"><span></span></label></div>
+        <div class="field"><div class="range-field"><label for="opt-vol">Lautstärke</label><output id="opt-vol-val" class="ltr" for="opt-vol">70 %</output></div>
+          <input type="range" id="opt-vol" min="5" max="100" step="5" value="70"></div>
+        <div class="switch-row"><span>Vibration</span>
+          <label class="switch"><input type="checkbox" id="opt-vib" aria-label="Vibration"><span></span></label></div>
+        <p class="hint">Auch ohne Ton nutzbar: Das Herz und der Vollbildmodus blinken im Takt. Der Bildschirm bleibt an, solange der Takt läuft.</p>
+      </div>
+    </details>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-metronom.js"></script>
+</body>
+</html>

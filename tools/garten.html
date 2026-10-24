@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gartenkalender – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    :root { --c-pre: var(--text-2); --c-sow: var(--accent); --c-harv: var(--ok); }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
+    .plain li { margin-bottom: .4em; }
+    .stackc > * + * { margin-top: 10px; }
+    .bar-legend { display: grid; gap: 8px 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); font-size: .9rem; }
+    .bar-legend > div { display: flex; align-items: center; gap: 10px; min-height: 26px; }
+    .bar-legend .bar { position: relative; flex: none; width: 56px; }
+    .count { color: var(--text-2); font-size: .9rem; margin: 2px 4px 10px; }
+
+    .cal { direction: ltr; }
+    .mhead { display: grid; grid-template-columns: repeat(12, 1fr); font-size: .72rem; text-align: center; color: var(--text-2); margin-bottom: 6px; }
+    .mhead span { padding: 2px 0; border-radius: 6px; }
+    .mhead span.cur { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+    .crop { border-bottom: 1px solid var(--line); padding: 2px 0 8px; }
+    .crop:last-child { border-bottom: 0; }
+    .crop-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; width: 100%; min-height: 48px;
+      padding: 4px 2px; border: 0; background: transparent; color: var(--text); font: 650 1rem var(--font); text-align: start; cursor: pointer; direction: inherit;
+    }
+    .crop-head:hover { background: var(--surface-2); border-radius: 10px; }
+    .crop-head .chips { display: flex; gap: 4px; flex-wrap: wrap; }
+    .crop-head::after { content: "+"; margin-inline-start: auto; color: var(--text-2); font-size: 1.3rem; font-weight: 400; padding-inline: 6px; }
+    .crop-head[aria-expanded="true"]::after { content: "–"; }
+    .track { position: relative; margin: 2px 0 4px; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: calc(100% / 12) 100%; border-inline-end: 1px solid var(--line); }
+    .track .now { position: absolute; top: -2px; bottom: -2px; width: calc(100% / 12); background: color-mix(in srgb, var(--accent) 14%, transparent); border-radius: 4px; pointer-events: none; }
+    .lane { position: relative; height: 13px; margin: 2px 0; }
+    .bar { position: absolute; top: 0; height: 13px; border-radius: 4px; min-width: 6px; }
+    .bar .tag { position: absolute; top: 0; inset-inline-start: 0; min-width: 14px; height: 13px; padding: 0 3px; border-radius: 4px; font-size: .62rem; line-height: 13px; font-weight: 700; text-align: center; color: var(--bg); }
+    .bar.pre { border: 1.5px dashed var(--c-pre); background: repeating-linear-gradient(135deg, var(--c-pre) 0 2px, transparent 2px 5px); }
+    .bar.pre .tag { background: var(--c-pre); }
+    .bar.sow { background: var(--c-sow); }
+    .bar.sow .tag { background: var(--c-sow); box-shadow: 0 0 0 1px var(--bg); }
+    .bar.plant { border: 1.5px solid var(--c-sow); background: repeating-linear-gradient(90deg, var(--c-sow) 0 5px, transparent 5px 8px); }
+    .bar.plant .tag { background: var(--c-sow); }
+    .bar.harv { background: var(--c-harv); }
+    .bar.harv .tag { background: var(--c-harv); box-shadow: 0 0 0 1px var(--bg); }
+    .bar-legend .bar .tag { position: static; display: inline-block; }
+    .bar-legend .bar { height: 13px; }
+    .detail { padding: 6px 4px 6px; font-size: .92rem; }
+    .detail div + div { margin-top: 4px; }
+    .detail .k { font-weight: 650; }
+    .store-list { display: grid; gap: 10px; }
+    .store-list .item { display: block; min-height: 0; padding: 12px 14px; background: var(--surface-2); border-radius: var(--r); border: 0; }
+    .store-list .item strong { display: block; }
+    .sources ul { padding-inline-start: 1.2em; }
+    .sources li { font-size: .92rem; color: var(--text-2); }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Gartenkalender</h1>
+    <p class="lead">Was wann in Baden-Württemberg gesät, gepflanzt und geerntet wird.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="field"><label for="q">Kultur suchen</label>
+        <input type="search" id="q" placeholder="z. B. Tomate" autocomplete="off"></div>
+      <div class="field"><span class="label">Anzeigen</span>
+        <div class="seg" data-local id="filter">
+          <button type="button" data-v="all" aria-pressed="true" id="fAll">Alle</button>
+          <button type="button" data-v="sow" aria-pressed="false" id="fSow">Jetzt säen</button>
+          <button type="button" data-v="harvest" aria-pressed="false" id="fHarvest">Jetzt ernten</button>
+        </div></div>
+      <div class="form-grid">
+        <div class="field"><label for="month">Monat</label><select id="month"></select></div>
+        <div class="field"><span class="label">Selbstversorgung</span>
+          <div class="switch-row"><span>Nur lagerfähige Kulturen</span>
+            <label class="switch"><input type="checkbox" id="store" aria-label="Nur lagerfähige Kulturen"><span></span></label></div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="bar-legend" aria-label="Legende">
+        <div><span class="bar pre"><span class="tag" id="lgV">V</span></span><span>Vorkultur (Frühbeet oder drinnen)</span></div>
+        <div><span class="bar sow"><span class="tag" id="lgS">S</span></span><span>Aussaat ins Freiland</span></div>
+        <div><span class="bar plant"><span class="tag" id="lgP">P</span></span><span>Pflanzen, Stecken oder Legen draußen</span></div>
+        <div><span class="bar harv"><span class="tag" id="lgE">E</span></span><span>Ernte</span></div>
+      </div>
+      <p class="hint">Tippe eine Kultur an, um die Zeiten als Text zu sehen.</p>
+    </section>
+
+    <section class="card">
+      <div class="count" id="count" aria-live="polite"></div>
+      <div class="cal">
+        <div class="mhead" id="mhead" aria-hidden="true"></div>
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <div class="callout info">
+      <strong>Wo und wie genau?</strong>
+      <ul class="plain">
+        <li>Die Termine stammen von der Bayerischen Gartenakademie (LWG Veitshöchheim) und gelten für mittlere Lagen in Süddeutschland. Baden-Württemberg liegt in einem ähnlichen Klima. Eine eigene Tabelle für Baden-Württemberg wurde nicht gefunden.</li>
+        <li>Die Balken sind auf halbe Monate gerundet. Es sind Richtwerte, nicht jedes Jahr gleich.</li>
+        <li>In milden Lagen wie dem Weinbauklima kann man meist früher beginnen, in kühlen Lagen und Höhenlagen oft später.</li>
+        <li>Die Kürbis- und Knoblauch-Termine fehlen, weil dafür keine geprüfte Quelle vorlag.</li>
+      </ul>
+    </div>
+
+    <section class="card">
+      <h2 style="margin-top:0;font-size:1.2rem">Selbstversorgung: lagerfähige Kulturen</h2>
+      <p class="muted" id="storeIntro"></p>
+      <div class="store-list" id="storeList"></div>
+      <p class="hint">Zu Kalorien liegen hier keine geprüften Angaben vor, deshalb werden keine genannt.</p>
+    </section>
+
+    <section class="card">
+      <h2 style="margin-top:0;font-size:1.2rem">Notfall-Garten: schnell etwas ernten</h2>
+      <div class="store-list" id="emerList"></div>
+    </section>
+
+    <section class="card">
+      <h2 style="margin-top:0;font-size:1.2rem">Frost und Eisheilige</h2>
+      <ul class="plain" id="frostList"></ul>
+    </section>
+
+    <div class="callout warn">
+      <strong>Pflanzen und Pilze draußen</strong>
+      <ul class="plain">
+        <li data-t>Dieser Kalender betrifft angebaute Gemüse und Kräuter. Wildpflanzen und Pilze nur essen, wenn sie zu 100 % sicher bestimmt sind. Siehe <a href="../wissen/nahrung.html">Nahrung</a>.</li>
+      </ul>
+    </div>
+
+    <section class="sources">
+      <h2>Quellen</h2>
+      <ul id="sources"></ul>
+      <p class="small muted">Links öffnen sich nur mit Internet. Alle Aussagen sind eigene, zusammengefasste Texte nach den genannten Quellen.</p>
+    </section>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/garten.js"></script>
+<script src="../js/garten-core.js"></script>
+<script src="../js/tool-garten.js"></script>
+</body>
+</html>

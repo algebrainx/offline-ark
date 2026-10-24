@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Morse-Trainer – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .chars { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+    .chars .ch { min-width: 44px; height: 44px; padding: 0 8px; display: inline-grid; place-items: center; border-radius: 12px; background: var(--surface-2); font: 700 1.2rem var(--font); }
+    .chars .ch.new { box-shadow: inset 0 0 0 2px var(--accent); }
+    .tempo-info { color: var(--text-2); font-size: .9rem; margin: 0 0 16px; }
+    .range-field { display: flex; justify-content: space-between; align-items: baseline; }
+    .range-field label { font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0; }
+    .range-field output { font-weight: 650; font-variant-numeric: tabular-nums; }
+    .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .time-grid .stepper { direction: ltr; }
+
+    .play-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; color: var(--text-2); }
+    .lamp-row { display: flex; align-items: center; gap: 14px; justify-content: center; margin: 6px 0 18px; }
+    .lamp { width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--line); transition: background .03s; flex: none; }
+    .lamp.on { background: var(--accent); border-color: var(--accent); }
+    .keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; direction: ltr; }
+    .key { min-height: 52px; border: 0; border-radius: 14px; background: var(--surface-2); color: var(--text); font: 700 1.3rem var(--font); cursor: pointer; touch-action: manipulation; }
+    .key:active { transform: scale(.96); }
+    .key[disabled] { cursor: default; }
+    .key.right, .opt.right { box-shadow: inset 0 0 0 3px var(--ok); }
+    .key.wrong, .opt.wrong { box-shadow: inset 0 0 0 3px var(--danger); }
+    .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .opt { min-height: 56px; font-size: 1.1rem; }
+    .word-box { display: flex; flex-wrap: wrap; gap: 10px; }
+    .word-box input { flex: 1 1 160px; text-transform: uppercase; letter-spacing: .08em; direction: ltr; }
+    .feedback { margin-top: 16px; padding: 14px 16px; border-radius: var(--r); background: var(--surface-2); font-size: 1.05rem; }
+    .feedback.ok { border: 2px solid var(--ok); }
+    .feedback.bad { border: 2px solid var(--danger); }
+    .feedback strong { letter-spacing: .06em; }
+    .btn-row.center { justify-content: center; }
+    .stat-table td, .stat-table th { padding: 10px 14px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Morse-Trainer</h1>
+    <p class="lead">Lerne Morsezeichen nach der Koch-Methode: Du hörst die Zeichen schnell und lernst Stufe für Stufe neue dazu.</p>
+  </header>
+
+  <!-- Einstellungen und Start -->
+  <div class="stack" id="view-setup">
+    <section class="card">
+      <div class="seg" id="modes" data-local role="group" aria-label="Übungsart" style="margin-bottom:18px">
+        <button type="button" data-v="learn" aria-pressed="true">Zeichen lernen</button>
+        <button type="button" data-v="words" aria-pressed="false">Wörter</button>
+        <button type="button" data-v="sos" aria-pressed="false">SOS &amp; Notzeichen</button>
+      </div>
+
+      <div id="level-box">
+        <div class="field"><span class="label">Stufe</span>
+          <div class="stepper" data-min="1" data-max="39" data-step="1" style="direction:ltr">
+            <button type="button" aria-label="Stufe zurück">−</button>
+            <input type="number" id="level" inputmode="numeric" min="1" max="39" value="1" aria-label="Stufe">
+            <button type="button" aria-label="Stufe weiter">+</button>
+          </div></div>
+        <span class="label small muted">Diese Zeichen übst du (das neueste ist markiert):</span>
+        <div class="chars ltr" id="level-chars"></div>
+      </div>
+      <p class="tempo-info" id="tempo-info"></p>
+
+      <button type="button" class="btn primary block" id="btn-start" style="min-height:56px">Runde starten</button>
+      <p class="hint">Mit Ton. Das Licht blinkt im Takt mit, falls du ohne Ton übst. Ab 90 % richtig wird das Tempo erhöht.</p>
+    </section>
+
+    <details>
+      <summary>Einstellungen</summary>
+      <div>
+        <div class="field"><div class="range-field"><label for="hz">Tonhöhe</label><output id="hz-val" class="ltr" for="hz">600 Hz</output></div>
+          <input type="range" id="hz" min="400" max="1000" step="25" value="600"></div>
+        <div class="time-grid">
+          <div class="field"><span class="label">Zeichen-Tempo (WPM)</span>
+            <div class="stepper" data-min="18" data-max="22" data-step="1"><button type="button" aria-label="Langsamer">−</button><input type="number" id="cw" inputmode="numeric" value="20" aria-label="Zeichen-Tempo"><button type="button" aria-label="Schneller">+</button></div></div>
+          <div class="field"><span class="label">Pausen-Tempo (WPM)</span>
+            <div class="stepper" data-min="5" data-max="22" data-step="1"><button type="button" aria-label="Langsamer">−</button><input type="number" id="eff" inputmode="numeric" value="10" aria-label="Pausen-Tempo"><button type="button" aria-label="Schneller">+</button></div></div>
+        </div>
+        <p class="hint">Farnsworth-Methode: Die Zeichen kommen schnell, die Pausen dazwischen sind am Anfang länger. Das Pausen-Tempo steigt von allein.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Statistik pro Zeichen</summary>
+      <div>
+        <p class="muted" id="stats-none">Noch keine Daten. Spiele eine Runde im Modus „Zeichen lernen“.</p>
+        <div class="table-wrap"><table class="stat-table"><thead><tr><th>Zeichen</th><th>Morse</th><th class="num">Treffer</th></tr></thead><tbody id="stats-body"></tbody></table></div>
+        <div class="btn-row" style="margin-top:12px"><button type="button" class="btn sm danger" id="btn-reset">Lernstände löschen</button></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Runde -->
+  <div class="stack" id="view-play" hidden>
+    <section class="card">
+      <div class="play-head"><span id="prog"></span><span id="score"></span></div>
+      <div class="lamp-row"><span class="lamp" id="lamp" aria-hidden="true"></span>
+        <button type="button" class="btn sm" id="btn-replay">Nochmal hören</button></div>
+
+      <div class="keys" id="keys" role="group" aria-label="Welches Zeichen war das?"></div>
+      <div class="word-box" id="word-box" hidden>
+        <input type="text" id="word-in" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" aria-label="Was hast du gehört?" placeholder="Was hast du gehört?">
+        <button type="button" class="btn" id="btn-check">Prüfen</button>
+      </div>
+      <div class="opts" id="opts" role="group" aria-label="Was war das?" hidden></div>
+
+      <div class="feedback" id="feedback" role="status" hidden></div>
+      <div class="btn-row" style="margin-top:16px">
+        <button type="button" class="btn primary" id="btn-next" hidden>Weiter</button>
+        <button type="button" class="btn sm" id="btn-abort">Runde beenden</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Ergebnis -->
+  <div class="stack" id="view-result" hidden>
+    <section class="card result">
+      <h2 id="res-title" style="margin-top:0"></h2>
+      <div><span class="num ltr" id="res-num"></span></div>
+      <p class="cap" id="res-msg" style="margin-top:12px"></p>
+      <div class="btn-row center" style="margin-top:18px">
+        <button type="button" class="btn primary" id="btn-again">Nächste Runde</button>
+        <button type="button" class="btn" id="btn-back">Zurück</button>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/morse-table.js"></script>
+<script src="../js/tool-morsetrainer.js"></script>
+</body>
+</html>

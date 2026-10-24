@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Notfall-Assistent – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Notruf-Streifen: bleibt oben sichtbar. Rot nur bei Lebensgefahr. */
+    .strip { position: sticky; top: 62px; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      min-height: 56px; padding: 6px 8px 6px 16px; margin-bottom: 16px; border-radius: var(--r); background: var(--surface-2); color: var(--text); border: 1px solid var(--line); }
+    html[dir="rtl"] .strip { padding: 6px 16px 6px 8px; }
+    .strip .t { flex: 1; min-width: 0; font-weight: 600; font-size: .95rem; line-height: 1.25; }
+    .strip .call { display: inline-flex; align-items: center; justify-content: center; min-width: 84px; min-height: var(--hit); padding: 0 20px; border-radius: 999px; font-size: 1.2rem; font-weight: 800; letter-spacing: .02em; color: var(--danger); background: var(--surface); border: 2px solid var(--danger); }
+    .strip .call:hover { text-decoration: none; }
+    .strip.e { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .strip.e .call { background: #fff; color: #b00012; border-color: #fff; }
+    html[data-theme="night"] .strip.e { color: #000; }
+    html[data-theme="night"] .strip.e .call { background: #000; color: var(--danger); border-color: #000; }
+    html[data-theme="night"] .strip .call { background: var(--surface); }
+
+    .kicker { margin: 0 0 4px; color: var(--text-2); font-size: .85rem; font-weight: 650; text-transform: uppercase; letter-spacing: .06em; }
+    h2.q { margin: 0 0 14px; font-size: clamp(1.4rem, 5vw, 1.9rem); line-height: 1.2; }
+    h2.q:focus { outline: none; }
+    #view { scroll-margin-top: 132px; }
+    .lead-s { font-size: 1.1rem; color: var(--text-2); margin: 0 0 14px; }
+    h3.mini { margin: 0 0 12px; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); font-weight: 650; }
+    h3.nxt { margin-top: 26px; }
+    #view .card { margin-bottom: 18px; }
+    #view .prose { max-width: none; }
+    #view .prose .steps { margin: 0; }
+    #view .prose .steps > li:last-child { margin-bottom: 0; }
+    #view .callout { margin-top: 16px; }
+
+    /* Startkacheln und Antwortknöpfe: groß, gut treffbar, kein Blau (Blau bleibt für die eine Hauptaktion) */
+    .choices { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); margin-top: 16px; }
+    .choice { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 16px; min-height: 112px; padding: 16px; text-align: start;
+      font: 650 1.02rem/1.25 var(--font); color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); cursor: pointer; box-shadow: var(--shadow); }
+    .choice .icon { width: 28px; height: 28px; color: var(--accent); stroke-width: 1.6; }
+    .choice:hover { background: var(--surface-2); }
+    .choice:active { transform: scale(.98); }
+    .answers { display: grid; gap: 12px; margin-top: 4px; }
+    .ans { display: flex; align-items: center; min-height: 64px; width: 100%; padding: 12px 20px; text-align: start;
+      font: 600 1.1rem/1.3 var(--font); color: var(--text); background: var(--surface); border: 2px solid var(--line); border-radius: var(--r); cursor: pointer; }
+    .ans:hover { background: var(--surface-2); border-color: var(--text-2); }
+    .ans:active { transform: scale(.99); }
+    .more { margin-top: 18px; }
+    .disc { margin-top: 18px; }
+
+    /* Untere Leiste: Zurück und Neu starten sind immer erreichbar */
+    .navbar { position: sticky; bottom: 0; z-index: 30; margin-top: 24px; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: var(--glass);
+      -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-top: 1px solid var(--line); }
+    .navbar .row { display: flex; align-items: center; gap: 10px; }
+    .navbar .row .grow { flex: 1; min-width: 0; text-align: end; color: var(--text-2); font-size: .9rem; font-variant-numeric: tabular-nums; }
+    .bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 0 0 10px; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width .25s; }
+
+    .print-view { display: none; }
+    @media print {
+      .print-view { display: block !important; }
+      main > .page-head, main > .screen, .strip, .navbar { display: none !important; }
+      .print-view h1 { font-size: 20pt; margin-bottom: 4pt; }
+      .print-view h2 { font-size: 13pt; margin: 12pt 0 4pt; }
+      .print-view .p112 { font-size: 16pt; border: 2pt solid #000; padding: 6pt 10pt; margin: 6pt 0 10pt; }
+      .print-view ol, .print-view ul { margin: 0 0 6pt; padding-inline-start: 1.4em; }
+      .print-view li { margin: 0 0 5pt; break-inside: avoid; font-size: 12pt; }
+      .print-view .pnote { font-size: 11pt; border-inline-start: 3pt solid #000; padding-inline-start: 8pt; margin: 8pt 0; }
+      .print-view .src { margin-top: 14pt; font-size: 9pt; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Notfall-Assistent</h1>
+    <p class="lead">Fragen beantworten, dann Schritt für Schritt Anweisungen erhalten.</p>
+  </header>
+
+  <div class="strip no-print" id="strip" role="region" aria-label="Notruf"></div>
+
+  <div class="screen">
+    <div id="view" aria-live="polite"></div>
+
+    <div class="navbar no-print">
+      <div class="bar" role="progressbar" aria-label="Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barWrap"><i id="bar"></i></div>
+      <div class="row">
+        <button type="button" class="btn sm" id="back">Zurück</button>
+        <button type="button" class="btn sm" id="restart">Neu starten</button>
+        <span class="grow" id="stepNo"></span>
+      </div>
+    </div>
+  </div>
+
+  <section class="print-view" id="printView" aria-hidden="true"></section>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/assistent.js"></script>
+<script src="../js/tool-assistent.js"></script>
+</body>
+</html>

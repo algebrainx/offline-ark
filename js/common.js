@@ -9,6 +9,11 @@
   var OA = window.OA = window.OA || {};
   OA.root = (document.body && document.body.getAttribute('data-root')) || '';
 
+  // Optional: Service Worker für die Installation als App (nur über http/https, nie unter file://)
+  if (/^https?:$/.test(location.protocol)) {
+    var pw = document.createElement('script'); pw.src = OA.root + 'js/pwa.js'; document.head.appendChild(pw);
+  }
+
   /* ---------- Speicher ---------- */
   var mem = {};          // Notlösung, falls localStorage gesperrt ist
   var PREFIX = 'oa.';

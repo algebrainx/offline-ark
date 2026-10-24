@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ausdruck-Paket – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <meta name="oa-dicts" content="tool-checklisten,tool-notvorrat,tool-kontakte,tool-morse">
+  <meta name="theme-color" content="#0071e3">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script>
+    // Zusätzliche Wörterbücher (Checklisten, Notvorrat, Kontakte, Morse) – für den Druck in jeder Sprache nötig
+    (function () {
+      var m = document.querySelector('meta[name="oa-dicts"]');
+      if (m && OA.lang !== 'de' && OA.base) m.content.split(',').forEach(function (f) { document.write('<script src="' + OA.base + 'data/i18n/' + f + '.js"><\/script>'); });
+    })();
+  </script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* ---------- Auswahl ---------- */
+    .pick { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 4px; border-bottom: 1px solid var(--line); cursor: pointer; }
+    .pick:last-child { border-bottom: 0; }
+    .pick .t { flex: 1; min-width: 0; }
+    .pick .t b { display: block; font-weight: 600; }
+    .pick .t small { display: block; color: var(--text-2); font-size: .85rem; }
+    .pick .chip { flex: none; }
+    .pick.off { cursor: default; opacity: .55; }
+    .group-card { padding-block: 10px; }
+    .switch-row .hint { display: block; margin-top: 2px; max-width: 34em; }
+    .switch-row + .switch-row { border-top: 1px solid var(--line); }
+    .switch-row > span { padding-inline-end: 12px; }
+    .pp-bar {
+      position: sticky; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 5;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 16px; background: var(--glass); border: 1px solid var(--line); border-radius: var(--r-lg);
+      -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    }
+    .pp-bar b { display: block; }
+    .pp-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; margin-bottom: 10px; }
+
+    /* ---------- Papier (Vorschau und Druck teilen sich diese Regeln) ---------- */
+    .pp, .pp-measure { --paper: #fff; --ink: #000; --ink-2: #444; --rule: #888; }
+    .pp-paper { background: var(--paper); color: var(--ink); max-width: 210mm; margin: 0 auto; padding: 12mm; border-radius: var(--r); box-shadow: var(--shadow); border: 1px solid var(--line); }
+    .pp-measure { position: absolute; left: -10000px; top: 0; width: 186mm; visibility: hidden; pointer-events: none; }
+    .pp-frame { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: inherit; }
+    .pp-frame > thead > tr > td, .pp-frame > tbody > tr > td, .pp-frame > tfoot > tr > td { padding: 0; border: 0; background: none; }
+    .pp-head, .pp-foot { font-size: 8.5pt; color: var(--ink-2); line-height: 1.3; }
+    .pp-head { padding-bottom: 1.5mm; margin-bottom: 3mm; border-bottom: .2mm solid var(--rule); }
+    .pp-foot { padding-top: 1.5mm; margin-top: 3mm; border-top: .2mm solid var(--rule); }
+    .pp-head div + div, .pp-foot div + div { margin-top: .4mm; }
+
+    .pp-part { color: var(--ink); background: var(--paper); font-size: 10.5pt; line-height: 1.35; break-before: page; page-break-before: always; }
+    #ppBody > .pp-part:first-child { break-before: auto; page-break-before: auto; }
+    @media screen { .pp-part + .pp-part { margin-top: 10mm; padding-top: 8mm; border-top: 2px dashed var(--rule); } body.pp-on .page-head { display: none; } }
+    .pp-part h2, .pp-part h3, .pp-part p, .pp-part ul, .pp-part ol { color: var(--ink); }
+    .pp-title { font-size: 17pt; line-height: 1.15; margin: 0 0 4mm; padding-bottom: 2mm; border-bottom: .5mm solid var(--ink); }
+    .pp-part h3 { font-size: 11.5pt; margin: 4mm 0 1.5mm; break-after: avoid; }
+    .pp-part p { margin: 0 0 2mm; }
+    .pp-part ul, .pp-part ol { margin: 0 0 2mm; padding-inline-start: 5mm; }
+    .pp-part li { margin: 0 0 1mm; }
+    .pp-part .lead { font-weight: 600; font-size: 11pt; }
+    .pp-part .small, .pp-small { font-size: 9pt; color: var(--ink-2); }
+    .pp-cols { column-count: 2; column-gap: 8mm; column-rule: .2mm solid #ccc; }
+    .pp-cols h2 { font-size: 12.5pt; margin: 4mm 0 1.5mm; break-after: avoid; }
+    .pp-cols ol.steps { list-style: decimal; }
+    .pp-cols .callout, .pp-cols .pp-disclaimer, .pp-cols .pp-plant, .pp-cols .orig { break-inside: avoid; }
+    .pp-part .callout, .pp-part .callout.warn, .pp-part .callout.danger, .pp-part .callout.info, .pp-disclaimer, .pp-plant, .pp-cols .orig {
+      background: var(--paper); color: var(--ink); border: .3mm solid var(--ink); border-radius: 1mm; padding: 1.5mm 2.5mm; margin: 0 0 3mm; font-size: 10pt;
+    }
+    .pp-part .callout.danger, .pp-plant { border-width: .7mm; }
+    .pp-part .callout > strong:first-child, .pp-part .callout.danger > strong:first-child { color: var(--ink); }
+    .pp-disclaimer, .pp-plant { font-size: 9.5pt; }
+    .pp-part .table-wrap { overflow: visible; border: 0; border-radius: 0; background: var(--paper); margin: 0 0 3mm; }
+    .pp-part table { font-size: 9pt; width: 100%; border-collapse: collapse; }
+    .pp-part th, .pp-part td { border: .2mm solid var(--rule); padding: 1mm 1.5mm; color: var(--ink); text-align: start; text-transform: none; letter-spacing: 0; font-size: 9pt; }
+    .pp-part th { background: #eee; font-weight: 700; }
+    .pp-part tr:last-child td { border-bottom: .2mm solid var(--rule); }
+    .pp-part .url { font-size: 8pt; color: var(--ink-2); word-break: break-all; }
+    .pp-sources { margin-top: 4mm; }
+    .pp-sources h2 { font-size: 10pt; }
+    .pp-sources li { font-size: 8.5pt; color: var(--ink-2); }
+    .pp-part code { font-size: 9.5pt; }
+    .pp-part .ltr { direction: ltr; unicode-bidi: isolate; }
+
+    .pp-cover { text-align: start; }
+    .pp-brand { font-size: 12pt; font-weight: 700; letter-spacing: .02em; }
+    .pp-cover h1 { font-size: 28pt; line-height: 1.1; margin: 2mm 0 2mm; color: var(--ink); }
+    .pp-date { color: var(--ink-2); margin-bottom: 8mm; }
+    .pp-cover h2 { font-size: 13pt; margin: 6mm 0 2mm; color: var(--ink); }
+    .pp-cover h3 { font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); margin: 4mm 0 1mm; }
+    .pp-toc { list-style: none; padding: 0; margin: 0; }
+    .pp-toc li { padding: 1.2mm 0; border-bottom: .2mm solid #ccc; display: flex; gap: 4mm; justify-content: space-between; align-items: baseline; margin: 0; }
+    .pp-toc span { color: var(--ink-2); font-size: 9pt; text-align: end; }
+    .pp-hint { margin-top: 10mm; border: .3mm solid var(--ink); border-radius: 1mm; padding: 2mm 3mm; font-size: 10pt; }
+
+    .nr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-bottom: 4mm; }
+    .nr { border: .4mm solid var(--ink); border-radius: 1.5mm; padding: 2.5mm 3.5mm; break-inside: avoid; }
+    .nr b { display: block; width: fit-content; font-size: 26pt; line-height: 1.1; direction: ltr; unicode-bidi: isolate; }
+    .nr.big { grid-column: 1 / -1; border-width: 1mm; }
+    .nr.big b { font-size: 46pt; }
+    .nr span { font-size: 10pt; }
+    .nr .fill { display: block; border-bottom: .3mm solid var(--ink); height: 9mm; }
+    .nr-ask { margin: 0 0 4mm; padding-inline-start: 6mm; }
+    .nr-ask li { margin-bottom: 1.5mm; font-size: 11pt; }
+    .al-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+    .al-wrap table { font-size: 10pt; }
+    .al-wrap td, .al-wrap th { padding: .7mm 1.5mm; }
+    .al-wrap td:first-child { font-weight: 700; width: 9mm; text-align: center; }
+
+    .mo-sos { display: flex; align-items: baseline; gap: 6mm; border: .6mm solid var(--ink); border-radius: 1.5mm; padding: 2mm 4mm; margin-bottom: 3mm; }
+    .mo-sos b { font-size: 22pt; }
+    .mo-sos i { font-style: normal; font-size: 22pt; letter-spacing: .15em; direction: ltr; unicode-bidi: isolate; }
+    .mo-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.2mm; margin-bottom: 2mm; }
+    .mo { border: .2mm solid var(--rule); border-radius: 1mm; padding: 1mm 1.5mm; display: flex; justify-content: space-between; align-items: baseline; gap: 1.5mm; break-inside: avoid; }
+    .mo b { font-size: 11pt; }
+    .mo i { font-style: normal; font-size: 10.5pt; direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+
+    .box { display: inline-block; flex: none; width: 3.2mm; height: 3.2mm; border: .3mm solid var(--ink); border-radius: .5mm; margin-top: .6mm; }
+    .cl { list-style: none; padding: 0; margin: 0 0 2mm; }
+    .cl li { display: flex; gap: 2mm; align-items: flex-start; margin: 0 0 1.2mm; }
+    .cl-sec { break-inside: avoid; margin-bottom: 2mm; }
+    .cl-sec h3 { margin-top: 2mm; }
+    .pp-blank td { height: 9mm; }
+    .pp-pass { border: .5mm solid var(--ink); border-radius: 2mm; padding: 3mm 4mm; margin-bottom: 5mm; break-inside: avoid; }
+    .pp-pass-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; border-bottom: .3mm solid var(--ink); padding-bottom: 1.5mm; margin-bottom: 1.5mm; }
+    .pp-pass-head b { font-size: 14pt; }
+    .pp-pass .blood { font-size: 15pt; font-weight: 700; }
+    .pp-pass table th { width: 34mm; background: transparent; font-weight: 600; }
+    .pp-pass table { margin: 0; }
+
+    @page { size: A4; margin: 12mm; }
+    @media print {
+      html, body { background: #fff !important; }
+      body.pp-on { display: block !important; min-height: 0 !important; }
+      body.pp-on > .print-only { display: none !important; }
+      body.pp-on main { display: block; padding: 0; }
+      body.pp-on main > :not(#pp) { display: none !important; }
+      .container { max-width: none; padding: 0; }
+      .pp-toolbar, .pp-tip { display: none !important; }
+      .pp-paper { max-width: none; padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Ausdruck-Paket</h1>
+    <p class="lead">Die wichtigsten Seiten auswählen und als Sammlung ausdrucken.</p>
+  </header>
+
+  <div id="picker" class="stack">
+    <section class="card">
+      <div class="field" style="margin-bottom:0"><span class="label">Voreinstellung</span>
+        <div class="seg" id="presets" role="group" aria-label="Voreinstellung">
+          <button type="button" data-v="wichtig" aria-pressed="false">Das Wichtigste</button>
+          <button type="button" data-v="alles" aria-pressed="false">Alles</button>
+          <button type="button" data-v="nichts" aria-pressed="false">Nichts</button>
+        </div></div>
+    </section>
+
+    <div id="groups"></div>
+
+    <section class="card">
+      <div class="switch-row" id="dualRow" hidden>
+        <span>Zusätzlich auf Deutsch drucken<small class="hint">Jeder Teil kommt danach noch einmal auf Deutsch – praktisch für Helfer und Behörden.</small></span>
+        <label class="switch"><input type="checkbox" id="dual" aria-label="Zusätzlich auf Deutsch drucken"><span></span></label>
+      </div>
+      <div class="switch-row">
+        <span>Nur Druckvorschau anzeigen<small class="hint">Zeigt die Seiten am Bildschirm, ohne den Druckdialog zu öffnen.</small></span>
+        <label class="switch"><input type="checkbox" id="previewOnly" aria-label="Nur Druckvorschau anzeigen"><span></span></label>
+      </div>
+    </section>
+
+    <div class="pp-bar">
+      <div><b id="sum" aria-live="polite"></b><span class="small muted">A4 · schwarz auf weiß · Schrift 10,5 pt</span></div>
+      <button class="btn primary" type="button" id="make">Ausdruck-Paket erstellen</button>
+    </div>
+  </div>
+
+  <div id="pp" class="pp" hidden>
+    <div class="pp-toolbar">
+      <button class="btn sm" type="button" id="back">Zurück zur Auswahl</button>
+      <span class="small muted" id="ppInfo" aria-live="polite"></span>
+      <button class="btn primary" type="button" id="printNow">Jetzt drucken</button>
+    </div>
+    <p class="small muted pp-tip" style="border:0;padding:0;margin:0 0 10px">Tipp: Im Druckdialog „Als PDF speichern“ wählen, um eine Datei zum Weitergeben zu erhalten. „Kopf- und Fußzeilen“ des Browsers am besten ausschalten.</p>
+    <div class="pp-paper" data-notranslate>
+      <table class="pp-frame">
+        <thead><tr><td><div class="pp-head" id="ppHead"></div></td></tr></thead>
+        <tbody><tr><td><div id="ppBody"></div></td></tr></tbody>
+        <tfoot><tr><td><div class="pp-foot" id="ppFoot"></div></td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+</main>
+<script src="../data/tools.js"></script>
+<script src="../data/checklisten.js"></script>
+<script src="../data/funk-alphabet.js"></script>
+<script src="../data/morse-table.js"></script>
+<script src="../data/print-pages.js"></script>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-ausdruck.js"></script>
+</body>
+</html>

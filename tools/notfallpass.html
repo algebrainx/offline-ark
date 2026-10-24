@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Notfallpass – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .seg.wrap { flex-wrap: wrap; }
+    .seg.wrap button { flex: 1 1 30%; min-height: var(--hit); }
+    .card h2 { margin-top: 0; font-size: 1.15rem; }
+    .row3 { display: grid; gap: 0 12px; grid-template-columns: 1fr 1fr 1fr; }
+    .row3 .field { min-width: 0; }
+    @media (max-width: 560px) { .row3 { grid-template-columns: 1fr; } }
+    .contact-box { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+    .contact-box:first-of-type { border-top: 0; padding-top: 0; }
+    .contact-box h3 { margin: 0 0 8px; font-size: .95rem; color: var(--text-2); }
+    .save-state { min-height: 1.4em; font-size: .9rem; color: var(--text-2); margin: 6px 2px 0; }
+    .preview-wrap { overflow: hidden; margin-bottom: 14px; }
+    .preview-wrap .cap { font-size: .8rem; color: var(--text-2); margin: 0 2px 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .preview-box { position: relative; }
+    .preview-box .pass-card { position: absolute; top: 0; left: 0; transform-origin: top left; }   /* Karte ist immer links-nach-rechts */
+    .tools-row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; align-items: center; margin: 4px 0 14px; }
+    @media (max-width: 560px) { .tools-row { grid-template-columns: 1fr; } }
+    textarea.copybox { min-height: 120px; font-family: var(--mono); font-size: .85rem; direction: ltr; text-align: start; }
+
+    dialog { width: min(520px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: auto; padding: 22px; border: 1px solid var(--line);
+      border-radius: var(--r-lg); background: var(--surface); color: var(--text); }
+    dialog::backdrop { background: color-mix(in srgb, var(--bg) 70%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+    dialog h2 { margin: 0 0 16px; font-size: 1.3rem; }
+    .dlg-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .dlg-actions .btn.primary { flex: 1 1 140px; }
+    @media (max-width: 560px) {
+      dialog { margin: auto 0 0; width: 100%; max-width: none; border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 92vh; }
+    }
+    /* ---------- Karte 85,6 × 54 mm (Bildschirm = Druck) ---------- */
+    .pass-card { width: 85.6mm; height: 54mm; box-sizing: border-box; padding: 2.4mm 2.8mm; overflow: hidden; direction: ltr; text-align: start;
+      background: var(--surface); color: var(--text); border: .3mm solid var(--text-2); border-radius: 2.5mm; font: 400 6.6pt/1.22 var(--font); display: flex; flex-direction: column; gap: .9mm; }
+    .pass-card .hd { display: flex; justify-content: space-between; align-items: baseline; border-bottom: .25mm solid var(--text); padding-bottom: .6mm; font-weight: 700; font-size: 7.2pt; letter-spacing: .02em; }
+    .pass-card .hd .sos { font-weight: 700; }
+    .pass-card .who { display: flex; justify-content: space-between; gap: 2mm; align-items: flex-start; }
+    .pass-card .nm { font-size: 10pt; font-weight: 700; line-height: 1.15; overflow-wrap: anywhere; }
+    .pass-card .bd { font-size: 7pt; }
+    .pass-card .blood { flex: none; text-align: center; border: .4mm solid var(--text); border-radius: 1.5mm; padding: .6mm 2mm; min-width: 17mm; }
+    .pass-card .blood b { display: block; font-size: 13pt; line-height: 1.1; }
+    .pass-card .blood small { display: block; font-size: 5.2pt; line-height: 1.1; }
+    .pass-card .fl { overflow-wrap: anywhere; }
+    .pass-card .fl .k { font-weight: 700; }
+    .pass-card .fl .k2 { color: var(--text-2); }
+    .pass-card .fl .v { white-space: pre-line; }
+    .pass-card .ft { margin-top: auto; font-size: 5.4pt; color: var(--text-2); }
+
+    /* ---------- A4-Blatt ---------- */
+    .sheet-a4 { direction: ltr; font: 400 10.5pt/1.35 var(--font); color: var(--text); }
+    .sheet-a4 h1 { font-size: 20pt; margin: 0 0 4pt; }
+    .sheet-a4 table { width: 100%; border-collapse: collapse; margin-top: 8pt; }
+    .sheet-a4 th, .sheet-a4 td { border: .3mm solid var(--text-2); padding: 3pt 6pt; vertical-align: top; text-align: start; font-size: 10.5pt; text-transform: none; letter-spacing: 0; background: none; color: var(--text); }
+    .sheet-a4 th { width: 38%; font-weight: 700; }
+    .sheet-a4 th small { display: block; font-weight: 400; color: var(--text-2); }
+    .sheet-a4 td { min-height: 9mm; height: 9mm; white-space: pre-line; }
+    .sheet-a4 td.big { font-size: 16pt; font-weight: 700; }
+    .sheet-a4 .note { margin-top: 8pt; font-size: 9pt; color: var(--text-2); }
+
+    /* ---------- Druck ---------- */
+    .print-area { display: none; }
+    .cut { position: relative; }
+    .cut i { position: absolute; width: 3mm; height: 3mm; border: 0 solid var(--text); }
+    .cut .tl { left: -3.4mm; top: -3.4mm; border-right-width: .2mm; border-bottom-width: .2mm; }
+    .cut .tr { right: -3.4mm; top: -3.4mm; border-left-width: .2mm; border-bottom-width: .2mm; }
+    .cut .bl { left: -3.4mm; bottom: -3.4mm; border-right-width: .2mm; border-top-width: .2mm; }
+    .cut .br { right: -3.4mm; bottom: -3.4mm; border-left-width: .2mm; border-top-width: .2mm; }
+    .cards-sheet { direction: ltr; }
+    .cards-sheet .pair { display: flex; gap: 8mm; margin: 4mm 0 6mm 4mm; }
+    .cards-sheet .hint { font-size: 8pt; color: var(--text-2); margin: 0 0 2mm; }
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      main > .page-head, main > .screen { display: none !important; }
+      body[data-print="cards"] #printCards { display: block !important; }
+      body[data-print="a4"] #printA4 { display: block !important; }
+      .pass-card { background: none; border-color: #000; }
+      .print-only { display: none !important; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Notfallpass</h1>
+    <p class="lead">Blutgruppe, Allergien, Medikamente und Kontakte auf einer Karte.</p>
+  </header>
+
+  <div class="stack screen">
+    <div class="callout warn" id="storeWarn" role="alert" hidden>
+      <strong>Speicher blockiert</strong>
+      Dein Browser erlaubt kein Speichern. Bitte nutze den Export („Mehr“ unten), sonst gehen die Angaben beim Schließen verloren.
+    </div>
+
+    <div class="callout info">
+      <strong>Datenschutz</strong>
+      Deine Angaben bleiben nur auf diesem Gerät gespeichert. Der Ausdruck enthält Gesundheitsdaten: Bewahre ihn sicher auf.
+    </div>
+
+    <section class="card">
+      <div class="field"><span class="label">Person</span>
+        <div class="seg wrap" id="people" role="group" aria-label="Person wählen"></div></div>
+      <button type="button" class="btn" id="addPerson">Person hinzufügen</button>
+    </section>
+
+    <section class="card">
+      <h2>Person</h2>
+      <div class="field"><label for="f-name">Name</label>
+        <input type="text" id="f-name" data-k="name" maxlength="100" autocomplete="off"></div>
+      <div class="form-grid">
+        <div class="field"><label for="f-birth">Geburtsdatum</label><input type="date" id="f-birth" data-k="birth"></div>
+        <div class="field"><span class="label">Blutgruppe</span>
+          <div class="form-grid" style="gap:0 8px">
+            <select id="f-abo" data-k="abo" aria-label="Blutgruppe (A, B, AB, 0)">
+              <option value="?">unbekannt</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="0">0</option>
+            </select>
+            <select id="f-rh" data-k="rh" aria-label="Rhesusfaktor">
+              <option value="?">Rhesus unbekannt</option><option value="+">Rhesus positiv (+)</option><option value="-">Rhesus negativ (−)</option>
+            </select>
+          </div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Gesundheit</h2>
+      <div class="field"><label for="f-allergies">Allergien</label>
+        <textarea id="f-allergies" data-k="allergies" maxlength="600" placeholder="z. B. Penicillin, Nüsse, Wespengift"></textarea></div>
+      <div class="field"><label for="f-conditions">Vorerkrankungen</label>
+        <textarea id="f-conditions" data-k="conditions" maxlength="600" placeholder="z. B. Diabetes, Asthma, Epilepsie"></textarea></div>
+      <div class="field"><label for="f-meds">Medikamente</label>
+        <textarea id="f-meds" data-k="meds" maxlength="900"></textarea>
+        <p class="hint">Trage hier nur ein, was dir verordnet wurde – so, wie es auf deinem Medikamentenplan steht („wie vom Arzt verordnet“). Die App gibt keine Mengen vor.</p></div>
+      <div class="field" style="margin-bottom:0"><label for="f-implants">Implantate / Hilfsmittel</label>
+        <textarea id="f-implants" data-k="implants" maxlength="400" placeholder="z. B. Herzschrittmacher, Insulinpumpe, Hörgerät"></textarea></div>
+    </section>
+
+    <section class="card">
+      <h2>Kontakte</h2>
+      <div class="contact-box">
+        <h3>Hausarzt</h3>
+        <div class="form-grid">
+          <div class="field"><label for="f-gpName">Name</label><input type="text" id="f-gpName" data-k="gpName" maxlength="100" autocomplete="off"></div>
+          <div class="field"><label for="f-gpPhone">Telefon</label><input type="tel" id="f-gpPhone" data-k="gpPhone" inputmode="tel" maxlength="40" autocomplete="off"></div>
+        </div>
+      </div>
+      <div id="contactBoxes"></div>
+    </section>
+
+    <details>
+      <summary>Impfung, Organspende, Patientenverfügung</summary>
+      <div>
+        <div class="field"><label for="f-tetanus">Tetanus-Impfung (Datum, optional)</label><input type="date" id="f-tetanus" data-k="tetanus"></div>
+        <div class="field"><label for="f-organ">Organspendeausweis</label>
+          <select id="f-organ" data-k="organ"><option value="">nicht angegeben</option><option value="ja">ja</option><option value="nein">nein</option></select></div>
+        <div class="field" id="organPlaceField" hidden><label for="f-organPlace">Wo liegt er?</label><input type="text" id="f-organPlace" data-k="organPlace" maxlength="120" autocomplete="off" placeholder="z. B. im Portemonnaie"></div>
+        <div class="field"><label for="f-pv">Patientenverfügung</label>
+          <select id="f-pv" data-k="pv"><option value="">nicht angegeben</option><option value="ja">ja</option><option value="nein">nein</option></select></div>
+        <div class="field" id="pvPlaceField" hidden><label for="f-pvPlace">Wo liegt sie?</label><input type="text" id="f-pvPlace" data-k="pvPlace" maxlength="120" autocomplete="off" placeholder="z. B. Dokumentenmappe im Flur"></div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Sprachen und Hinweis für Retter</summary>
+      <div>
+        <div class="field"><label for="f-langs">Sprachen</label><input type="text" id="f-langs" data-k="langs" maxlength="120" autocomplete="off" placeholder="z. B. Deutsch, Arabisch"></div>
+        <div class="field"><label for="f-note">Hinweis für Retter</label>
+          <textarea id="f-note" data-k="note" maxlength="600" placeholder="z. B. Bitte Tochter anrufen, trage Kontaktlinsen"></textarea></div>
+      </div>
+    </details>
+    <div class="save-state" id="saveState" role="status" aria-live="polite"></div>
+
+    <section class="card" id="outCard">
+      <h2>Karte</h2>
+      <div class="preview-wrap" id="pvFront"><div class="cap">Vorderseite</div><div class="preview-box"></div></div>
+      <div class="preview-wrap" id="pvBack"><div class="cap">Rückseite</div><div class="preview-box"></div></div>
+      <div class="callout warn" id="fitWarn" hidden>Der Text passt nicht ganz auf die Karte. Fasse dich kürzer oder drucke das A4-Blatt.</div>
+      <div class="tools-row">
+        <div class="switch-row" id="bilingualRow"><span>Karte zweisprachig (Deutsch + meine Sprache)</span>
+          <label class="switch"><input type="checkbox" id="bilingual" aria-label="Karte zweisprachig (Deutsch + meine Sprache)"><span></span></label></div>
+        <div class="field" style="margin:0"><span class="label">Kartenpaare pro Blatt</span>
+          <div class="stepper" data-min="1" data-max="4"><button type="button" aria-label="Weniger Karten">−</button><input type="number" id="copies" inputmode="numeric" value="2" aria-label="Kartenpaare pro Blatt"><button type="button" aria-label="Mehr Karten">+</button></div></div>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="printCardsBtn">Karte drucken</button>
+        <button type="button" class="btn" id="printA4Btn">A4-Blatt drucken</button>
+        <button type="button" class="btn" id="copyBtn">Als Text kopieren</button>
+      </div>
+      <p class="hint" id="copyMsg" role="status"></p>
+      <p class="hint" data-t="">Aus dem kopierten Text kannst du mit dem Werkzeug <a href="qrcode.html">QR-Code</a> einen QR-Code machen.</p>
+      <p class="hint">Schneide die Karte an den Schnittmarken aus und falte sie in der Mitte oder klebe Vorder- und Rückseite zusammen.</p>
+    </section>
+
+    <details>
+      <summary>Mehr: Export, Import, Person löschen</summary>
+      <div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="export">Exportieren</button>
+          <button type="button" class="btn" id="import">Importieren</button>
+          <button type="button" class="btn danger" id="delPerson">Person löschen</button>
+        </div>
+        <p class="hint">Der Export ist eine JSON-Datei mit allen Personen. Sie enthält Gesundheitsdaten – bewahre sie sicher auf.</p>
+        <p class="hint" id="msg" role="status"></p>
+        <div class="field"><label for="copybox">Kompakter Text</label><textarea id="copybox" class="copybox" readonly></textarea></div>
+      </div>
+    </details>
+  </div>
+
+  <section class="print-area cards-sheet" id="printCards" aria-hidden="true"></section>
+  <section class="print-area sheet-a4" id="printA4" aria-hidden="true"></section>
+</main>
+
+<dialog id="impDlg" aria-labelledby="impTitle">
+  <h2 id="impTitle">Datei importieren</h2>
+  <p id="impText"></p>
+  <div class="dlg-actions">
+    <button type="button" class="btn primary" id="impMerge">Zusammenführen</button>
+    <button type="button" class="btn danger" id="impReplace">Ersetzen</button>
+    <button type="button" class="btn" id="impCancel">Abbrechen</button>
+  </div>
+  <p class="hint">Zusammenführen: Neue Personen kommen dazu, Personen mit gleicher Kennung werden aktualisiert. Ersetzen: Deine jetzigen Personen werden gelöscht.</p>
+</dialog>
+
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/notfallpass-core.js"></script>
+<script src="../js/tool-notfallpass.js"></script>
+</body>
+</html>

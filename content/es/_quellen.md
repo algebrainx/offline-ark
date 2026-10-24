@@ -21,6 +21,14 @@ Los PDF de la [Biblioteca](../bibliothek/index.html) son obras del gobierno de E
 
 Los contenidos suelen estar bajo CC BY-SA. No reproducimos textos literalmente, sino que citamos Wikipedia solo como fuente de hechos que reformulamos con palabras propias.
 
+## Mapas, fotos y datos
+
+- **OpenStreetMap** (hospitales, farmacias, desfibriladores, bomberos, puntos de agua, límites en el mapa sin conexión): © Colaboradores de OpenStreetMap, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). Más información: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). Los datos corresponden a la fecha de descarga y pueden estar desactualizados o incompletos.
+- **Natural Earth** (contornos y fronteras aproximados): [dominio público](https://www.naturalearthdata.com/about/terms-of-use/).
+- **Fotos** (plantas, setas, nubes, nudos): [Wikimedia Commons](https://commons.wikimedia.org/), cada una con licencia CC0, dominio público, CC BY o CC BY-SA. El autor y la licencia figuran bajo cada foto y en el archivo `bibliothek/bilder/ATTRIBUTION.md`. Las imágenes se han reducido de tamaño.
+- **Códigos QR:** codificador propio según ISO/IEC 18004. «QR Code» es una marca registrada de DENSO WAVE.
+- Otras fuentes (p. ej. catálogo de estrellas, fechas de huerto, poder calorífico) se indican al final de la página de cada herramienta.
+
 ## Código propio
 
 El HTML, el CSS y el JavaScript de este proyecto están bajo la **licencia MIT** (véase el archivo `LICENSE`). Los iconos están dibujados por nosotros. No se carga ninguna fuente tipográfica, biblioteca ni servicio externo.

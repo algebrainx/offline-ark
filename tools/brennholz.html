@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Brennholz-Rechner – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
+    .plain li { margin-bottom: .4em; }
+    .warnbox { margin: 0; }
+    .warnbox .callout { margin: 0 0 8px; }
+    .stat .num { word-break: keep-all; }
+    .stat .cap .ltr { unicode-bidi: isolate; }
+    .sources ul { padding-inline-start: 1.2em; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Brennholz-Rechner</h1>
+    <p class="lead">Wie viel Holz brauche ich für Raum und Zeit?</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <div class="field"><span class="label">Raum angeben als</span>
+        <div class="seg" data-local id="mode">
+          <button type="button" data-v="area" aria-pressed="true">Fläche und Höhe</button>
+          <button type="button" data-v="vol" aria-pressed="false">Raumvolumen</button>
+        </div></div>
+      <div class="form-grid">
+        <div class="field" id="boxArea"><label for="area">Wohnfläche (m²)</label>
+          <input type="text" class="ltr" id="area" inputmode="decimal" value="25" autocomplete="off"></div>
+        <div class="field" id="boxVol" hidden><label for="vol">Raumvolumen (m³)</label>
+          <input type="text" class="ltr" id="vol" inputmode="decimal" value="62,5" autocomplete="off"></div>
+        <div class="field"><label for="height">Deckenhöhe (m)</label>
+          <input type="text" class="ltr" id="height" inputmode="decimal" value="2,5" autocomplete="off"></div>
+      </div>
+      <div class="field"><span class="label">Dämmstandard</span>
+        <div class="seg" data-local id="ins">
+          <button type="button" data-v="gut" aria-pressed="true">Gut</button>
+          <button type="button" data-v="mittel" aria-pressed="false">Mittel</button>
+          <button type="button" data-v="schlecht" aria-pressed="false">Schlecht</button>
+        </div>
+        <div class="hint" id="insHint"></div></div>
+      <div class="form-grid">
+        <div class="field"><span class="label">Raumtemperatur (°C)</span>
+          <div class="stepper" data-min="10" data-max="26" data-step="1"><button type="button" aria-label="Raumtemperatur senken">−</button><input type="number" id="tin" inputmode="numeric" value="20" aria-label="Raumtemperatur in Grad Celsius"><button type="button" aria-label="Raumtemperatur erhöhen">+</button></div></div>
+        <div class="field"><span class="label">Außentemperatur (°C)</span>
+          <div class="stepper" data-min="-25" data-max="20" data-step="1"><button type="button" aria-label="Außentemperatur senken">−</button><input type="number" id="tout" inputmode="numeric" value="-5" aria-label="Außentemperatur in Grad Celsius"><button type="button" aria-label="Außentemperatur erhöhen">+</button></div></div>
+        <div class="field"><span class="label">Stunden pro Tag</span>
+          <div class="stepper" data-min="1" data-max="24" data-step="1"><button type="button" aria-label="Weniger Stunden">−</button><input type="number" id="hours" inputmode="numeric" value="10" aria-label="Heizstunden pro Tag"><button type="button" aria-label="Mehr Stunden">+</button></div></div>
+        <div class="field"><span class="label">Tage</span>
+          <div class="stepper" data-min="1" data-max="365" data-step="1"><button type="button" aria-label="Weniger Tage">−</button><input type="number" id="days" inputmode="numeric" value="7" aria-label="Heiztage"><button type="button" aria-label="Mehr Tage">+</button></div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="form-grid">
+        <div class="field"><label for="species">Holzart</label><select id="species"></select></div>
+        <div class="field"><label for="stove">Ofen</label><select id="stove"></select></div>
+        <div class="field"><span class="label">Wassergehalt des Holzes (%)</span>
+          <div class="stepper" data-min="5" data-max="60" data-step="1"><button type="button" aria-label="Wassergehalt senken">−</button><input type="number" id="water" inputmode="numeric" value="15" aria-label="Wassergehalt in Prozent"><button type="button" aria-label="Wassergehalt erhöhen">+</button></div>
+          <div class="hint">Lufttrocken sind etwa 15 %. Für Kaminöfen höchstens 20 %.</div></div>
+        <div class="field"><span class="label">Scheitlänge</span>
+          <div class="seg" data-local id="len">
+            <button type="button" data-v="33" aria-pressed="true">33 cm</button>
+            <button type="button" data-v="100" aria-pressed="false">1 m</button>
+          </div></div>
+      </div>
+    </section>
+
+    <div class="warnbox" id="warns" aria-live="polite"></div>
+
+    <section class="card result" aria-live="polite">
+      <div><span class="num ltr" id="rm">–</span><span class="unit">Raummeter (Rm, Ster)</span></div>
+      <div class="cap" id="rmCap">Richtwert, keine genaue Messung</div>
+    </section>
+
+    <section class="card">
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <div class="callout info">
+      <strong>So wird gerechnet (Näherung)</strong>
+      <ul class="plain">
+        <li>Wärmebedarf = Wärmeverlust des Raums × Temperaturunterschied × Heizstunden.</li>
+        <li>Der Wärmeverlust stammt aus den Energieeffizienzklassen für Wohngebäude: gut gedämmt entspricht Klasse B (bis 75 kWh pro m² und Jahr), mittel Klasse E (bis 160) und schlecht Klasse G (bis 250). Die Obergrenzen werden vorsichtig als Durchschnitt des ganzen Hauses angesetzt.</li>
+        <li>Umgerechnet auf eine Heizlast bei 30 Kelvin Temperaturunterschied (20 °C innen, −10 °C außen) und 1600 Volllaststunden im Jahr.</li>
+        <li>Die Holzmenge folgt aus dem Heizwert der Holzart bei dem eingegebenen Wassergehalt und dem Wirkungsgrad des Ofens.</li>
+        <li>Alle Werte sind Richtwerte. Wetter, Wind, Lüften, Ofen und Wohnung weichen ab. Plane einen Sicherheitszuschlag ein.</li>
+      </ul>
+    </div>
+
+    <div class="callout warn">
+      <strong>Holz richtig trocknen und lagern</strong>
+      <ul class="plain">
+        <li>Frisches Holz hat je nach Art etwa 35 bis 50 % Wassergehalt. Es brennt schlecht, rußt und verschmutzt den Schornstein.</li>
+        <li>Spalte das Holz und lasse es mindestens einen, besser zwei Sommer trocknen: sonnig, luftig, regengeschützt, Boden nicht direkt auf der Erde.</li>
+        <li>Für Kaminöfen gilt: höchstens 20 % Wassergehalt (25 % Holzfeuchte). Die Verbraucherzentrale rät zu etwa zwei Jahren trockener Lagerung.</li>
+        <li>Mit einem Holzfeuchte-Messgerät kannst du das prüfen. Es zeigt meist die Holzfeuchte (bezogen auf Trockenmasse): 25 % entsprechen 20 % Wassergehalt.</li>
+      </ul>
+    </div>
+
+    <div class="callout danger">
+      <strong>Sicherheit zuerst</strong>
+      <ul class="plain">
+        <li>Kohlenmonoxid (CO) ist unsichtbar und geruchlos. Stelle einen batteriebetriebenen CO-Warnmelder auf und lüfte regelmäßig.</li>
+        <li>Ofen nur mit freiem Abzug in den Schornstein betreiben. Nie in geschlossenen Räumen ohne Abzug heizen. Nie Grill, Gasherd oder Backofen zum Heizen benutzen.</li>
+        <li>Die Luftzufuhr nicht zudrehen, um das Feuer zu bremsen: Dabei bildet sich Kohlenmonoxid.</li>
+        <li>Frage vor dem Anschluss und vor dem ersten Feuer den zuständigen Schornsteinfeger. Lasse Ofen und Abgasrohr regelmäßig prüfen und reinigen. Öfen über 25 Jahre entsprechen meist nicht mehr dem Stand der Technik.</li>
+        <li>Rauchmelder gehören in Schlafräume und Flure. Die Pflicht regeln die Bundesländer.</li>
+        <li data-t>Brandschutz: Löscher und Löschdecke griffbereit, nie Brennspiritus nachgießen, Asche kalt und in feuerfestem Behälter entsorgen, brennbare Dinge fernhalten. Mehr: <a href="../wissen/feuer-waerme.html">Feuer, Wärme und Unterschlupf</a>.</li>
+      </ul>
+    </div>
+
+    <section class="sources">
+      <h2>Quellen</h2>
+      <ul id="sources"></ul>
+      <p class="small muted">Links öffnen sich nur mit Internet. Alle Aussagen sind eigene, zusammengefasste Texte nach den genannten Quellen.</p>
+    </section>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/brennholz.js"></script>
+<script src="../js/brennholz-core.js"></script>
+<script src="../js/tool-brennholz.js"></script>
+</body>
+</html>

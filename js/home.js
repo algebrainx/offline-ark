@@ -27,11 +27,17 @@
   });
   OA.$('#tool-groups').innerHTML = html;
 
-  /* ---------- Wissensliste ---------- */
-  OA.$('#wissen-list').innerHTML = wissen.map(function (w) {
-    return '<a href="' + OA.genUrl('wissen/' + w.id + '.html') + '">' + OA.icon(w.icon) +
-      '<span class="name">' + OA.esc(OA.t(w.title)) + '<span class="sub">' + OA.esc(OA.t(w.sub)) + '</span></span>' + OA.icon('chev', 'chev') + '</a>';
-  }).join('');
+  /* ---------- Wissensseiten in zwei kleinen Listen ---------- */
+  var wissenHtml = '';
+  (window.OA_WISSEN_GROUPS || [{ id: '', title: 'Wissen' }]).forEach(function (g) {
+    var items = wissen.filter(function (w) { return !g.id || w.group === g.id; });
+    if (!items.length) return;
+    wissenHtml += '<h2 class="section-title">' + OA.esc(OA.t(g.title)) + '</h2><nav class="list" aria-label="' + OA.esc(OA.t(g.title)) + '">' + items.map(function (w) {
+      return '<a href="' + OA.genUrl('wissen/' + w.id + '.html') + '">' + OA.icon(w.icon) +
+        '<span class="name">' + OA.esc(OA.t(w.title)) + '<span class="sub">' + OA.esc(OA.t(w.sub)) + '</span></span>' + OA.icon('chev', 'chev') + '</a>';
+    }).join('') + '</nav>';
+  });
+  OA.$('#wissen-groups').innerHTML = wissenHtml;
 
   /* ---------- Uhr, Datum, Akku ---------- */
   function tick() {

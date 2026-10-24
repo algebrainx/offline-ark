@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Knoten – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .kn-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .kn-filter button { min-height: var(--hit); padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: 600 .92rem var(--font); cursor: pointer; }
+    .kn-filter button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .kn-list { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); margin: 16px 0 0; padding: 0; list-style: none; }
+    .kn-list button { width: 100%; min-height: 64px; text-align: start; padding: 10px 14px; border-radius: var(--r); border: 2px solid var(--line); background: var(--surface); box-shadow: var(--shadow); color: var(--text); font: 650 1rem/1.25 var(--font); cursor: pointer; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+    .kn-list button small { font-weight: 400; color: var(--text-2); font-size: .8rem; }
+    .kn-list button[aria-current="true"] { border-color: var(--accent); }
+    .kn-empty { text-align: center; color: var(--text-2); padding: 28px 12px; }
+
+    .kn-card h2 { margin-top: 0; }
+    .kn-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+    .kn-stage { position: relative; background: var(--surface-2); border-radius: var(--r); overflow: hidden; }
+    .kn-svg { display: block; width: 100%; height: auto; max-height: 360px; }
+    .kn-svg .rope { fill: none; stroke: var(--text); stroke-linecap: round; stroke-linejoin: round; stroke-width: var(--rw, 12); }
+    .kn-svg .rope-b { stroke: var(--accent); }
+    .kn-svg .halo { fill: none; stroke: var(--surface-2); stroke-linecap: butt; stroke-linejoin: round; }
+    .kn-svg .stripe { fill: none; stroke: var(--surface-2); stroke-width: calc(var(--rw, 12) * .14); stroke-dasharray: calc(var(--rw, 12) * .3) calc(var(--rw, 12) * .4); stroke-linecap: butt; stroke-linejoin: round; opacity: .85; }
+    .kn-svg .mk { fill: var(--text); stroke: none; }
+    .kn-svg .mk-line { stroke: var(--text); fill: none; stroke-width: 3; stroke-linecap: round; }
+    .kn-svg text { font: 700 17px var(--font); fill: var(--text); paint-order: stroke; stroke: var(--surface-2); stroke-width: 5px; stroke-linejoin: round; text-anchor: middle; letter-spacing: 0; }
+    html[dir="rtl"] .kn-svg text { font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif; }
+    .kn-badge { position: absolute; top: 10px; inset-inline-start: 10px; width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font: 750 1.2rem var(--font); }
+    .kn-photos { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .kn-photos figure { margin: 0; background: var(--surface-2); border-radius: var(--r); overflow: hidden; }
+    .kn-photos img { display: block; width: 100%; height: auto; }
+    .kn-photos figcaption { padding: 8px 12px 10px; font-size: .8rem; color: var(--text-2); }
+    .kn-nav { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+    .kn-nav .btn { min-width: 112px; }
+    .kn-nav .pos { flex: 1; text-align: center; font-weight: 650; min-width: 90px; }
+    .kn-anim { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--hit); margin: 4px 0 10px; }
+    .kn-now { font-size: 1.15rem; font-weight: 600; margin: 4px 0 14px; min-height: 3.2em; }
+    .kn-steps { margin: 0 0 1em; padding: 0; list-style: none; counter-reset: s; }
+    .kn-steps li { counter-increment: s; position: relative; padding: 8px 0; padding-inline-start: 44px; min-height: 44px; border-bottom: 1px solid var(--line); }
+    .kn-steps li:last-child { border-bottom: 0; }
+    .kn-steps li::before { content: counter(s); position: absolute; inset-inline-start: 0; top: 8px; width: 30px; height: 30px; border-radius: 50%; background: var(--surface-2); color: var(--text); display: grid; place-items: center; font-weight: 700; font-size: .9rem; }
+    .kn-steps li[aria-current="step"] { font-weight: 650; }
+    .kn-steps li[aria-current="step"]::before { background: var(--accent); color: var(--on-accent); }
+    .kn-meta h3 { font-size: 1rem; margin: 1.2em 0 .3em; }
+    .kn-meta p { margin: 0 0 .6em; }
+    .kn-src { font-size: .85rem; color: var(--text-2); }
+    .kn-src a { overflow-wrap: anywhere; }
+    @media print {
+      .kn-filter, .kn-list, .kn-nav, .kn-anim, .search { display: none !important; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Knoten</h1>
+    <p class="lead">Wichtige Knoten mit Schritt-für-Schritt-Bildern.</p>
+  </header>
+
+  <div class="callout warn" role="note">
+    <strong>Knoten vorher üben</strong>
+    Übe jeden Knoten in Ruhe, bevor du ihn brauchst. Für Menschen sichern (Klettern, Abseilen, Rettung) nur mit Ausbildung: Ein falsch geknüpfter Knoten kann sich lösen.
+  </div>
+
+  <div class="search" style="margin-top:0">
+    <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <label class="sr-only" for="q">Knoten suchen</label>
+    <input type="search" id="q" placeholder="Knoten suchen, z. B. Schlinge" autocomplete="off">
+  </div>
+  <div class="kn-filter" id="filter" role="group" aria-label="Nach Zweck filtern"></div>
+  <ul class="kn-list" id="list"></ul>
+  <p class="kn-empty" id="empty" hidden>Kein Knoten gefunden. Probiere ein anderes Wort oder „Alle“.</p>
+
+  <article class="card kn-card" id="detail" style="margin-top:22px" aria-live="polite"></article>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/knoten-core.js"></script>
+<script src="../data/knoten-szenen.js"></script>
+<script src="../data/knoten.js"></script>
+<script src="../js/tool-knoten.js"></script>
+</body>
+</html>

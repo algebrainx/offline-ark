@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Chat im lokalen Netz – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .status { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; font-size: .9rem; color: var(--text-2); }
+    .status .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text-2); flex: none; }
+    .status.on .dot { background: var(--ok); }
+    .status.off .dot { background: var(--danger); }
+    .bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .room-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+    .room-row .field { flex: 1 1 200px; margin: 0; }
+    .msgs { list-style: none; margin: 0; padding: 12px; background: var(--surface-2); border-radius: var(--r); min-height: 240px; height: 48vh; max-height: 520px; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 10px; }
+    .msgs .empty { margin: auto; color: var(--text-2); text-align: center; padding: 20px; }
+    .msg { max-width: 92%; align-self: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 8px 14px 10px; overflow-wrap: anywhere; }
+    .msg.mine { align-self: flex-end; background: var(--accent); color: var(--on-accent); border-color: transparent; }
+    .msg .meta { display: flex; gap: 10px; align-items: baseline; font-size: .8rem; opacity: .8; margin-bottom: 2px; }
+    .msg .meta strong { font-weight: 650; }
+    .msg .body { white-space: pre-wrap; font-size: 1.05rem; line-height: 1.4; unicode-bidi: plaintext; text-align: start; }
+    .msg .body a { color: inherit; text-decoration: underline; font-weight: 600; }
+    .compose { margin-top: 12px; }
+    .compose textarea { min-height: 88px; font-size: 1.1rem; }
+    .compose-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+    .compose-row .btn.primary { flex: 1 1 160px; min-height: 52px; }
+    .counter { color: var(--text-2); font-size: .8rem; margin-inline-start: auto; }
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .quick .btn { min-height: var(--hit); padding: 0 14px; font-size: .92rem; text-align: center; }
+    .err { color: var(--danger); font-weight: 600; margin: 8px 0 0; min-height: 1.2em; }
+    .codeblock { display: block; direction: ltr; text-align: left; unicode-bidi: isolate; background: var(--surface-2); border-radius: var(--r-sm); padding: 12px 14px; margin: 8px 0; font: 500 .95rem/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .guide ol, .guide ul { padding-inline-start: 1.3em; margin: 0 0 1em; }
+    .guide li { margin-bottom: .5em; }
+    .guide h3 { margin-top: 1.4em; }
+    .guide code { font-family: var(--mono); font-size: .92em; background: var(--surface-2); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
+    .guide code.codeblock { padding: 12px 14px; font-size: .95rem; overflow-wrap: anywhere; border-radius: var(--r-sm); }
+    .steps-big { counter-reset: s; list-style: none; padding: 0 !important; }
+    .steps-big > li { counter-increment: s; position: relative; padding-inline-start: 48px; margin-bottom: 18px; min-height: 36px; }
+    .steps-big > li::before { content: counter(s); position: absolute; inset-inline-start: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 700; }
+    .steps-big > li > strong { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+    .switch-row.compact { min-height: var(--hit); gap: 12px; }
+    details.guide { margin-top: 16px; }
+    @media print { .compose, .quick, .bar .btn { display: none !important; } .msgs { height: auto; max-height: none; overflow: visible; } }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Chat im lokalen Netz</h1>
+    <p class="lead">Mini-Server auf einem Laptop oder Raspberry Pi: alle im selben WLAN können schreiben.</p>
+  </header>
+
+  <div class="callout warn" role="note">
+    <strong>Nur im eigenen WLAN oder Hotspot verwenden</strong>
+    Die Verbindung ist nicht verschlüsselt (HTTP). Alle im selben Netz können mitlesen. Schreibe hier keine Passwörter, keine Bankdaten und keine geheimen Informationen.
+  </div>
+
+  <!-- Chat-Oberfläche: nur sichtbar, wenn die Seite vom Chat-Server geladen wurde (http://) -->
+  <div id="chat" hidden>
+    <section class="card" id="join">
+      <h2 style="margin-top:0;font-size:1.3rem">Wie heißt du?</h2>
+      <div class="field"><label for="name">Dein Name (so sehen dich die anderen)</label>
+        <input type="text" id="name" dir="auto" maxlength="30" autocomplete="nickname" placeholder="z. B. Anna, Haus 4"></div>
+      <div class="field" id="pin-field" hidden><label for="pin">Chat-Code (PIN)</label>
+        <input type="text" id="pin" class="ltr" maxlength="40" autocomplete="off" inputmode="text"></div>
+      <button type="button" class="btn primary block" id="join-go">Chat öffnen</button>
+      <p class="err" id="join-err" role="alert"></p>
+    </section>
+
+    <section class="card" id="room-view" hidden>
+      <div class="bar">
+        <span class="status" id="status" role="status"><span class="dot"></span><span id="status-text">Verbinde …</span></span>
+        <div class="switch-row compact"><span id="sound-label">Ton bei neuer Nachricht</span>
+          <label class="switch"><input type="checkbox" id="sound" aria-labelledby="sound-label"><span></span></label></div>
+      </div>
+
+      <div class="room-row">
+        <div class="field"><label for="room">Raum</label>
+          <select id="room" data-notranslate></select></div>
+        <button type="button" class="btn sm" id="room-new">Neuer Raum</button>
+        <button type="button" class="btn sm" id="name-change">Name ändern</button>
+      </div>
+      <div class="room-row" id="room-new-row" hidden style="margin-top:10px">
+        <div class="field"><label for="room-new-name">Name des neuen Raums</label>
+          <input type="text" id="room-new-name" dir="auto" maxlength="30" autocomplete="off"></div>
+        <button type="button" class="btn sm" id="room-new-go">Raum öffnen</button>
+      </div>
+
+      <h2 style="font-size:1.1rem;margin:18px 0 8px" id="msgs-title">Nachrichten</h2>
+      <ol class="msgs" id="msgs" role="log" aria-live="polite" aria-labelledby="msgs-title" tabindex="0"></ol>
+
+      <div class="compose">
+        <div class="quick" role="group" aria-label="Schnellnachrichten">
+          <button type="button" class="btn sm" data-q="water">Wir brauchen Wasser</button>
+          <button type="button" class="btn sm" data-q="medical">Wir brauchen Hilfe (medizinisch)</button>
+          <button type="button" class="btn sm" data-q="safe">Wir sind in Sicherheit</button>
+          <button type="button" class="btn sm" data-q="meet">Treffpunkt: …</button>
+          <button type="button" class="btn sm" id="loc">Standort teilen</button>
+        </div>
+        <label class="sr-only" for="text">Deine Nachricht</label>
+        <textarea id="text" dir="auto" maxlength="1000" placeholder="Nachricht schreiben …"></textarea>
+        <div class="compose-row">
+          <button type="button" class="btn primary" id="send">Senden</button>
+          <span class="counter ltr" id="counter" aria-hidden="true"></span>
+        </div>
+        <p class="err" id="send-err" role="alert"></p>
+      </div>
+      <p class="hint">Der Standort wird nur gesendet, wenn du ihn selbst in die Nachricht einfügst und auf „Senden“ tippst.</p>
+    </section>
+
+    <div class="callout danger" id="noserver" hidden role="alert">
+      <strong>Hier läuft kein Chat-Server</strong>
+      Diese Seite wurde nicht vom Offline-Ark-Chat-Server geladen. Starte den Server wie unten beschrieben und öffne die Adresse, die er anzeigt.
+    </div>
+  </div>
+
+  <!-- Anleitung: unter file:// offen, sonst eingeklappt -->
+  <details class="guide card" id="guide" style="padding:0 22px">
+    <summary>So richtest du den Chat ein</summary>
+    <div style="padding-bottom:22px">
+      <p id="file-intro" hidden class="callout info" data-t>Du hast diese Seite direkt als Datei geöffnet. Der Chat braucht einen kleinen Server auf <strong>einem</strong> Gerät (Laptop oder Raspberry Pi). Die anderen öffnen dann nur eine Adresse im Browser.</p>
+
+      <ol class="steps-big">
+        <li><strong>Node.js installieren</strong>
+          <span data-t>Auf dem Laptop oder Raspberry Pi: Node.js ab Version 16 installieren (<a href="https://nodejs.org/en/download" rel="noopener noreferrer" target="_blank">nodejs.org</a>). Das geht einmal mit Internet; danach läuft alles ohne. Lade den Installer am besten schon jetzt herunter und speichere ihn auf einem USB-Stick.</span>
+          <span class="hint" style="display:block" data-t>Raspberry Pi: Im Terminal <code>sudo apt install nodejs</code> eingeben und mit <code>node -v</code> prüfen.</span></li>
+        <li><strong>Server starten</strong>
+          <span data-t>Öffne im Offline-Ark-Ordner ein Terminal (Windows: Rechtsklick in den Ordner, „Im Terminal öffnen“) und tippe:</span>
+          <code class="codeblock" data-notranslate>node server/chat-server.js</code>
+          <span class="hint" style="display:block" data-t>Optional: <code>--pin 1234</code> verlangt einen Chat-Code, <code>--log</code> speichert die Nachrichten in einer Datei, <code>--port 8081</code> ändert den Port. Fragt die Windows-Firewall, erlaube den Zugriff nur für „Private Netzwerke“.</span></li>
+        <li><strong>Handys verbinden</strong>
+          <span>Alle Handys müssen im selben WLAN sein – oder im Hotspot des Laptops. Der Server zeigt beim Start Adressen an, zum Beispiel:</span>
+          <code class="codeblock" data-notranslate>http://192.168.1.23:8080/tools/chat.html</code>
+          <span>Diese Adresse im Browser der Handys öffnen. Im Terminal erscheint außerdem ein QR-Code, den du mit der Kamera scannen kannst.</span></li>
+      </ol>
+
+      <h3>Kein WLAN vorhanden? Hotspot nutzen</h3>
+      <ul>
+        <li data-t><strong>Laptop mit Windows:</strong> Einstellungen → Netzwerk &amp; Internet → Mobiler Hotspot einschalten. Die anderen verbinden sich mit diesem WLAN. Mehr dazu bei <a href="https://support.microsoft.com/en-us/windows/use-your-windows-pc-as-a-mobile-hotspot-c89b0fad-72d5-41e8-f7ea-406ad9036b85" rel="noopener noreferrer" target="_blank">Microsoft</a>.</li>
+        <li data-t><strong>Android-Handy als Hotspot:</strong> Einstellungen → Netzwerk &amp; Internet → Hotspot &amp; Tethering → WLAN-Hotspot. Er funktioniert auch ohne Internet. Der Server kann auf einem Laptop laufen, der sich mit diesem Hotspot verbindet.</li>
+        <li data-t><strong>iPhone:</strong> Der „Persönliche Hotspot“ funktioniert meist nur mit Mobilfunk-Tarif. Nimm besser einen Laptop oder ein Android-Handy als Hotspot.</li>
+        <li data-t><strong>Raspberry Pi als Hotspot:</strong> Mit Raspberry Pi OS (NetworkManager) erzeugt dieser Befehl ein eigenes WLAN, zum Beispiel <code>sudo nmcli device wifi hotspot ssid Offline-Ark password MeinGeheimesWort</code>. Danach den Server auf dem Pi starten. Die Adresse zeigt der Server an. Mehr zum Befehl: <a href="https://networkmanager.dev/docs/api/latest/nmcli.html" rel="noopener noreferrer" target="_blank">nmcli</a>.</li>
+      </ul>
+
+      <h3>Raspberry Pi: Chat beim Einschalten automatisch starten</h3>
+      <p data-t>Ein Beispiel für einen systemd-Dienst steht in der Datei <code>server/README.md</code> im Offline-Ark-Ordner.</p>
+
+      <h3>Wichtig zur Sicherheit</h3>
+      <ul>
+        <li>Nur im eigenen WLAN oder Hotspot verwenden, nie ins Internet freigeben.</li>
+        <li>Es gibt keine Verschlüsselung. Wer im Netz ist, kann mitlesen.</li>
+        <li>Nachrichten sind nur Text. Bilder und Dateien werden nicht übertragen.</li>
+        <li>Ein Chat ersetzt keinen Notruf: Bei Gefahr zuerst 112 wählen, wenn das Telefonnetz geht.</li>
+      </ul>
+    </div>
+  </details>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/tool-chat.js"></script>
+</body>
+</html>

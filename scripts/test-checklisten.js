@@ -3,7 +3,7 @@
 var assert = require('assert');
 var L = require('../data/checklisten.js');
 
-assert.deepStrictEqual(L.map(function (l) { return l.id; }), ['notgepaeck', 'hausapotheke', 'stromausfall', 'evakuierung', 'winter']);
+assert.deepStrictEqual(L.map(function (l) { return l.id; }), ['notgepaeck', 'hausapotheke', 'stromausfall', 'evakuierung', 'winter', 'dokumente']);
 var all = {};
 L.forEach(function (l) {
   assert.ok(l.title && l.intro && l.sections.length >= 3, l.id);

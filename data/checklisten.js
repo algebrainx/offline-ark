@@ -229,6 +229,58 @@
           'Powerbank und Radio bereithalten'
         ] }
       ]
+    },
+    {
+      id: 'dokumente', title: 'Dokumente', short: 'Dokumentenmappe',
+      intro: 'Eine Mappe, in der alle wichtigen Unterlagen beisammen liegen, spart im Ernstfall Zeit und Nerven. Halte Originale oder Kopien griffbereit und lege eine zweite Sammlung digital oder bei einer Vertrauensperson ab. Prüfe den Inhalt einmal im Jahr.',
+      sections: [
+        { title: 'Ausweise & Urkunden', items: [
+          'Personalausweis, Reisepass und gegebenenfalls Aufenthaltstitel',
+          'Geburtsurkunden aller Familienmitglieder',
+          'Heiratsurkunde oder Nachweis der Lebenspartnerschaft',
+          'Führerschein',
+          'Aktuelle Passfotos',
+          'Sterbe- oder Scheidungsurkunden, falls vorhanden'
+        ] },
+        { title: 'Gesundheit & Versicherung', items: [
+          'Krankenversicherungskarte oder Versicherungsnachweis',
+          'Impfpass',
+          'Aktueller Medikamentenplan',
+          'Notfallpass mit Blutgruppe und Allergien',
+          'Organspendeausweis, falls vorhanden',
+          'Policen der Haftpflicht-, Hausrat- und Unfallversicherung',
+          'Telefonnummern der Versicherungen für den Schadensfall'
+        ] },
+        { title: 'Vorsorge & Recht', items: [
+          'Vorsorgevollmacht',
+          'Patientenverfügung',
+          'Testament',
+          'Einer Vertrauensperson sagen, wo die Unterlagen liegen'
+        ] },
+        { title: 'Geld & Verträge', items: [
+          'Bank- und Kreditkarten',
+          'Kontonummern (IBAN) getrennt von den Karten notiert',
+          'Sperrnummer für Karten notiert',
+          'Bargeld in kleinen Scheinen und Münzen',
+          'Miet- oder Kaufvertrag, bei Eigentum Grundbuchauszug',
+          'Wichtige Verträge (Strom, Internet, Handy) mit Kundennummern'
+        ] },
+        { title: 'Fahrzeug & Besitz', items: [
+          'Fahrzeugschein und weitere Fahrzeugpapiere',
+          'Versicherungsnachweis fürs Auto',
+          'Fotos von Wertgegenständen und Hausrat als Nachweis',
+          'Liste der Wertsachen mit Seriennummern'
+        ] },
+        { title: 'Kopien & Aufbewahrung', items: [
+          'Kopien aller wichtigen Dokumente auf Papier',
+          'Digitale Kopien auf einem Speicherstick, möglichst verschlüsselt',
+          'Alles in Klarsichthüllen und einer wasserfesten Mappe',
+          'Mappe an einem festen Ort, griffbereit beim Notgepäck',
+          'Zweite Kopie bei einer Vertrauensperson außerhalb der Region',
+          'Liste mit Notfallkontakten auf Papier',
+          'Inhalt einmal im Jahr prüfen und aktualisieren'
+        ] }
+      ]
     }
   ];
 

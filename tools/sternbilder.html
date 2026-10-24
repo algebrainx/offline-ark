@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sternbilder – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .seg button { min-height: var(--hit); }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
+    .plain li { margin-bottom: .5em; }
+    .flush { margin-top: 0; margin-bottom: 0; }
+    .section-title.first { margin-top: 8px; }
+    .tight { margin: 4px 0 0; }
+    .steps-line { margin: 10px 0 12px; padding-inline-start: 1.4em; }
+    .steps-line li { margin-bottom: .5em; padding-inline-start: .2em; }
+    .ctrl { display: grid; gap: 14px; }
+    .ctrl .field { margin-bottom: 0; }
+    .time-row { display: flex; align-items: center; gap: 12px; }
+    .time-row output { min-width: 3.6em; font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-align: center; }
+    .time-row input[type="range"] { flex: 1; min-width: 0; }
+    .date-row { display: flex; gap: 10px; align-items: stretch; }
+    .date-row input { flex: 1; min-width: 0; }
+    .status { color: var(--text-2); font-size: .92rem; margin: 10px 2px 0; min-height: 1.4em; }
+    .sky-wrap { padding: 8px; }
+    svg.sky { display: block; width: 100%; max-width: 760px; margin-inline: auto; height: auto; direction: ltr; border-radius: 12px; }
+    .sky .bg { fill: var(--surface-2); }
+    .sky .ground { fill: color-mix(in srgb, var(--text) 14%, var(--surface-2)); }
+    .sky .horizon { fill: none; stroke: var(--text-2); stroke-width: 1.5; }
+    .sky .grid { fill: none; stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 3 6; opacity: .5; }
+    .sky .glabel { fill: var(--text-2); font: 500 15px var(--font); opacity: .85; }
+    .sky .cline { stroke: var(--text-2); stroke-width: 1.8; stroke-linecap: round; opacity: .75; }
+    .sky .cline.on { stroke: var(--accent); stroke-width: 3.4; opacity: 1; }
+    .sky .star { fill: var(--text); }
+    .sky .star.on { fill: var(--accent); }
+    .sky.day .stars { opacity: .3; }
+    .sky .slabel { fill: var(--text); font: 600 18px var(--font); paint-order: stroke; stroke: var(--surface-2); stroke-width: 4px; stroke-linejoin: round; }
+    .sky .clabel { fill: var(--text-2); font: 700 17px var(--font); letter-spacing: .02em; paint-order: stroke; stroke: var(--surface-2); stroke-width: 4px; stroke-linejoin: round; }
+    .sky .clabel.on { fill: var(--accent); }
+    .sky .compass { fill: var(--text); font: 700 18px var(--font); }
+    .sky .pointer { stroke: var(--accent); stroke-width: 2.4; stroke-dasharray: 8 6; fill: none; }
+    .sky .pole { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+    .sky .poletxt { fill: var(--accent); font: 700 18px var(--font); paint-order: stroke; stroke: var(--surface-2); stroke-width: 4px; }
+    .legend { color: var(--text-2); font-size: .85rem; margin: 8px 6px 2px; }
+    .vis-list .item { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; text-align: start; cursor: pointer; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 18px; }
+    .vis-list .item:last-child { border-bottom: 0; }
+    .vis-list .item:hover { background: var(--surface-2); }
+    .vis-list .item[aria-pressed="true"] { background: var(--surface-2); box-shadow: inset 4px 0 0 var(--accent); }
+    html[dir="rtl"] .vis-list .item[aria-pressed="true"] { box-shadow: inset -4px 0 0 var(--accent); }
+    .vis-list .name { font-weight: 600; display: block; }
+    .vis-list .sub { display: block; color: var(--text-2); font-size: .85rem; }
+    .vis-list .where { margin-inline-start: auto; text-align: end; font-size: .85rem; color: var(--text-2); flex: none; max-width: 48%; }
+    .vis-list .none { color: var(--text-2); }
+    .vis-list .empty { padding: 16px 18px; color: var(--text-2); }
+    .list-title { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); font-weight: 650; padding: 14px 18px 6px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Sternbilder</h1>
+    <p class="lead">Großer Wagen, Polarstern, Kassiopeia, Orion: Himmelsrichtung nachts finden.</p>
+  </header>
+
+  <div class="stack">
+    <section class="card">
+      <h2 class="flush">Norden mit dem Polarstern finden</h2>
+      <ol class="steps-line">
+        <li>Suche den Großen Wagen. Er besteht aus sieben Sternen und sieht aus wie ein Wagen mit Deichsel.</li>
+        <li>Verlängere die Linie durch die beiden hinteren Sterne des Wagenkastens (Merak und Dubhe) etwa um das Fünffache.</li>
+        <li>Dort steht der Polarstern. Er ist nicht besonders hell, aber in seiner Umgebung gibt es keinen gleich hellen Stern.</li>
+        <li>Der Polarstern steht fast genau im Norden. Wenn du zu ihm schaust, ist rechts Osten, links Westen und hinter dir Süden.</li>
+        <li>Zur Kontrolle: Auf der anderen Seite des Polarsterns liegt das W der Kassiopeia, etwa in gleichem Abstand wie der Große Wagen.</li>
+      </ol>
+      <div class="callout warn flush">
+        <strong>Nicht verwechseln</strong>
+        Die beiden hinteren Sterne des Kleinen Wagens (Kochab und Pherkad) sind ähnlich hell. Der Polarstern ist der Stern am Ende der Deichsel des Kleinen Wagens.
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title first">Sternkarte</h2>
+      <div class="card">
+        <div class="ctrl">
+          <div class="field"><span class="label">Blick</span>
+            <div class="seg" data-local id="view" role="group" aria-label="Blickrichtung wählen">
+              <button type="button" data-v="N" aria-pressed="true">Nach Norden</button>
+              <button type="button" data-v="S" aria-pressed="false">Nach Süden</button>
+            </div></div>
+          <div class="field"><label for="date">Datum</label>
+            <div class="date-row">
+              <input type="date" id="date" aria-label="Datum">
+              <button type="button" class="btn primary" id="now">Jetzt</button>
+            </div></div>
+          <div class="field"><label for="time">Uhrzeit (Gerätezeit)</label>
+            <div class="time-row">
+              <input type="range" id="time" min="0" max="1435" step="5" value="0" aria-label="Uhrzeit">
+              <output class="ltr" id="timeOut" for="time">00:00</output>
+            </div></div>
+          <details>
+            <summary>Anderer Ort (Koordinaten)</summary>
+            <div>
+              <div class="form-grid">
+                <div class="field"><label for="lat">Breite (° Nord, Süden negativ)</label><input type="text" class="ltr" id="lat" inputmode="decimal" autocomplete="off"></div>
+                <div class="field"><label for="lon">Länge (° Ost, Westen negativ)</label><input type="text" class="ltr" id="lon" inputmode="decimal" autocomplete="off"></div>
+              </div>
+              <div class="btn-row"><button type="button" class="btn sm" id="home">Waiblingen</button></div>
+            </div>
+          </details>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="card sky-wrap">
+        <svg class="sky" id="sky" viewBox="0 0 640 470" role="img" aria-label="Sternkarte"></svg>
+        <p class="legend">Je größer der Punkt, desto heller der Stern. Gestrichelte Linie: Verlängerung der Hinterachse des Großen Wagens zum Polarstern.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Jetzt sichtbar</h2>
+      <div class="list vis-list" id="visible"></div>
+      <p class="hint">Tippe auf einen Eintrag, um ihn auf der Karte hervorzuheben. Mond und Planeten zeigt diese Karte nicht.</p>
+    </section>
+
+    <section class="card">
+      <h2 class="flush">Höhe des Polarsterns und Breite</h2>
+      <p class="tight">Der Polarstern steht fast genau über dem Nordpol der Erde. Darum entspricht seine Höhe über dem Horizont ungefähr der geografischen Breite deines Standorts.</p>
+      <ul class="plain">
+        <li>Waiblingen liegt bei etwa 48,8° Nord. Der Polarstern steht dort knapp 49° über dem Horizont.</li>
+        <li>Am Nordpol der Erde stünde er senkrecht über dir. Am Äquator stünde er am Horizont.</li>
+        <li>Er ist vom Himmelspol nur etwa 0,7° entfernt. Seine Höhe schwankt deshalb im Lauf der Nacht um weniger als 1° um diesen Wert.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2 class="flush">Weitere Sternbilder</h2>
+      <ul class="plain">
+        <li>Kassiopeia: fünf helle Sterne in Form eines W oder M. Die Spitze in der Mitte zeigt ungefähr zum Polarstern.</li>
+        <li>Orion: Im Winterhalbjahr am Abendhimmel. Er liegt am Himmelsäquator und geht darum ungefähr im Osten auf und im Westen unter. Verlängere die drei Gürtelsterne nach links unten (beim Blick nach Süden): Dort steht Sirius, der hellste Stern am Nachthimmel.</li>
+        <li>Sommerdreieck: Wega, Deneb und Atair bilden ein großes Dreieck. Mitte August steht es gegen 22 Uhr (MEZ) im Süden.</li>
+        <li>Pegasus-Viereck: Vier Sterne bilden ein großes Viereck am Herbsthimmel.</li>
+      </ul>
+    </section>
+
+    <section class="sources">
+      <h2>Quellen</h2>
+      <ul id="sources"></ul>
+      <p class="small muted">Links öffnen sich nur mit Internet. Die Sterne sind selbst aus den Katalogwerten berechnet und gezeichnet. Alle Texte sind eigene, zusammengefasste Aussagen nach den genannten Quellen. Der Himmel wird ohne Strahlenbrechung gerechnet. Am Horizont kann ein Stern deshalb etwa einen halben Grad höher erscheinen.</p>
+    </section>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/sternbilder.js"></script>
+<script src="../js/tool-sternbilder.js"></script>
+</body>
+</html>

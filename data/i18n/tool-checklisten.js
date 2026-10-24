@@ -1,10 +1,10 @@
 /* Offline-Ark – Wörterbuch für tools/checklisten.html (Schlüssel = deutscher Text aus data/checklisten.js und der Seite). */
 OA.i18n.add({
   "Checklisten": { en: "Checklists", es: "Listas de comprobación", ar: "قوائم المراجعة" },
-  "Notgepäck, Hausapotheke, Stromausfall, Evakuierung, Winter.": {
-    en: "Emergency bag, home pharmacy, power outage, evacuation, winter.",
-    es: "Mochila de emergencia, botiquín doméstico, apagón, evacuación, invierno.",
-    ar: "حقيبة الطوارئ، الصيدلية المنزلية، انقطاع الكهرباء، الإخلاء، الشتاء." },
+  "Notgepäck, Hausapotheke, Stromausfall, Evakuierung, Winter, Dokumente.": {
+    en: "Emergency bag, home pharmacy, power outage, evacuation, winter, documents.",
+    es: "Mochila de emergencia, botiquín doméstico, apagón, evacuación, invierno, documentos.",
+    ar: "حقيبة الطوارئ، الصيدلية المنزلية، انقطاع الكهرباء، الإخلاء، الشتاء، المستندات." },
   "Speicher blockiert": { en: "Storage blocked", es: "Almacenamiento bloqueado", ar: "التخزين محظور" },
   "Dein Browser erlaubt kein Speichern. Deine Häkchen gehen beim Schließen der Seite verloren. Drucke die Liste bei Bedarf aus.": {
     en: "Your browser does not allow saving. Your ticks will be lost when you close the page. Print the list if you need it.",
@@ -255,5 +255,51 @@ OA.i18n.add({
   "Lebensmittel ohne Kühlung haltbar": { en: "Food that keeps without refrigeration", es: "Alimentos que se conservan sin refrigeración", ar: "أطعمة تحفظ دون تبريد" },
   "Heiße Getränke und Suppen für die Kälte": { en: "Hot drinks and soups for the cold", es: "Bebidas calientes y sopas para el frío", ar: "مشروبات ساخنة وشوربات لمواجهة البرد" },
   "Kocher mit Brennstoff (nur gut belüftet oder im Freien)": { en: "Stove with fuel (only well ventilated or outdoors)", es: "Hornillo con combustible (solo bien ventilado o al aire libre)", ar: "موقد مع وقود (في مكان جيد التهوية أو في الهواء الطلق فقط)" },
-  "Powerbank und Radio bereithalten": { en: "Have a power bank and radio ready", es: "Tener a mano una batería externa y una radio", ar: "جهّز شاحنًا محمولًا وراديو" }
+  "Powerbank und Radio bereithalten": { en: "Have a power bank and radio ready", es: "Tener a mano una batería externa y una radio", ar: "جهّز شاحنًا محمولًا وراديو" },
+
+  /* ---- Dokumente ---- */
+  "Dokumente": { en: "Documents", es: "Documentos", ar: "المستندات" },
+  "Eine Mappe, in der alle wichtigen Unterlagen beisammen liegen, spart im Ernstfall Zeit und Nerven. Halte Originale oder Kopien griffbereit und lege eine zweite Sammlung digital oder bei einer Vertrauensperson ab. Prüfe den Inhalt einmal im Jahr.": {
+    en: "A folder that keeps all your important papers together saves time and nerves in an emergency. Keep originals or copies within easy reach and store a second set digitally or with a person you trust. Check the contents once a year.",
+    es: "Una carpeta con todos los documentos importantes juntos ahorra tiempo y nervios en una emergencia. Ten los originales o las copias a mano y guarda un segundo juego en formato digital o con una persona de confianza. Revisa el contenido una vez al año.",
+    ar: "مجلد يضم جميع أوراقك المهمة معًا يوفّر الوقت والأعصاب عند الطوارئ. احتفظ بالأصول أو النسخ في متناول اليد، واحفظ مجموعة ثانية رقميًا أو لدى شخص تثق به. افحص المحتويات مرة في السنة." },
+  "Ausweise & Urkunden": { en: "Identity documents & certificates", es: "Documentos de identidad y actas", ar: "الهويات والشهادات الرسمية" },
+  "Personalausweis, Reisepass und gegebenenfalls Aufenthaltstitel": { en: "ID card, passport and, if applicable, residence permit", es: "Documento de identidad, pasaporte y, en su caso, permiso de residencia", ar: "بطاقة الهوية وجواز السفر وتصريح الإقامة عند الاقتضاء" },
+  "Geburtsurkunden aller Familienmitglieder": { en: "Birth certificates of all family members", es: "Actas de nacimiento de todos los miembros de la familia", ar: "شهادات ميلاد جميع أفراد الأسرة" },
+  "Heiratsurkunde oder Nachweis der Lebenspartnerschaft": { en: "Marriage certificate or proof of civil partnership", es: "Acta de matrimonio o prueba de la pareja registrada", ar: "عقد الزواج أو إثبات الشراكة المسجّلة" },
+  "Führerschein": { en: "Driving licence", es: "Permiso de conducir", ar: "رخصة القيادة" },
+  "Aktuelle Passfotos": { en: "Recent passport photos", es: "Fotos de pasaporte recientes", ar: "صور شخصية حديثة" },
+  "Sterbe- oder Scheidungsurkunden, falls vorhanden": { en: "Death or divorce certificates, if applicable", es: "Actas de defunción o de divorcio, si las hay", ar: "شهادات الوفاة أو الطلاق إن وجدت" },
+  "Gesundheit & Versicherung": { en: "Health & insurance", es: "Salud y seguros", ar: "الصحة والتأمين" },
+  "Krankenversicherungskarte oder Versicherungsnachweis": { en: "Health insurance card or proof of insurance", es: "Tarjeta del seguro médico o justificante del seguro", ar: "بطاقة التأمين الصحي أو إثبات التأمين" },
+  "Impfpass": { en: "Vaccination record", es: "Cartilla de vacunación", ar: "بطاقة التطعيم" },
+  "Aktueller Medikamentenplan": { en: "Current medication plan", es: "Plan de medicación actual", ar: "خطة الأدوية الحالية" },
+  "Notfallpass mit Blutgruppe und Allergien": { en: "Emergency card with blood group and allergies", es: "Tarjeta de emergencia con grupo sanguíneo y alergias", ar: "بطاقة طوارئ فيها فصيلة الدم والحساسية" },
+  "Organspendeausweis, falls vorhanden": { en: "Organ donor card, if you have one", es: "Tarjeta de donante de órganos, si la tienes", ar: "بطاقة التبرع بالأعضاء إن وجدت" },
+  "Policen der Haftpflicht-, Hausrat- und Unfallversicherung": { en: "Policies for liability, household contents and accident insurance", es: "Pólizas del seguro de responsabilidad civil, del hogar y de accidentes", ar: "وثائق التأمين ضد المسؤولية المدنية وتأمين المحتويات المنزلية والحوادث" },
+  "Telefonnummern der Versicherungen für den Schadensfall": { en: "Insurers’ phone numbers for reporting a claim", es: "Teléfonos de las aseguradoras para comunicar un siniestro", ar: "أرقام هواتف شركات التأمين للإبلاغ عن الأضرار" },
+  "Vorsorge & Recht": { en: "Advance planning & legal matters", es: "Previsión y asuntos legales", ar: "التخطيط المسبق والشؤون القانونية" },
+  "Vorsorgevollmacht": { en: "Lasting power of attorney (Vorsorgevollmacht)", es: "Poder de representación preventivo (Vorsorgevollmacht)", ar: "توكيل احترازي (Vorsorgevollmacht)" },
+  "Patientenverfügung": { en: "Advance healthcare directive (Patientenverfügung)", es: "Voluntades anticipadas (Patientenverfügung)", ar: "وصية العلاج المسبقة (Patientenverfügung)" },
+  "Testament": { en: "Will", es: "Testamento", ar: "الوصية" },
+  "Einer Vertrauensperson sagen, wo die Unterlagen liegen": { en: "Tell someone you trust where the documents are", es: "Decir a una persona de confianza dónde están los documentos", ar: "أخبر شخصًا تثق به بمكان الأوراق" },
+  "Geld & Verträge": { en: "Money & contracts", es: "Dinero y contratos", ar: "المال والعقود" },
+  "Bank- und Kreditkarten": { en: "Bank and credit cards", es: "Tarjetas bancarias y de crédito", ar: "بطاقات البنك والائتمان" },
+  "Kontonummern (IBAN) getrennt von den Karten notiert": { en: "Account numbers (IBAN) noted down separately from the cards", es: "Números de cuenta (IBAN) anotados aparte de las tarjetas", ar: "أرقام الحسابات (IBAN) مدوّنة بعيدًا عن البطاقات" },
+  "Sperrnummer für Karten notiert": { en: "Card blocking number noted down", es: "Número para bloquear las tarjetas anotado", ar: "رقم حظر البطاقات مدوّن" },
+  "Miet- oder Kaufvertrag, bei Eigentum Grundbuchauszug": { en: "Rental or purchase contract, land register extract if you own property", es: "Contrato de alquiler o de compraventa y, si eres propietario, extracto del registro de la propiedad", ar: "عقد الإيجار أو الشراء، ومستخرج السجل العقاري للملّاك" },
+  "Wichtige Verträge (Strom, Internet, Handy) mit Kundennummern": { en: "Important contracts (electricity, internet, mobile) with customer numbers", es: "Contratos importantes (luz, internet, móvil) con los números de cliente", ar: "العقود المهمة (الكهرباء، الإنترنت، الجوال) مع أرقام العملاء" },
+  "Fahrzeug & Besitz": { en: "Vehicle & property", es: "Vehículo y bienes", ar: "المركبة والممتلكات" },
+  "Fahrzeugschein und weitere Fahrzeugpapiere": { en: "Vehicle registration certificate and other vehicle papers", es: "Permiso de circulación y demás documentos del vehículo", ar: "رخصة المركبة وسائر أوراقها" },
+  "Versicherungsnachweis fürs Auto": { en: "Proof of car insurance", es: "Justificante del seguro del coche", ar: "إثبات تأمين السيارة" },
+  "Fotos von Wertgegenständen und Hausrat als Nachweis": { en: "Photos of valuables and household contents as proof", es: "Fotos de objetos de valor y enseres del hogar como prueba", ar: "صور للأشياء الثمينة والمحتويات المنزلية كإثبات" },
+  "Liste der Wertsachen mit Seriennummern": { en: "List of valuables with serial numbers", es: "Lista de objetos de valor con números de serie", ar: "قائمة بالأشياء الثمينة مع أرقامها التسلسلية" },
+  "Kopien & Aufbewahrung": { en: "Copies & storage", es: "Copias y almacenamiento", ar: "النسخ وطريقة الحفظ" },
+  "Kopien aller wichtigen Dokumente auf Papier": { en: "Paper copies of all important documents", es: "Copias en papel de todos los documentos importantes", ar: "نسخ ورقية من جميع المستندات المهمة" },
+  "Digitale Kopien auf einem Speicherstick, möglichst verschlüsselt": { en: "Digital copies on a USB stick, encrypted if possible", es: "Copias digitales en una memoria USB, a ser posible cifradas", ar: "نسخ رقمية على ذاكرة USB، ويفضّل أن تكون مشفّرة" },
+  "Alles in Klarsichthüllen und einer wasserfesten Mappe": { en: "Everything in clear sleeves and a waterproof folder", es: "Todo en fundas transparentes y en una carpeta impermeable", ar: "كل شيء في أغلفة شفافة ومجلد مقاوم للماء" },
+  "Mappe an einem festen Ort, griffbereit beim Notgepäck": { en: "Keep the folder in a fixed place, within reach next to the emergency bag", es: "Guardar la carpeta en un lugar fijo, a mano junto a la mochila de emergencia", ar: "ضع المجلد في مكان ثابت وفي متناول اليد بجانب حقيبة الطوارئ" },
+  "Zweite Kopie bei einer Vertrauensperson außerhalb der Region": { en: "Second copy with a trusted person outside the region", es: "Segunda copia con una persona de confianza fuera de la región", ar: "نسخة ثانية لدى شخص موثوق خارج المنطقة" },
+  "Liste mit Notfallkontakten auf Papier": { en: "List of emergency contacts on paper", es: "Lista de contactos de emergencia en papel", ar: "قائمة جهات اتصال الطوارئ على ورق" },
+  "Inhalt einmal im Jahr prüfen und aktualisieren": { en: "Check and update the contents once a year", es: "Revisar y actualizar el contenido una vez al año", ar: "افحص المحتويات وحدّثها مرة في السنة" }
 });

@@ -195,10 +195,10 @@ OA.i18n.add({
 
   "Checklisten": { en: "Checklists", es: "Listas de comprobación", ar: "قوائم التحقق" },
   "Zum Abhaken": { en: "To tick off", es: "Para marcar", ar: "للتأشير" },
-  "Notgepäck, Hausapotheke, Stromausfall, Evakuierung, Winter.": {
-    en: "Go-bag, medicine cabinet, power outage, evacuation, winter.", es: "Mochila de emergencia, botiquín, apagón, evacuación, invierno.", ar: "حقيبة الطوارئ وصيدلية المنزل وانقطاع الكهرباء والإخلاء والشتاء." },
-  "checkliste notgepäck fluchtrucksack hausapotheke evakuierung winter": {
-    en: "checklist go-bag bug-out bag medicine cabinet evacuation winter", es: "lista mochila de emergencia botiquín evacuación invierno", ar: "قائمة حقيبة طوارئ صيدلية إخلاء شتاء" },
+  "Notgepäck, Hausapotheke, Stromausfall, Evakuierung, Winter, Dokumente.": {
+    en: "Go-bag, medicine cabinet, power outage, evacuation, winter, documents.", es: "Mochila de emergencia, botiquín, apagón, evacuación, invierno, documentos.", ar: "حقيبة الطوارئ وصيدلية المنزل وانقطاع الكهرباء والإخلاء والشتاء والوثائق." },
+  "checkliste notgepäck fluchtrucksack hausapotheke evakuierung winter dokumente": {
+    en: "checklist go-bag bug-out bag medicine cabinet evacuation winter documents", es: "lista mochila de emergencia botiquín evacuación invierno documentos", ar: "قائمة حقيبة طوارئ صيدلية إخلاء شتاء وثائق" },
 
   /* ---------- Wissensseiten ---------- */
   "Stromausfall-Leitfaden": { en: "Power outage guide", es: "Guía para apagones", ar: "دليل انقطاع الكهرباء" },
@@ -217,5 +217,153 @@ OA.i18n.add({
   "Kommunikation & Funk": { en: "Communication & radio", es: "Comunicación y radio", ar: "الاتصال واللاسلكي" },
   "Gehört werden": { en: "Being heard", es: "Hacerse oír", ar: "أن يُسمع صوتك" },
   "Strom & Energie off-grid": { en: "Power & energy off-grid", es: "Energía autónoma (off-grid)", ar: "الطاقة والكهرباء خارج الشبكة" },
-  "Akkus, Solar, Aggregat": { en: "Batteries, solar, generator", es: "Baterías, solar, generador", ar: "البطاريات والطاقة الشمسية والمولّد" }
+  "Akkus, Solar, Aggregat": { en: "Batteries, solar, generator", es: "Baterías, solar, generador", ar: "البطاريات والطاقة الشمسية والمولّد" },
+
+  /* ---------- Neue Gruppen ---------- */
+  "Im Ernstfall": { en: "In an emergency", es: "En una emergencia", ar: "في حالات الطوارئ" },
+  "Mitteilen": { en: "Communicate", es: "Comunicar", ar: "التواصل" },
+  "Natur & Bestimmen": { en: "Nature & Identification", es: "Naturaleza e identificación", ar: "الطبيعة والتعرّف" },
+  "Selbstversorgung": { en: "Self-sufficiency", es: "Autosuficiencia", ar: "الاكتفاء الذاتي" },
+  "Lernen & Üben": { en: "Learn & Practise", es: "Aprender y practicar", ar: "التعلّم والتدرّب" },
+  "Wissen: Im Notfall": { en: "Knowledge: In an emergency", es: "Conocimientos: en una emergencia", ar: "المعرفة: في حالات الطوارئ" },
+  "Wissen: Draußen & Technik": { en: "Knowledge: Outdoors & technology", es: "Conocimientos: al aire libre y técnica", ar: "المعرفة: في الخارج والتقنية" },
+  "Reparatur-Basics": { en: "Repair basics", es: "Reparaciones básicas", ar: "أساسيات الإصلاح" },
+  "Fahrrad, Wasser, Strom-Sicherheit": { en: "Bicycle, water, electrical safety", es: "Bicicleta, agua, seguridad eléctrica", ar: "الدراجة والماء وسلامة الكهرباء" },
+
+  /* ---------- Neue Werkzeuge ---------- */
+  "Notfall-Assistent": { en: "Emergency assistant", es: "Asistente de emergencias", ar: "مساعد الطوارئ" },
+  "Was ist passiert?": { en: "What happened?", es: "¿Qué ha pasado?", ar: "ماذا حدث؟" },
+  "Fragen beantworten, dann Schritt für Schritt Anweisungen erhalten.": {
+    en: "Answer questions, then get step-by-step instructions.", es: "Responde a las preguntas y recibe instrucciones paso a paso.", ar: "أجب عن الأسئلة ثم احصل على التعليمات خطوة بخطوة." },
+  "entscheidungsbaum hilfe unfall bewusstlos atmet blutet notfall anleitung": {
+    en: "decision tree help accident unconscious breathing bleeding emergency instructions", es: "árbol de decisión ayuda accidente inconsciente respira sangra emergencia instrucciones", ar: "شجرة قرار مساعدة حادث فاقد الوعي يتنفس ينزف طوارئ تعليمات" },
+
+  "Wiederbelebungs-Takt": { en: "Resuscitation rhythm", es: "Ritmo de reanimación", ar: "إيقاع الإنعاش" },
+  "100–120 pro Minute": { en: "100–120 per minute", es: "100–120 por minuto", ar: "100–120 في الدقيقة" },
+  "Takt mit Ton und Blinken für die Herzdruckmassage.": {
+    en: "Rhythm with sound and flashing for chest compressions.", es: "Ritmo con sonido y destellos para las compresiones torácicas.", ar: "إيقاع بالصوت والوميض لضغطات الصدر." },
+  "reanimation herzdruckmassage metronom takt hlw wiederbelebung rhythmus": {
+    en: "resuscitation chest compressions metronome beat cpr rhythm", es: "reanimación compresiones torácicas metrónomo ritmo rcp", ar: "إنعاش ضغطات الصدر مترونوم إيقاع" },
+
+  "Stromausfall-Plan": { en: "Power outage plan", es: "Plan para apagones", ar: "خطة انقطاع الكهرباء" },
+  "Stunde 1 bis Woche 1": { en: "Hour 1 to week 1", es: "De la hora 1 a la semana 1", ar: "من الساعة الأولى إلى الأسبوع الأول" },
+  "Was wann zu tun ist: Stunde 1, Tag 1, Tag 3, Woche 1 zum Abhaken.": {
+    en: "What to do when: hour 1, day 1, day 3, week 1, to tick off.", es: "Qué hacer y cuándo: hora 1, día 1, día 3, semana 1, para marcar.", ar: "ما يجب فعله ومتى: الساعة 1 واليوم 1 واليوم 3 والأسبوع 1، للتأشير." },
+  "stromausfall ablauf plan blackout stunden tage woche": {
+    en: "power outage plan blackout hours days week", es: "apagón plan blackout horas días semana", ar: "انقطاع كهرباء خطة ساعات أيام أسبوع" },
+
+  "Offline-Karte": { en: "Offline map", es: "Mapa sin conexión", ar: "خريطة دون إنترنت" },
+  "Wasser, Ärzte, Anlaufstellen": { en: "Water, doctors, contact points", es: "Agua, médicos, puntos de ayuda", ar: "الماء والأطباء ونقاط المساعدة" },
+  "Karte von Baden-Württemberg mit Krankenhäusern, Apotheken, Wasserstellen und eigenen Punkten.": {
+    en: "Map of Baden-Württemberg with hospitals, pharmacies, water points and your own points.", es: "Mapa de Baden-Württemberg con hospitales, farmacias, puntos de agua y tus propios puntos.", ar: "خريطة بادن-فورتمبيرغ مع المستشفيات والصيدليات ونقاط المياه ونقاطك الخاصة." },
+  "karte kartenansicht krankenhaus apotheke wasserstelle defibrillator feuerwehr anlaufstelle leuchtturm treffpunkt": {
+    en: "map hospital pharmacy water point defibrillator fire station contact point lighthouse meeting point", es: "mapa hospital farmacia punto de agua desfibrilador bomberos punto de ayuda faro punto de encuentro", ar: "خريطة مستشفى صيدلية نقطة مياه جهاز صدمات إطفاء نقطة مساعدة نقطة تجمع" },
+
+  "Aushänge": { en: "Notices", es: "Carteles", ar: "الإعلانات" },
+  "Druckbare Vorlagen": { en: "Printable templates", es: "Plantillas imprimibles", ar: "قوالب قابلة للطباعة" },
+  "Hilfe gesucht, Vermisstenmeldung, Treffpunkt: Aushang ausfüllen und drucken.": {
+    en: "Help wanted, missing person, meeting point: fill in a notice and print it.", es: "Se busca ayuda, persona desaparecida, punto de encuentro: rellena un cartel e imprímelo.", ar: "طلب مساعدة أو بلاغ مفقود أو نقطة تجمع: املأ الإعلان واطبعه." },
+  "aushang plakat vermisst hilfe gesucht treffpunkt zettel drucken": {
+    en: "notice poster missing help wanted meeting point sheet print", es: "cartel póster desaparecido se busca ayuda punto de encuentro hoja imprimir", ar: "إعلان ملصق مفقود طلب مساعدة نقطة تجمع ورقة طباعة" },
+
+  "QR-Code": { en: "QR code", es: "Código QR", ar: "رمز QR" },
+  "Von Handy zu Handy": { en: "Phone to phone", es: "De móvil a móvil", ar: "من هاتف إلى هاتف" },
+  "QR-Codes für Text, Koordinaten und Kontakte erzeugen, komplett offline.": {
+    en: "Create QR codes for text, coordinates and contacts, completely offline.", es: "Crea códigos QR para texto, coordenadas y contactos, totalmente sin conexión.", ar: "أنشئ رموز QR للنص والإحداثيات وجهات الاتصال دون إنترنت بالكامل." },
+  "qr code teilen übertragen koordinaten kontakt": {
+    en: "qr code share transfer coordinates contact", es: "código qr compartir transferir coordenadas contacto", ar: "رمز qr مشاركة نقل إحداثيات جهة اتصال" },
+
+  "Chat im lokalen Netz": { en: "Chat on the local network", es: "Chat en la red local", ar: "دردشة على الشبكة المحلية" },
+  "Ohne Internet im WLAN": { en: "In Wi-Fi without internet", es: "En el wifi sin internet", ar: "عبر الواي فاي دون إنترنت" },
+  "Mini-Server auf einem Laptop oder Raspberry Pi: alle im selben WLAN können schreiben.": {
+    en: "Mini server on a laptop or Raspberry Pi: everyone on the same Wi-Fi can write.", es: "Miniservidor en un portátil o Raspberry Pi: todos en el mismo wifi pueden escribir.", ar: "خادم صغير على لابتوب أو Raspberry Pi: يستطيع الجميع على نفس الشبكة الكتابة." },
+  "chat messenger wlan lokal server raspberry pi nachrichten nachbarn": {
+    en: "chat messenger wifi local server raspberry pi messages neighbours", es: "chat mensajería wifi local servidor raspberry pi mensajes vecinos", ar: "دردشة مراسلة واي فاي محلي خادم raspberry pi رسائل جيران" },
+
+  "Ausdruck-Paket": { en: "Print pack", es: "Paquete para imprimir", ar: "حزمة الطباعة" },
+  "Das Wichtigste auf Papier": { en: "The essentials on paper", es: "Lo esencial en papel", ar: "الأهم على الورق" },
+  "Die wichtigsten Seiten auswählen und als Sammlung ausdrucken.": {
+    en: "Choose the most important pages and print them as a collection.", es: "Elige las páginas más importantes e imprímelas como colección.", ar: "اختر أهم الصفحات واطبعها كمجموعة." },
+  "ausdrucken drucken papier paket pdf sammlung": {
+    en: "print printing paper pack pdf collection", es: "imprimir impresión papel paquete pdf colección", ar: "طباعة ورق حزمة pdf مجموعة" },
+
+  "Pflanzen & Pilze": { en: "Plants & Mushrooms", es: "Plantas y setas", ar: "النباتات والفطر" },
+  "Gefährliche Doppelgänger": { en: "Dangerous look-alikes", es: "Parecidos peligrosos", ar: "أشباه خطيرة" },
+  "Bestimmungshilfe mit Fotos: giftige Doppelgänger essbarer Pflanzen und Pilze.": {
+    en: "Identification aid with photos: poisonous look-alikes of edible plants and mushrooms.", es: "Ayuda de identificación con fotos: parecidos venenosos de plantas y setas comestibles.", ar: "مساعدة على التعرّف بالصور: أشباه سامة للنباتات والفطر الصالح للأكل." },
+  "bestimmen pflanzen pilze beeren giftig doppelgänger bärlauch maiglöckchen knollenblätterpilz champignon": {
+    en: "identify plants mushrooms berries poisonous look-alike wild garlic lily of the valley death cap champignon", es: "identificar plantas setas bayas venenoso parecido ajo silvestre lirio de los valles amanita champiñón", ar: "تعرّف نباتات فطر توت سام شبيه ثوم بري زنبق الوادي فطر الموت شامبينيون" },
+
+  "Wolken & Wetter": { en: "Clouds & Weather", es: "Nubes y tiempo", ar: "السحب والطقس" },
+  "Wetterzeichen erkennen": { en: "Recognising weather signs", es: "Reconocer señales del tiempo", ar: "التعرّف على علامات الطقس" },
+  "Wolkenarten und Wetterzeichen, die Wetterumschwünge ankündigen.": {
+    en: "Cloud types and weather signs that announce a change in the weather.", es: "Tipos de nubes y señales que anuncian cambios del tiempo.", ar: "أنواع السحب وعلامات الطقس التي تنذر بتغيّر الجو." },
+  "wetter wolken gewitter regen front vorhersage": {
+    en: "weather clouds thunderstorm rain front forecast", es: "tiempo nubes tormenta lluvia frente pronóstico", ar: "طقس سحب عاصفة رعدية مطر جبهة توقعات" },
+
+  "Sternbilder": { en: "Constellations", es: "Constelaciones", ar: "الأبراج والكوكبات" },
+  "Orientierung nachts": { en: "Finding your way at night", es: "Orientarse de noche", ar: "التوجّه ليلاً" },
+  "Großer Wagen, Polarstern, Kassiopeia, Orion: Himmelsrichtung nachts finden.": {
+    en: "Big Dipper, Pole Star, Cassiopeia, Orion: find direction at night.", es: "Osa Mayor, Estrella Polar, Casiopea, Orión: encuentra el rumbo de noche.", ar: "الدب الأكبر والنجم القطبي وذات الكرسي والجبّار: اعرف الاتجاه ليلاً." },
+  "sterne sternbild polarstern großer wagen kassiopeia orion nacht norden": {
+    en: "stars constellation pole star big dipper cassiopeia orion night north", es: "estrellas constelación estrella polar osa mayor casiopea orión noche norte", ar: "نجوم كوكبة نجم قطبي دب أكبر ذات الكرسي جبار ليل شمال" },
+
+  "Tierspuren": { en: "Animal tracks", es: "Huellas de animales", ar: "آثار الحيوانات" },
+  "Wer war das?": { en: "Who was that?", es: "¿Quién ha sido?", ar: "من كان هذا؟" },
+  "Trittsiegel und Spuren häufiger Tiere in Deutschland erkennen.": {
+    en: "Recognise footprints and tracks of common animals in Germany.", es: "Reconoce huellas y rastros de animales comunes en Alemania.", ar: "تعرّف على آثار أقدام وعلامات الحيوانات الشائعة في ألمانيا." },
+  "tierspuren trittsiegel fährte wildschwein reh fuchs wolf hund": {
+    en: "animal tracks footprint trail wild boar deer fox wolf dog", es: "huellas animales rastro jabalí corzo zorro lobo perro", ar: "آثار حيوانات بصمة قدم خنزير بري غزال ثعلب ذئب كلب" },
+
+  "Gartenkalender": { en: "Garden calendar", es: "Calendario de huerto", ar: "تقويم الحديقة" },
+  "Säen und ernten": { en: "Sowing and harvesting", es: "Sembrar y cosechar", ar: "الزراعة والحصاد" },
+  "Was wann in Baden-Württemberg gesät, gepflanzt und geerntet wird.": {
+    en: "What is sown, planted and harvested when in Baden-Württemberg.", es: "Qué se siembra, planta y cosecha y cuándo en Baden-Württemberg.", ar: "ماذا يُزرع ويُغرس ويُحصد ومتى في بادن-فورتمبيرغ." },
+  "garten aussaat säen ernten gemüse kalender anbau beet": {
+    en: "garden sowing harvest vegetables calendar growing bed", es: "huerto siembra cosecha verduras calendario cultivo bancal", ar: "حديقة بذر حصاد خضار تقويم زراعة" },
+
+  "Haltbar machen": { en: "Preserving food", es: "Conservar alimentos", ar: "حفظ الطعام" },
+  "Einkochen, Fermentieren, Trocknen": { en: "Canning, fermenting, drying", es: "Esterilizar, fermentar, deshidratar", ar: "التعليب والتخمير والتجفيف" },
+  "Rechner und Anleitungen für sicheres Haltbarmachen.": {
+    en: "Calculators and guides for safe food preservation.", es: "Calculadoras y guías para conservar alimentos de forma segura.", ar: "حاسبات وإرشادات لحفظ الطعام بأمان." },
+  "einkochen einwecken fermentieren trocknen sauerkraut salz haltbar konservieren": {
+    en: "canning preserving fermenting drying sauerkraut salt shelf-stable", es: "esterilizar conservas fermentar deshidratar chucrut sal conservar", ar: "تعليب حفظ تخمير تجفيف مخلل ملح" },
+
+  "Brennholz-Rechner": { en: "Firewood calculator", es: "Calculadora de leña", ar: "حاسبة حطب التدفئة" },
+  "Holzbedarf für den Ofen": { en: "Wood needed for the stove", es: "Leña necesaria para la estufa", ar: "كمية الحطب للموقد" },
+  "Wie viel Holz brauche ich für Raum und Zeit?": {
+    en: "How much wood do I need for a room and a period of time?", es: "¿Cuánta leña necesito para una habitación y un periodo?", ar: "كم أحتاج من الحطب لغرفة ولمدة معيّنة؟" },
+  "holz brennholz ofen kamin heizen raummeter ster heizbedarf": {
+    en: "wood firewood stove fireplace heating cubic metre heating demand", es: "leña madera estufa chimenea calefacción metro cúbico demanda", ar: "حطب خشب موقد مدفأة تدفئة متر مكعب احتياج" },
+
+  "Quiz": { en: "Quiz", es: "Cuestionario", ar: "اختبار" },
+  "Erste Hilfe, Morse, Funk": { en: "First aid, Morse, radio", es: "Primeros auxilios, Morse, radio", ar: "الإسعافات الأولية ومورس واللاسلكي" },
+  "Wissen testen: Erste Hilfe, Morsecode, Funkalphabet, Pflanzen.": {
+    en: "Test your knowledge: first aid, Morse code, spelling alphabet, plants.", es: "Pon a prueba tus conocimientos: primeros auxilios, Morse, alfabeto de deletreo, plantas.", ar: "اختبر معلوماتك: الإسعافات الأولية وشفرة مورس وأبجدية التهجئة والنباتات." },
+  "quiz test üben fragen lernen": { en: "quiz test practise questions learn", es: "cuestionario prueba practicar preguntas aprender", ar: "اختبار تدرّب أسئلة تعلّم" },
+
+  "Knoten": { en: "Knots", es: "Nudos", ar: "العقد" },
+  "Schritt für Schritt": { en: "Step by step", es: "Paso a paso", ar: "خطوة بخطوة" },
+  "Wichtige Knoten mit Schritt-für-Schritt-Bildern.": {
+    en: "Important knots with step-by-step pictures.", es: "Nudos importantes con imágenes paso a paso.", ar: "عقد مهمة بصور خطوة بخطوة." },
+  "knoten palstek kreuzknoten seil leine stek": { en: "knots bowline reef knot rope line hitch", es: "nudos as de guía nudo de rizo cuerda cabo", ar: "عقد عقدة بولين عقدة مربعة حبل" },
+
+  "Morse-Trainer": { en: "Morse trainer", es: "Entrenador de Morse", ar: "مدرّب مورس" },
+  "Mit steigendem Tempo": { en: "With rising speed", es: "Con velocidad creciente", ar: "بسرعة متزايدة" },
+  "Morsezeichen hören und lernen, mit steigendem Tempo.": {
+    en: "Listen to and learn Morse characters, with rising speed.", es: "Escucha y aprende los signos Morse, con velocidad creciente.", ar: "استمع إلى رموز مورس وتعلّمها بسرعة متزايدة." },
+  "morse trainer lernen hören koch methode": { en: "morse trainer learn listen koch method", es: "morse entrenador aprender escuchar método koch", ar: "مورس مدرب تعلم استماع طريقة كوخ" },
+
+  "Notfallpass": { en: "Emergency passport", es: "Tarjeta de emergencia", ar: "بطاقة الطوارئ" },
+  "Pro Person zum Ausdrucken": { en: "Printable for each person", es: "Imprimible para cada persona", ar: "للطباعة لكل شخص" },
+  "Blutgruppe, Allergien, Medikamente und Kontakte auf einer Karte.": {
+    en: "Blood group, allergies, medication and contacts on one card.", es: "Grupo sanguíneo, alergias, medicamentos y contactos en una tarjeta.", ar: "فصيلة الدم والحساسية والأدوية وجهات الاتصال على بطاقة واحدة." },
+  "notfallpass blutgruppe allergie medikament ausweis karte": {
+    en: "emergency passport blood group allergy medication id card", es: "tarjeta de emergencia grupo sanguíneo alergia medicamento documento", ar: "بطاقة طوارئ فصيلة دم حساسية دواء هوية" },
+
+  "Kinderbereich": { en: "Kids' corner", es: "Rincón infantil", ar: "ركن الأطفال" },
+  "Erklärt und Spiele": { en: "Explanations and games", es: "Explicaciones y juegos", ar: "شروحات وألعاب" },
+  "Einfache Erklärungen für Kinder und Offline-Spiele gegen Langeweile.": {
+    en: "Simple explanations for children and offline games against boredom.", es: "Explicaciones sencillas para niños y juegos sin conexión contra el aburrimiento.", ar: "شروحات بسيطة للأطفال وألعاب دون إنترنت لمحاربة الملل." },
+  "kinder spiele erklärung langeweile spielen": { en: "children games explanation boredom play", es: "niños juegos explicación aburrimiento jugar", ar: "أطفال ألعاب شرح ملل لعب" }
 });

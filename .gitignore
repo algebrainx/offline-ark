@@ -1,0 +1,7 @@
+# Erzeugte Einzeldatei (mit `node scripts/build-single.js` neu bauen)
+dist/
+# Arbeitsordner und Testreste
+scratch/
+_work*/
+node_modules/
+*.part

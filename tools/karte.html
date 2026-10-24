@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Offline-Karte – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .layers { display: flex; flex-wrap: wrap; gap: 8px; }
+    .lchip {
+      display: inline-flex; align-items: center; gap: 8px; min-height: var(--hit); padding: 0 16px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--surface); color: var(--text); font: 600 .92rem var(--font); cursor: pointer;
+    }
+    .lchip .icon { width: 20px; height: 20px; color: var(--text-2); }
+    .lchip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+    .lchip[aria-pressed="true"] .icon { color: var(--on-accent); }
+    .lchip[aria-busy="true"] { opacity: .6; }
+
+    .mapcard { padding: 0; overflow: hidden; position: relative; }
+    .mapbox { position: relative; height: clamp(340px, 56vh, 640px); background: var(--bg); touch-action: none; }
+    .mapbox canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; }
+    .mapbox canvas:active { cursor: grabbing; }
+    .mapbox canvas:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+    .mapbox.fs { position: fixed; inset: 0; z-index: 150; height: 100vh; height: 100dvh; }
+    .mapctl { position: absolute; inset-inline-end: 10px; top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .mapbtn {
+      width: var(--hit); height: var(--hit); display: inline-grid; place-items: center; border-radius: 12px; cursor: pointer;
+      border: 1px solid var(--line); background: var(--surface); color: var(--text); box-shadow: var(--shadow); font: 500 1.5rem var(--font); padding: 0;
+    }
+    .mapbtn .icon { width: 22px; height: 22px; }
+    .mapbtn:active { transform: scale(.96); }
+    .north { position: absolute; inset-inline-start: 10px; top: 8px; width: 40px; height: 48px; pointer-events: none; color: var(--text); }
+    .north svg { width: 100%; height: 100%; }
+    .north .n { fill: var(--danger); }
+    .north .s { fill: var(--text-2); opacity: .5; }
+    .north text { font: 700 11px var(--font); fill: var(--text); text-anchor: middle; }
+    .scale { position: absolute; inset-inline-start: 10px; bottom: 10px; color: var(--text); font-size: .78rem; font-weight: 600; pointer-events: none;
+      background: color-mix(in srgb, var(--surface) 82%, transparent); border-radius: 8px; padding: 4px 8px; }
+    .scale .bar { height: 6px; border: 2px solid var(--text); border-top: 0; margin-bottom: 2px; }
+    .attrib { position: absolute; inset-inline-end: 6px; bottom: 6px; max-width: 70%; font-size: .68rem; color: var(--text-2); text-align: end;
+      background: color-mix(in srgb, var(--surface) 82%, transparent); border-radius: 6px; padding: 2px 6px; pointer-events: none; }
+    .maphint { position: absolute; inset-inline: 56px; top: 10px; text-align: center; pointer-events: none; }
+    .maphint span { display: inline-block; font-size: .8rem; font-weight: 600; color: var(--text); padding: 5px 10px; border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent); border: 1px solid var(--line); }
+    .status { color: var(--text-2); font-size: .9rem; min-height: 1.4em; }
+    .coord { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 1.15rem; }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .near-group + .near-group { margin-top: 14px; }
+    .near-group h3 { margin: 0 0 4px; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); font-weight: 600; }
+    .near-item {
+      display: flex; align-items: center; gap: 12px; width: 100%; min-height: var(--hit); padding: 6px 4px; border: 0; background: none; color: var(--text);
+      border-bottom: 1px solid var(--line); text-align: start; font: inherit; cursor: pointer;
+    }
+    .near-item:last-child { border-bottom: 0; }
+    .near-item:hover { background: var(--surface-2); }
+    .near-item .nm { flex: 1; min-width: 0; font-weight: 600; word-break: break-word; }
+    .near-item .nm small { display: block; font-weight: 400; color: var(--text-2); }
+    .near-item .ds { color: var(--text-2); font-size: .88rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .pt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .pt:last-child { border-bottom: 0; }
+    .pt .info { flex: 1 1 200px; min-width: 0; }
+    .pt .name { font-weight: 650; word-break: break-word; }
+    .pt .sub { color: var(--text-2); font-size: .85rem; }
+    .pt .note { font-size: .9rem; margin-top: 2px; word-break: break-word; }
+    .pform label.lbl, .pform .label { display: block; font-size: .85rem; font-weight: 600; color: var(--text-2); margin: 0 0 6px 0; margin-inline-start: 2px; }
+    .legend { display: grid; gap: 6px 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .legend div { display: flex; align-items: center; gap: 10px; min-height: 32px; }
+    .legend canvas { flex: none; width: 24px; height: 24px; }
+    .plain { margin: 6px 0 0; padding-inline-start: 1.2em; }
+    .plain li { margin-bottom: .45em; }
+    .src li { font-size: .92rem; }
+    .print-only { display: none; }
+    .small-top { margin-top: 10px; }
+    @media print {
+      .layers, .mapctl, .maphint, .no-print { display: none !important; }
+      .mapbox { height: 420px; }
+      .print-only { display: block !important; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Offline-Karte</h1>
+    <p class="lead">Karte von Baden-Württemberg mit Krankenhäusern, Apotheken, Wasserstellen und eigenen Punkten.</p>
+  </header>
+
+  <div class="stack">
+    <div class="layers no-print" id="layers" role="group" aria-label="Ebenen">
+      <button type="button" class="lchip" data-layer="hospital" aria-pressed="false"><span data-icon="aid"></span>Krankenhäuser</button>
+      <button type="button" class="lchip" data-layer="pharmacy" aria-pressed="false"><span data-icon="jar"></span>Apotheken</button>
+      <button type="button" class="lchip" data-layer="defib" aria-pressed="false"><span data-icon="heart"></span>Defibrillatoren</button>
+      <button type="button" class="lchip" data-layer="fire" aria-pressed="false"><span data-icon="flame"></span>Feuerwehr &amp; Notfall</button>
+      <button type="button" class="lchip" data-layer="water" aria-pressed="false"><span data-icon="drop"></span>Wasser</button>
+      <button type="button" class="lchip" data-layer="own" aria-pressed="false"><span data-icon="star"></span>Meine Punkte</button>
+      <button type="button" class="lchip" data-layer="wp" aria-pressed="false"><span data-icon="pin"></span>Wegpunkte</button>
+    </div>
+
+    <section class="card mapcard">
+      <div class="mapbox" id="mapbox">
+        <canvas id="map" tabindex="0" role="img" aria-label="Karte. Ziehen zum Verschieben, Zwei-Finger-Geste oder Mausrad zum Zoomen."></canvas>
+        <div class="north" aria-hidden="true"><svg viewBox="0 -9 40 48"><path class="n" d="M20 4l7 18H13z"/><path class="s" d="M20 36l7-14H13z"/><text id="northLetter" data-notranslate x="20" y="3.5" dy="0">N</text></svg></div>
+        <div class="maphint" id="maphint"><span id="maphintText"></span></div>
+        <div class="mapctl no-print">
+          <button type="button" class="mapbtn" id="zin" aria-label="Hineinzoomen">+</button>
+          <button type="button" class="mapbtn" id="zout" aria-label="Herauszoomen">−</button>
+          <button type="button" class="mapbtn" id="fs" aria-label="Vollbild"><span data-icon="globe"></span></button>
+        </div>
+        <div class="scale ltr" id="scale"><div class="bar" id="scaleBar"></div><span id="scaleTxt"></span></div>
+        <div class="attrib" id="attrib"></div>
+      </div>
+    </section>
+
+    <div class="btn-row no-print">
+      <button type="button" class="btn primary" id="locate">Meine Position</button>
+      <button type="button" class="btn" id="add">Punkt hinzufügen</button>
+      <button type="button" class="btn" id="save">Als Bild speichern</button>
+    </div>
+    <div class="status no-print" id="status" role="status" aria-live="polite"></div>
+
+    <section class="card" id="sel" hidden>
+      <div class="label small muted" id="selKind"></div>
+      <div id="selTitle" style="font-weight:650"></div>
+      <div class="coord ltr" id="selCoord" data-notranslate></div>
+      <div id="selDist" class="small muted" style="margin-top:6px"></div>
+      <div id="selNote" class="small muted" style="margin-top:6px"></div>
+      <div class="row-actions no-print">
+        <button type="button" class="btn sm" id="selCopy">Koordinaten kopieren</button>
+        <button type="button" class="btn sm" id="selAdd">Hier Punkt hinzufügen</button>
+        <button type="button" class="btn sm" id="selEdit" hidden>Bearbeiten</button>
+        <button type="button" class="btn sm danger" id="selDel" hidden>Löschen</button>
+      </div>
+    </section>
+
+    <section class="card pform no-print" id="pform" hidden>
+      <h2 style="margin:0 0 12px;font-size:1.2rem" id="pformTitle">Punkt hinzufügen</h2>
+      <div class="field"><label class="lbl" for="pName">Name</label>
+        <input type="text" id="pName" maxlength="60" placeholder="z. B. Feuerwehrhaus Musterstadt" autocomplete="off"></div>
+      <div class="field"><label class="lbl" for="pType">Art</label>
+        <select id="pType">
+          <option value="t">Treffpunkt</option>
+          <option value="l">Leuchtturm / Notfalltreffpunkt</option>
+          <option value="w">Wasserstelle</option>
+          <option value="u">Notunterkunft</option>
+          <option value="x">Sonstiges</option>
+        </select></div>
+      <div class="field"><span class="label">Ort</span>
+        <div class="seg" data-local id="pLoc" role="group" aria-label="Ort des Punkts">
+          <button type="button" data-v="center" aria-pressed="true">Kartenmitte</button>
+          <button type="button" data-v="gps" aria-pressed="false">Meine Position</button>
+          <button type="button" data-v="tap" aria-pressed="false">Angetippte Stelle</button>
+        </div>
+        <div class="hint"><span class="ltr" id="pCoord" data-notranslate></span></div></div>
+      <div class="field"><label class="lbl" for="pNote">Notiz (optional)</label>
+        <textarea id="pNote" maxlength="400" rows="3" placeholder="z. B. Öffnungszeiten, Ansprechperson, Hinweis"></textarea></div>
+      <div class="err small" id="pErr" role="alert" style="color:var(--danger);min-height:1.2em"></div>
+      <div class="btn-row">
+        <button type="button" class="btn primary" id="pSave">Speichern</button>
+        <button type="button" class="btn" id="pCancel">Abbrechen</button>
+      </div>
+    </section>
+
+    <section class="card" id="nearCard">
+      <h2 style="margin:0 0 4px;font-size:1.2rem">Nächstgelegene</h2>
+      <div class="small muted" id="nearRef" style="margin-bottom:10px"></div>
+      <div id="nearList"></div>
+    </section>
+
+    <section class="card" id="ownCard">
+      <h2 style="margin:0 0 8px;font-size:1.2rem">Meine Punkte</h2>
+      <p class="small muted" style="margin:0 0 10px" data-t="">Hier trägst du Orte ein, die für dich wichtig sind: Treffpunkte, Wasserstellen oder die Anlaufstellen deiner Gemeinde. Alles bleibt nur auf diesem Gerät.</p>
+      <div id="ownList"></div>
+      <div class="btn-row no-print" style="margin-top:12px">
+        <button type="button" class="btn sm" id="pExport">Punkte sichern (JSON)</button>
+        <button type="button" class="btn sm" id="pImport">Punkte laden</button>
+      </div>
+      <div class="status" id="pMsg" role="status"></div>
+    </section>
+
+    <div>
+      <details>
+        <summary>Was ist ein Leuchtturm (Notfalltreffpunkt)?</summary>
+        <div>
+          <ul class="plain">
+            <li data-t="">Katastrophenschutz-Leuchttürme sind Anlaufstellen der Gemeinde für die Bevölkerung, vor allem bei einem großflächigen Stromausfall. Dort gibt es Informationen zur Lage, und in lebensbedrohlichen Notfällen wird ein Notruf an die Leitstelle weitergegeben.</li>
+            <li data-t="">In Baden-Württemberg heißen sie <strong>Notfalltreffpunkte</strong>. Was ein Standort genau bietet (zum Beispiel Notstrom oder Laden von Handys), entscheidet jede Gemeinde selbst.</li>
+            <li data-t=""><strong>Die Standorte sind nicht in dieser Karte hinterlegt.</strong> Frage bei deiner Gemeindeverwaltung nach und trage sie unter „Meine Punkte“ ein (Art: Leuchtturm / Notfalltreffpunkt).</li>
+          </ul>
+          <ul class="plain src">
+            <li data-t=""><a href="https://www.notfalltreffpunkt-bw.de/" target="_blank" rel="noopener">notfalltreffpunkt-bw.de</a> – Informationsseite des Landes Baden-Württemberg</li>
+            <li data-t=""><a href="https://im.baden-wuerttemberg.de/de/service/presse-und-oeffentlichkeitsarbeit/pressemitteilung/pid/notfalltreffpunkte-in-baden-wuerttemberg" target="_blank" rel="noopener">Innenministerium Baden-Württemberg</a> – Pressemitteilung zu den Notfalltreffpunkten</li>
+            <li data-t=""><a href="https://www.bbk.bund.de/SharedDocs/Downloads/DE/Mediathek/Publikationen/Krisenmanagement/katastrophenleuchttuerme_download.pdf" target="_blank" rel="noopener">BBK (Bundesamt für Bevölkerungsschutz und Katastrophenhilfe)</a> – Hinweise zu Katastrophenschutz-Leuchttürmen (PDF)</li>
+          </ul>
+        </div>
+      </details>
+
+      <details id="legendBox">
+        <summary>Legende</summary>
+        <div><div class="legend" id="legend"></div></div>
+      </details>
+
+      <details>
+        <summary>Eigene Kacheln hinzufügen (Raster-Hintergrund)</summary>
+        <div>
+          <div class="switch-row">
+            <span>Eigene Kacheln verwenden</span>
+            <label class="switch"><input type="checkbox" id="tilesOn" aria-label="Eigene Kacheln verwenden"><span></span></label>
+          </div>
+          <p class="small muted" id="tilesMsg" role="status"></p>
+          <button type="button" class="btn sm" id="tilesTest">Kacheln prüfen</button>
+          <ol class="plain small-top">
+            <li data-t="">Lege Kacheln im Ordner <code class="ltr">bibliothek/karten/{z}/{x}/{y}.png</code> ab (auch .jpg oder .webp). Das ist das übliche „Slippy-Map“-Schema mit 256-Pixel-Kacheln.</li>
+            <li data-t="">Schalte oben „Eigene Kacheln verwenden“ ein. Zoomstufen und Quellenangabe stehen in <code class="ltr">data/karte-config.js</code>. Fehlen Kacheln, zeigt die Karte leise wieder die Vektorkarte.</li>
+            <li>Kacheln erzeugst du rechtmäßig aus freien Daten, zum Beispiel mit MOBAC, QGIS („Rasterkacheln erzeugen“) oder gdal2tiles aus eigenen Rasterkarten, oder indem du Kacheln aus OpenStreetMap-Daten selbst renderst.</li>
+            <li data-t="">Lade <strong>keine</strong> Kacheln massenhaft von tile.openstreetmap.org herunter: Die <a href="https://operations.osmfoundation.org/policies/tiles/" target="_blank" rel="noopener">Nutzungsrichtlinie</a> verbietet das. Beachte immer die Lizenz und Quellenangabe deiner Kacheln.</li>
+            <li>PMTiles- oder MBTiles-Dateien kann eine Seite ohne Server nicht einfach lesen. Dafür wäre ein zusätzlicher Viewer nötig. Hier werden nur einzelne Kachel-Dateien unterstützt.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
+
+    <section class="card src">
+      <h2 style="margin:0 0 8px;font-size:1.2rem">Stand der Daten und Quellen</h2>
+      <div class="small" id="dataStand"></div>
+      <ul class="plain">
+        <li data-t="">Karten- und Punktdaten: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mitwirkende</a>, Lizenz <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">Open Database License (ODbL) 1.0</a>. Auszug über <a href="https://download.geofabrik.de/" target="_blank" rel="noopener">Geofabrik</a>.</li>
+        <li data-t="">Umriss Deutschland, Länder, Seen, große Flüsse und Städte: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (gemeinfrei, <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener">Nutzungsbedingungen</a>).</li>
+        <li>Die Daten können unvollständig oder veraltet sein. Verlasse dich im Notfall nicht allein auf diese Karte und rufe den Notruf 112.</li>
+        <li data-t="">Eigene Punkte und Wegpunkte (aus „Koordinaten &amp; GPS“) stammen von dir und liegen nur auf diesem Gerät.</li>
+      </ul>
+    </section>
+
+    <section class="print-only card" id="printInfo">
+      <div id="printCenter" class="coord ltr" data-notranslate></div>
+      <div id="printLegend" class="small"></div>
+      <div id="printSrc" class="small"></div>
+    </section>
+  </div>
+</main>
+<script src="../data/karte-config.js"></script>
+<script src="../data/karte-regions.js"></script>
+<script src="../data/karte-base.js"></script>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/karte-core.js"></script>
+<script src="../js/tool-karte.js"></script>
+</body>
+</html>

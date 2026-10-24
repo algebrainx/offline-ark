@@ -1,0 +1,130 @@
+/* Wörterbuch: tools/ausdruck.html (Ausdruck-Paket) */
+OA.i18n.add({
+  "Voreinstellung": { en: "Preset", es: "Selección rápida", ar: "اختيار سريع" },
+  "Das Wichtigste": { en: "The essentials", es: "Lo más importante", ar: "الأهم" },
+  "Alles": { en: "Everything", es: "Todo", ar: "الكل" },
+  "Nichts": { en: "Nothing", es: "Nada", ar: "لا شيء" },
+  "Sofort-Karten": { en: "Quick cards", es: "Tarjetas rápidas", ar: "بطاقات سريعة" },
+  "Wissensseiten": { en: "Knowledge pages", es: "Páginas de conocimiento", ar: "صفحات المعرفة" },
+  "Listen & Karten": { en: "Lists & tables", es: "Listas y tablas", ar: "قوائم وجداول" },
+  "Zusätzlich auf Deutsch drucken": { en: "Also print in German", es: "Imprimir también en alemán", ar: "الطباعة أيضاً بالألمانية" },
+  "Jeder Teil kommt danach noch einmal auf Deutsch – praktisch für Helfer und Behörden.": {
+    en: "Each part is then printed again in German – handy for helpers and authorities.",
+    es: "Después, cada parte se imprime otra vez en alemán: útil para ayudantes y autoridades.",
+    ar: "بعد ذلك تُطبع كل مادة مرة أخرى بالألمانية – مفيد للمساعدين والجهات الرسمية." },
+  "Nur Druckvorschau anzeigen": { en: "Show print preview only", es: "Mostrar solo la vista previa", ar: "عرض المعاينة فقط" },
+  "Zeigt die Seiten am Bildschirm, ohne den Druckdialog zu öffnen.": {
+    en: "Shows the pages on screen without opening the print dialog.",
+    es: "Muestra las páginas en pantalla sin abrir el cuadro de impresión.",
+    ar: "يعرض الصفحات على الشاشة دون فتح نافذة الطباعة." },
+  "A4 · schwarz auf weiß · Schrift 10,5 pt": { en: "A4 · black on white · 10.5 pt text", es: "A4 · negro sobre blanco · letra de 10,5 pt", ar: "A4 · أسود على أبيض · خط 10.5 نقطة" },
+  "Ausdruck-Paket erstellen": { en: "Create print pack", es: "Crear paquete para imprimir", ar: "إنشاء حزمة الطباعة" },
+  "Zurück zur Auswahl": { en: "Back to selection", es: "Volver a la selección", ar: "العودة إلى الاختيار" },
+  "Jetzt drucken": { en: "Print now", es: "Imprimir ahora", ar: "اطبع الآن" },
+  "Tipp: Im Druckdialog „Als PDF speichern“ wählen, um eine Datei zum Weitergeben zu erhalten. „Kopf- und Fußzeilen“ des Browsers am besten ausschalten.": {
+    en: "Tip: In the print dialog, choose “Save as PDF” to get a file you can pass on. It is best to switch off the browser’s “Headers and footers”.",
+    es: "Consejo: en el cuadro de impresión elige «Guardar como PDF» para obtener un archivo que puedas compartir. Lo mejor es desactivar los «encabezados y pies de página» del navegador.",
+    ar: "نصيحة: اختر في نافذة الطباعة «حفظ بصيغة PDF» للحصول على ملف يمكنك تمريره. الأفضل إيقاف «الرأس والتذييل» الخاصين بالمتصفح." },
+
+  "Notruf-Karte": { en: "Emergency call card", es: "Tarjeta de llamada de emergencia", ar: "بطاقة نداء الطوارئ" },
+  "Nummern, Fragen am Telefon, Funkalphabet": { en: "Numbers, phone questions, spelling alphabet", es: "Números, preguntas por teléfono, alfabeto de deletreo", ar: "الأرقام وأسئلة الهاتف وأبجدية التهجئة" },
+  "Notfallpass": { en: "Emergency passport", es: "Pasaporte de emergencia", ar: "بطاقة الطوارئ الصحية" },
+  "Eine Karte pro Person": { en: "One card per person", es: "Una tarjeta por persona", ar: "بطاقة لكل شخص" },
+  "Noch leer – zuerst im Notfallpass ausfüllen": { en: "Still empty – fill in the emergency passport first", es: "Aún vacío: primero rellena el pasaporte de emergencia", ar: "ما زال فارغاً – املأ بطاقة الطوارئ الصحية أولاً" },
+  "Kontakte & Treffpunkte": { en: "Contacts & meeting points", es: "Contactos y puntos de encuentro", ar: "جهات الاتصال ونقاط اللقاء" },
+  "Deine Einträge": { en: "Your entries", es: "Tus entradas", ar: "ما أدخلته" },
+  "Noch leer – Vordruck zum Ausfüllen von Hand": { en: "Still empty – blank form to fill in by hand", es: "Aún vacío: formulario en blanco para rellenar a mano", ar: "ما زال فارغاً – نموذج فارغ للتعبئة باليد" },
+  "Morse-Tabelle": { en: "Morse code table", es: "Tabla del código Morse", ar: "جدول شفرة مورس" },
+  "SOS und alle Zeichen": { en: "SOS and all characters", es: "SOS y todos los caracteres", ar: "نداء SOS وجميع الرموز" },
+  "Fehlt noch – bitte „node scripts/build.js“ ausführen": { en: "Missing – please run “node scripts/build.js”", es: "Falta: ejecuta «node scripts/build.js»", ar: "غير موجود – شغّل «node scripts/build.js»" },
+  "Die Wissensseiten fehlen noch. Bitte „node scripts/build.js“ ausführen.": {
+    en: "The knowledge pages are still missing. Please run “node scripts/build.js”.", es: "Todavía faltan las páginas de conocimiento. Ejecuta «node scripts/build.js».", ar: "صفحات المعرفة غير موجودة بعد. شغّل «node scripts/build.js»." },
+  "Checkliste: {0}": { en: "Checklist: {0}", es: "Lista de control: {0}", ar: "قائمة التحقق: {0}" },
+  "Mit Kästchen zum Abhaken": { en: "With boxes to tick off", es: "Con casillas para marcar", ar: "مع مربعات للتأشير" },
+  "Notvorrat-Tabelle": { en: "Emergency supply table", es: "Tabla de reservas de emergencia", ar: "جدول مخزون الطوارئ" },
+  "1 Person, 10 Tage": { en: "1 person, 10 days", es: "1 persona, 10 días", ar: "شخص واحد، 10 أيام" },
+
+  "ca. 1 Seite": { en: "approx. 1 page", es: "aprox. 1 página", ar: "حوالي صفحة واحدة" },
+  "ca. {0} Seiten": { en: "approx. {0} pages", es: "aprox. {0} páginas", ar: "حوالي {0} صفحات" },
+  "Nichts gewählt": { en: "Nothing selected", es: "Nada seleccionado", ar: "لم يُختر شيء" },
+  "1 Teil gewählt": { en: "1 part selected", es: "1 parte seleccionada", ar: "تم اختيار جزء واحد" },
+  "{0} Teile gewählt": { en: "{0} parts selected", es: "{0} partes seleccionadas", ar: "تم اختيار {0} أجزاء" },
+
+  "Notfallwissen auf Papier": { en: "Emergency knowledge on paper", es: "Conocimientos de emergencia en papel", ar: "معرفة الطوارئ على الورق" },
+  "Stand: {0}": { en: "As of: {0}", es: "Actualizado: {0}", ar: "التاريخ: {0}" },
+  "Inhalt": { en: "Contents", es: "Contenido", ar: "المحتويات" },
+  "Bewahre diesen Ausdruck griffbereit auf, zum Beispiel beim Notgepäck.": {
+    en: "Keep this printout within reach, for example with your emergency bag.", es: "Guarda esta copia impresa a mano, por ejemplo junto a la mochila de emergencia.", ar: "احتفظ بهذه الطباعة في متناول يدك، مثلاً مع حقيبة الطوارئ." },
+  "Ersetzt keine Ausbildung. Im Notfall zuerst 112 anrufen.": {
+    en: "Does not replace training. In an emergency, call 112 first.", es: "No sustituye a una formación. En una emergencia, llama primero al 112.", ar: "لا يغني عن التدريب. في حالة الطوارئ اتصل أولاً بالرقم 112." },
+  "Offline-Ark – Notfallwissen · Stand {0} · Notruf 112": {
+    en: "Offline-Ark – Emergency knowledge · As of {0} · Emergency 112", es: "Offline-Ark – Conocimientos de emergencia · Actualizado {0} · Emergencias 112", ar: "Offline-Ark – معرفة الطوارئ · التاريخ {0} · الطوارئ 112" },
+
+  "Notruf: Feuerwehr und Rettungsdienst": { en: "Emergency: fire brigade and ambulance", es: "Emergencias: bomberos y servicio de rescate", ar: "الطوارئ: الإطفاء والإسعاف" },
+  "Polizei": { en: "Police", es: "Policía", ar: "الشرطة" },
+  "Ärztlicher Bereitschaftsdienst (nicht lebensbedrohlich)": { en: "On-call doctor service (not life-threatening)", es: "Servicio médico de guardia (sin peligro de muerte)", ar: "خدمة الطبيب المناوب (حالات غير مهددة للحياة)" },
+  "Giftinformationszentrale (Nummer hier eintragen)": { en: "Poison information centre (write the number here)", es: "Centro de información toxicológica (escribe aquí el número)", ar: "مركز معلومات السموم (اكتب الرقم هنا)" },
+  "Bei Netzproblemen mehrfach versuchen, auch ohne Empfang im eigenen Netz.": {
+    en: "If the network has problems, keep trying – even without reception in your own network.", es: "Si hay problemas de red, sigue intentándolo, incluso sin cobertura de tu propia red.", ar: "عند مشاكل الشبكة واصل المحاولة، حتى بدون تغطية شبكتك." },
+  "Die fünf W-Fragen am Telefon": { en: "The five questions on the phone", es: "Las cinco preguntas por teléfono", ar: "الأسئلة الخمسة عند الاتصال" },
+  "Wo ist der Notfallort?": { en: "Where is the emergency?", es: "¿Dónde ocurre la emergencia?", ar: "أين مكان الحادث؟" },
+  "Was ist passiert?": { en: "What happened?", es: "¿Qué ha pasado?", ar: "ماذا حدث؟" },
+  "Wie viele Betroffene gibt es?": { en: "How many people are affected?", es: "¿Cuántas personas están afectadas?", ar: "كم عدد المصابين؟" },
+  "Welche Verletzungen oder Erkrankungen?": { en: "What injuries or illnesses?", es: "¿Qué lesiones o enfermedades hay?", ar: "ما الإصابات أو الأمراض؟" },
+  "Warten auf Rückfragen – erst auflegen, wenn die Leitstelle es sagt.": { en: "Wait for questions – only hang up when the control centre says so.", es: "Espera preguntas: cuelga solo cuando la central lo indique.", ar: "انتظر الأسئلة – لا تُنهِ المكالمة إلا عندما يقول مركز الطوارئ ذلك." },
+  "Deutsch": { en: "German", es: "Alemán", ar: "الألمانية" },
+  "International (NATO)": { en: "International (NATO)", es: "Internacional (OTAN)", ar: "الدولية (الناتو)" },
+  "Buchstabieren (Funkalphabet)": { en: "Spelling (radio alphabet)", es: "Deletreo (alfabeto radiofónico)", ar: "التهجئة (أبجدية اللاسلكي)" },
+
+  "Notsignal: dreimal kurz, dreimal lang, dreimal kurz – mit Licht, Pfeife oder Klopfen. Dann kurz warten und wiederholen.": {
+    en: "Distress signal: three short, three long, three short – with light, whistle or knocking. Then wait briefly and repeat.",
+    es: "Señal de socorro: tres cortas, tres largas, tres cortas, con luz, silbato o golpes. Después espera un momento y repite.",
+    ar: "إشارة استغاثة: ثلاث قصيرة ثم ثلاث طويلة ثم ثلاث قصيرة – بالضوء أو الصفارة أو الطرق. ثم انتظر قليلاً وكرّر." },
+  "Ein Strich ist so lang wie drei Punkte. Pause zwischen Zeichen: 1 Punkt, zwischen Buchstaben: 3 Punkte, zwischen Wörtern: 7 Punkte.": {
+    en: "A dash is as long as three dots. Pause between signs: 1 dot, between letters: 3 dots, between words: 7 dots.",
+    es: "Una raya dura lo mismo que tres puntos. Pausa entre signos: 1 punto, entre letras: 3 puntos, entre palabras: 7 puntos.",
+    ar: "الشرطة بطول ثلاث نقاط. الفاصل بين الإشارات: نقطة واحدة، وبين الحروف: 3 نقاط، وبين الكلمات: 7 نقاط." },
+  "Arabische Buchstaben": { en: "Arabic letters", es: "Letras árabes", ar: "الحروف العربية" },
+
+  "Kontakte": { en: "Contacts", es: "Contactos", ar: "جهات الاتصال" },
+  "Treffpunkte": { en: "Meeting points", es: "Puntos de encuentro", ar: "نقاط اللقاء" },
+  "Wichtige Adressen": { en: "Important addresses", es: "Direcciones importantes", ar: "عناوين مهمة" },
+  "Name": { en: "Name", es: "Nombre", ar: "الاسم" },
+  "Telefon": { en: "Phone", es: "Teléfono", ar: "الهاتف" },
+  "Beziehung": { en: "Relationship", es: "Relación", ar: "صلة القرابة" },
+  "Hinweis": { en: "Note", es: "Nota", ar: "ملاحظة" },
+  "Ort": { en: "Place", es: "Lugar", ar: "المكان" },
+  "Koordinaten": { en: "Coordinates", es: "Coordenadas", ar: "الإحداثيات" },
+  "Art": { en: "Type", es: "Tipo", ar: "النوع" },
+  "Adresse": { en: "Address", es: "Dirección", ar: "العنوان" },
+
+  "geboren": { en: "born", es: "nacimiento", ar: "تاريخ الميلاد" },
+  "Blutgruppe": { en: "Blood group", es: "Grupo sanguíneo", ar: "فصيلة الدم" },
+  "Allergien": { en: "Allergies", es: "Alergias", ar: "الحساسية" },
+  "Vorerkrankungen": { en: "Existing conditions", es: "Enfermedades previas", ar: "الأمراض السابقة" },
+  "Medikamente": { en: "Medication", es: "Medicamentos", ar: "الأدوية" },
+  "Implantate und Hilfsmittel": { en: "Implants and aids", es: "Implantes y ayudas técnicas", ar: "الغرسات والأجهزة المساعدة" },
+  "Letzte Tetanus-Impfung": { en: "Last tetanus vaccination", es: "Última vacuna del tétanos", ar: "آخر تطعيم ضد الكزاز" },
+  "Organspende": { en: "Organ donation", es: "Donación de órganos", ar: "التبرع بالأعضاء" },
+  "Patientenverfügung": { en: "Advance directive", es: "Voluntades anticipadas", ar: "وصية المريض المسبقة" },
+  "Hausarzt": { en: "Family doctor", es: "Médico de cabecera", ar: "طبيب الأسرة" },
+  "Notfallkontakte": { en: "Emergency contacts", es: "Contactos de emergencia", ar: "جهات اتصال الطوارئ" },
+  "Sprachen": { en: "Languages", es: "Idiomas", ar: "اللغات" },
+  "Hinweise": { en: "Notes", es: "Notas", ar: "ملاحظات" },
+  "Ja": { en: "Yes", es: "Sí", ar: "نعم" },
+  "Nein": { en: "No", es: "No", ar: "لا" },
+
+  "Wasser (davon {0} l zum Kochen)": { en: "Water (of which {0} l for cooking)", es: "Agua (de ellos {0} l para cocinar)", ar: "الماء (منها {0} لتر للطبخ)" },
+  "Richtwerte für 1 erwachsene Person und 10 Tage. Für mehr Personen entsprechend malnehmen.": {
+    en: "Guide values for 1 adult and 10 days. For more people, multiply accordingly.", es: "Valores orientativos para 1 adulto y 10 días. Para más personas, multiplica en consecuencia.", ar: "قيم تقريبية لشخص بالغ واحد ولمدة 10 أيام. لعدد أكبر من الأشخاص اضرب حسب العدد." },
+  "Was": { en: "Item", es: "Qué", ar: "الصنف" },
+  "Menge für 10 Tage": { en: "Amount for 10 days", es: "Cantidad para 10 días", ar: "الكمية لـ 10 أيام" },
+  "Pro Tag": { en: "Per day", es: "Por día", ar: "في اليوم" },
+  "Vorhanden": { en: "Have it", es: "Lo tengo", ar: "متوفر" },
+  "Insgesamt etwa {0} kcal und {1} Lebensmittel (haltbare Ware). Rechenbasis: {2} kcal pro Tag.": {
+    en: "In total about {0} kcal and {1} of food (long-life goods). Basis: {2} kcal per day.", es: "En total, unas {0} kcal y {1} de alimentos (productos duraderos). Base de cálculo: {2} kcal al día.", ar: "المجموع نحو {0} كيلوكالوري و{1} من الطعام (مواد تدوم طويلاً). أساس الحساب: {2} كيلوكالوري يومياً." },
+  "Zusätzlich bedenken: Babynahrung, Haustierfutter, persönliche Medikamente, Hygieneartikel. Mehr Wasser bei Hitze, Anstrengung, Krankheit.": {
+    en: "Also consider: baby food, pet food, personal medication, hygiene items. More water in heat, exertion or illness.",
+    es: "Piensa también en: comida para bebés, comida para mascotas, medicamentos personales, artículos de higiene. Más agua con calor, esfuerzo o enfermedad.",
+    ar: "فكّر أيضاً في: طعام الأطفال الرضّع وطعام الحيوانات الأليفة والأدوية الشخصية ومستلزمات النظافة. مزيداً من الماء عند الحر أو الجهد أو المرض." }
+});

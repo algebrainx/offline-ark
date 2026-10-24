@@ -21,6 +21,14 @@ The PDFs in the [library](../bibliothek/index.html) are public-domain US governm
 
 Content is mostly under CC BY-SA. We do not copy texts word for word; we only name Wikipedia as a source for facts that we restate in our own words.
 
+## Maps, photos and data
+
+- **OpenStreetMap** (hospitals, pharmacies, defibrillators, fire stations, water points, boundaries in the offline map): © OpenStreetMap contributors, [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). More details: [openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). The data reflects the retrieval date and may be outdated or incomplete.
+- **Natural Earth** (rough outlines and borders): [public domain](https://www.naturalearthdata.com/about/terms-of-use/).
+- **Photos** (plants, mushrooms, clouds, knots): [Wikimedia Commons](https://commons.wikimedia.org/), each under CC0, public domain, CC BY or CC BY-SA. Author and license are shown under each photo and in the file `bibliothek/bilder/ATTRIBUTION.md`. The images were scaled down.
+- **QR codes:** our own encoder following ISO/IEC 18004. "QR Code" is a registered trademark of DENSO WAVE.
+- Other sources (e.g. star catalogue, gardening dates, heating values) are listed at the bottom of the respective tool page.
+
 ## Our own code
 
 The HTML, CSS and JavaScript of this project are under the **MIT license** (see the file `LICENSE`). The icons are drawn by ourselves. No fonts, libraries or services are loaded from outside.

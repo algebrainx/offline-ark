@@ -40,18 +40,23 @@ Alles gibt es in allen vier Sprachen: alle Werkzeuge, alle Wissensseiten, Suche,
 ### 🆘 Notfall – ein Klick von der Startseite
 **Erste Hilfe** · **Stromausfall** · **Wasser**
 
-### 🧰 17 Werkzeuge
+### 🧰 37 Werkzeuge
 
 | Bereich | Werkzeuge |
 |---|---|
+| **Im Ernstfall** | Notfall-Assistent (Entscheidungsbaum „Was ist passiert?“) · Wiederbelebungs-Takt (100–120/min, mit Ton) · Stromausfall-Plan (Stunde 1 bis Woche 1) |
 | **Versorgung** | Wasserbedarf · Notvorrat (nach BBK) · Wasser entkeimen · Strom & Akku |
 | **Rechnen & Zeit** | Einheiten · Taschenrechner · Stoppuhr, Timer, Countdown |
-| **Orientierung** | Kompass · Sonne & Tageslicht · Koordinaten & GPS (UTM) |
+| **Orientierung** | Kompass · Sonne & Tageslicht · Koordinaten & GPS (UTM) · **Offline-Karte** (Baden-Württemberg: Krankenhäuser, Apotheken, Defibrillatoren, Feuerwehr, Wasserstellen, eigene Punkte) |
 | **Signal & Funk** | Morse-Code · SOS-Licht · Funk-Spickzettel (PMR446, Freenet, CB, Meshtastic) |
-| **Organisation** | Vorratsliste mit Ablaufwarnung · Notizen & Tagebuch · Kontakte & Treffpunkte · Checklisten |
+| **Mitteilen** | Aushänge zum Ausdrucken · QR-Code-Generator (offline) · Chat im lokalen Netz (Mini-Server) · Ausdruck-Paket |
+| **Natur & Bestimmen** | Pflanzen & Pilze mit gefährlichen Doppelgängern (Fotos) · Wolken & Wetter · Sternbilder · Tierspuren |
+| **Selbstversorgung** | Gartenkalender · Haltbar machen (Einkochen, Fermentieren, Trocknen) · Brennholz-Rechner |
+| **Lernen & Üben** | Quiz · Knoten · Morse-Trainer |
+| **Organisation** | Vorratsliste mit Ablaufwarnung · Notizen & Tagebuch · Kontakte & Treffpunkte · Checklisten (inkl. Dokumente) · Notfallpass · Kinderbereich mit Spielen |
 
-### 📖 9 Wissensseiten
-Erste Hilfe · Stromausfall-Leitfaden · Wasser finden & aufbereiten · Feuer, Wärme & Unterschlupf · Nahrung · Hygiene & Sanitär · Navigation ohne GPS · Kommunikation & Funk · Strom & Energie off-grid
+### 📖 10 Wissensseiten
+Erste Hilfe · Stromausfall-Leitfaden · Wasser finden & aufbereiten · Hygiene & Sanitär · Feuer, Wärme & Unterschlupf · Nahrung · Navigation ohne GPS · Kommunikation & Funk · Strom & Energie off-grid · Reparatur-Basics
 
 Dazu eine **Offline-Suche** über alles, eine **Bibliothek** mit gemeinfreien PDFs und eine Seite **Quellen & Lizenzen**.
 
@@ -91,12 +96,44 @@ Vorratsliste, Notizen, Kontakte, Wegpunkte, Checklisten und Einstellungen liegen
 - **Einstellungen** (Symbol oben rechts): Hell, Dunkel, **Nacht**, Schriftgröße, Bildschirm anlassen, Drucken, Daten sichern.
 - **Drucken:** jede Seite hat eine saubere Druckansicht ohne Bedienelemente.
 
+## Ausdruck-Paket: das Wichtigste auf Papier
+
+Werkzeug **Ausdruck-Paket** (Startseite → Mitteilen): Teile ankreuzen – Notruf-Karte mit Funkalphabet, Notfallpass, Kontakte & Treffpunkte, Morse-Tabelle, Wissensseiten, Checklisten zum Abhaken, Notvorrat-Tabelle – und **Ausdruck-Paket erstellen** tippen. Das Paket hat ein Inhaltsverzeichnis, A4-Seiten mit Kopf- und Fußzeile (Stand, Notruf 112), schwarz auf weiß, Schrift 10,5 pt, Links ausgeschrieben, in der gewählten Sprache (auch rechts-nach-links) und auf Wunsch zusätzlich auf Deutsch. Die Seitenzahl wird vorab geschätzt. Mit **Nur Druckvorschau anzeigen** öffnet sich kein Druckdialog; im Druckdialog lässt sich „Als PDF speichern“ wählen. Die Wissensseiten dafür stehen in `data/print-pages.js` (erzeugt von `node scripts/build.js`).
+
+## Als App installieren (optional)
+
+Offline-Ark läuft **ohne Installation** per Doppelklick (`file://`). Wer es zusätzlich als **App** auf dem Startbildschirm haben möchte (eigenes Symbol, ohne Browserleiste, startet auch ohne Netz), kann das tun – aber nur über eine Adresse mit **`https://`** oder **`http://localhost`**:
+
+- **Reines `file://` kann das nicht.** Browser erlauben den dafür nötigen „Service Worker“ nur auf sicheren Adressen. Das ist keine Einschränkung von Offline-Ark.
+- **GitHub Pages (https):** Repository veröffentlichen (Settings → Pages), die Seite einmal mit Internet öffnen, dann im Browser **Installieren / Zum Startbildschirm hinzufügen**. Danach funktioniert alles auch ohne Netz.
+- **Lokaler Server:** im Projektordner z. B. `python -m http.server 8099` oder `npx serve` starten und `http://localhost:8099/` öffnen. Auf Windows liefert Python manchmal `.js`-Dateien mit falschem Typ (`text/plain`) aus, dann meldet sich der Service Worker nicht an – in dem Fall `npx serve` nehmen.
+- **Im WLAN (`http://192.168.…`) geht es nicht:** ohne HTTPS und ohne `localhost` erlaubt der Browser keinen Service Worker. Die Seiten selbst laufen dort trotzdem, sie lassen sich nur nicht als App installieren.
+- Beim ersten Öffnen werden alle Seiten, Skripte und Daten (ca. 5 MB) gespeichert; danach kommt alles aus dem Speicher. **Updates** gelten ab dem **nächsten Start** der App (kein Neuladen mitten in der Benutzung). Die **PDFs** der Bibliothek werden nur auf Knopfdruck zusätzlich gespeichert (Bibliothek → **PDFs auch offline speichern**), weil sie viel Platz brauchen.
+- Technik: `manifest.webmanifest`, `sw.js` (Dateiliste und Version erzeugt `scripts/build-pwa.js`, läuft bei jedem `node scripts/build.js`), `js/pwa.js` (meldet den Service Worker nur bei `http(s)` an), Symbole in `icons/` (neu erzeugen mit `node scripts/make-icons.js`, braucht Edge oder Chrome).
+
+## Alles in einer Datei
+
+Für Weitergabe per **Messenger, Bluetooth, E-Mail oder USB-Stick** gibt es einen Export als **eine einzige HTML-Datei**, ohne Ordner und ohne Server:
+
+```bash
+node scripts/build.js          # Seiten erzeugen (einmal vorher)
+node scripts/build-single.js   # -> dist/offline-ark.html
+node scripts/build-single.js --no-pdf             # ohne PDFs (kleiner)
+node scripts/build-single.js --lang de,en         # nur diese Sprachen (kleiner)
+```
+
+Die Datei enthält alle Seiten (Start, Werkzeuge, Wissen und Bibliothek in allen Sprachen) samt Stilen, Skripten, Wörterbüchern, Daten, Bildern und PDFs (als Base64) und einen kleinen Router. Sie wird per Doppelklick im Browser geöffnet; Sprachwechsel, Links, Suche, Drucken und gespeicherte Eingaben (`localStorage`) funktionieren wie im Ordner. Größe: ca. 3 MB ohne PDFs, ca. 6,5 MB mit der PDF in `bibliothek/`.
+
+- Aufbau: jede Seite steht als Text in der Datei und wird beim Öffnen mit ihren Skripten zusammengesetzt und in einem eingebetteten Rahmen (`iframe srcdoc`) angezeigt. Die Adresse lautet z. B. `offline-ark.html#/tools/zeit.html`; der Zurück-Knopf des Browsers funktioniert.
+- Die Datei lässt sich nicht von Hand bearbeiten. Nach Änderungen im Projekt einfach neu erzeugen. Die Seitenskripte werden nur im Export angepasst (`location.*` → `scripts/single-bridge.js`), im Projekt bleibt alles unverändert.
+- Grenzen: Ist eine Seite oder ein PDF nicht enthalten (z. B. `--no-pdf`), erscheint eine Hinweisseite. Der **Chat im lokalen Netz** braucht einen Server und geht daher nur im Ordner. Als Kopie auf manchen Handys (z. B. iPhone, Datei in Messenger-Vorschau) lässt sich eine HTML-Datei nicht vollständig öffnen: dort die Datei im Browser öffnen oder einen Laptop nehmen.
+
 ## Für Entwickler und Ergänzer
 
 ```
 offline-ark/
 ├── index.html          Startseite
-├── tools/*.html        die 17 Werkzeuge
+├── tools/*.html        die 37 Werkzeuge
 ├── wissen/*.html       Wissensseiten Deutsch (erzeugt aus content/*.md)
 ├── wissen/{en,es,ar}/  dieselben Seiten in den anderen Sprachen
 ├── css/style.css       gesamtes Design (hell, dunkel, nacht, Druck, rechts-nach-links)
@@ -106,7 +143,9 @@ offline-ark/
 ├── content/*.md        Quelltexte der Wissensseiten (Deutsch) inkl. Quellenangaben
 ├── content/{en,es,ar}/ Übersetzungen der Wissensseiten
 ├── bibliothek/         PDFs, Bilder
-├── scripts/            Generator und Hilfsskripte (Node.js)
+├── scripts/            Generator und Hilfsskripte (Node.js): build.js, build-pwa.js, build-single.js
+├── manifest.webmanifest, sw.js, icons/   App-Installation (optional, nur über https/localhost)
+├── dist/               (nur nach build-single.js) offline-ark.html = alles in einer Datei
 └── update-content.sh   Inhalte neu laden und Seiten neu erzeugen
 ```
 
@@ -140,6 +179,10 @@ node scripts/test-notizen.js
 node scripts/test-kontakte.js
 node scripts/test-checklisten.js
 node scripts/test-i18n.js
+node scripts/test-ausdruck.js
+node scripts/test-wolken.js
+node scripts/test-sternbilder.js
+node scripts/test-tierspuren.js
 ```
 
 ## ⚠️ Wichtiger Hinweis

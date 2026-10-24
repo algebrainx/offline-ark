@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>QR-Code – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    .qr-layout { display: grid; gap: 16px; grid-template-columns: 1fr; align-items: start; }
+    @media (min-width: 860px) { .qr-layout { grid-template-columns: 1fr minmax(300px, 380px); } .qr-side { position: sticky; top: 72px; } }
+    /* QR-Codes müssen in jedem Design schwarz auf weiß bleiben, sonst sind sie nicht lesbar */
+    .qr-box { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 6px; width: 100%; max-width: 340px; margin-inline: auto; aspect-ratio: 1; display: grid; place-items: center; }
+    .qr-box svg { width: 100%; height: auto; display: block; }
+    .qr-empty { color: #6e6e73; text-align: center; padding: 20px; font-size: .95rem; }
+    .qr-info { margin: 12px 0 0; text-align: center; color: var(--text-2); font-size: .9rem; }
+    .qr-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 14px; }
+    .qr-actions .btn { flex: 1 1 140px; }
+    .eclist { display: grid; gap: 6px; margin-top: 8px; }
+    .ec-note { color: var(--text-2); font-size: .85rem; margin: 8px 2px 0; }
+    .pane .field:last-child { margin-bottom: 0; }
+    .scan-video { width: 100%; max-height: 320px; border-radius: var(--r); background: #000; display: block; object-fit: cover; }
+    .scan-result { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--surface-2); border-radius: var(--r-sm); padding: 12px 14px; margin: 12px 0 0; font: 400 1rem var(--font); unicode-bidi: plaintext; text-align: start; }
+    .check-row { display: flex; align-items: center; gap: 12px; min-height: var(--hit); cursor: pointer; margin-bottom: 8px; }
+    .row-2 { display: grid; gap: 0 14px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .tips ul { margin: 6px 0 0; padding-inline-start: 1.2em; }
+    .tips li { margin-bottom: .45em; }
+    @media print {
+      main > .page-head, main .qr-main, main .scan-card, main .tips, .qr-actions, .qr-info .no-print { display: none !important; }
+      .qr-layout { display: block; }
+      .qr-box { border: 0; max-width: 12cm; }
+    }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>QR-Code</h1>
+    <p class="lead">QR-Codes für Text, Koordinaten und Kontakte erzeugen, komplett offline.</p>
+  </header>
+
+  <div class="qr-layout">
+    <div class="stack qr-main">
+      <section class="card">
+        <div class="field"><label for="tpl">Was soll im Code stehen?</label>
+          <select id="tpl">
+            <option value="text">Freitext</option>
+            <option value="geo">Koordinaten (Karten-Link)</option>
+            <option value="vcard">Kontakt (vCard)</option>
+            <option value="tel">Telefonnummer</option>
+            <option value="wifi">WLAN-Zugang</option>
+            <option value="pass">Notfallpass-Kurztext</option>
+            <option value="note">Notiz</option>
+          </select></div>
+
+        <div class="pane" data-pane="text">
+          <div class="field"><label for="f-text">Text</label>
+            <textarea id="f-text" dir="auto" maxlength="1500" placeholder="Beliebiger Text oder Link"></textarea></div>
+        </div>
+
+        <div class="pane" data-pane="geo" hidden>
+          <div class="field" id="wp-wrap" hidden><label for="wp-pick">Gespeicherter Wegpunkt</label>
+            <select id="wp-pick" data-notranslate></select></div>
+          <div class="row-2">
+            <div class="field"><label for="f-lat">Breitengrad (Nord)</label>
+              <input type="text" id="f-lat" class="ltr" inputmode="decimal" placeholder="48.83100" autocomplete="off"></div>
+            <div class="field"><label for="f-lon">Längengrad (Ost)</label>
+              <input type="text" id="f-lon" class="ltr" inputmode="decimal" placeholder="9.31600" autocomplete="off"></div>
+          </div>
+          <p class="hint" style="margin-top:0">Süd und West sind negativ (z. B. −33.86). Der Code enthält geo:Breite,Länge – Karten-Apps öffnen ihn direkt.</p>
+        </div>
+
+        <div class="pane" data-pane="vcard" hidden>
+          <div class="field" id="ct-wrap" hidden><label for="ct-pick">Aus meinen Kontakten</label>
+            <select id="ct-pick" data-notranslate></select></div>
+          <div class="field"><label for="f-name">Name</label>
+            <input type="text" id="f-name" dir="auto" maxlength="80" placeholder="Vorname Nachname" autocomplete="off"></div>
+          <div class="field"><label for="f-phone">Telefon</label>
+            <input type="tel" id="f-phone" maxlength="30" placeholder="+49 170 1234567" autocomplete="off"></div>
+          <div class="field"><label for="f-mail">E-Mail (optional)</label>
+            <input type="email" id="f-mail" class="ltr" maxlength="80" placeholder="name@example.org" autocomplete="off"></div>
+        </div>
+
+        <div class="pane" data-pane="tel" hidden>
+          <div class="field"><label for="f-tel">Telefonnummer</label>
+            <input type="tel" id="f-tel" maxlength="30" placeholder="+49 711 1234567" autocomplete="off"></div>
+          <p class="hint" style="margin-top:0">Wer den Code scannt, kann direkt anrufen.</p>
+        </div>
+
+        <div class="pane" data-pane="wifi" hidden>
+          <div class="field"><label for="f-ssid">Name des WLANs (SSID)</label>
+            <input type="text" id="f-ssid" dir="auto" maxlength="32" autocomplete="off"></div>
+          <div class="field"><label for="f-wpw">Passwort</label>
+            <input type="text" id="f-wpw" dir="auto" maxlength="63" autocomplete="off"></div>
+          <div class="field"><span class="label">Sicherheit</span>
+            <div class="seg" data-local id="f-wsec">
+              <button type="button" data-v="WPA" aria-pressed="true">WPA/WPA2/WPA3</button>
+              <button type="button" data-v="WEP" aria-pressed="false">WEP</button>
+              <button type="button" data-v="nopass" aria-pressed="false">Offen</button>
+            </div></div>
+          <label class="check-row"><input type="checkbox" id="f-whid"><span>Verstecktes WLAN</span></label>
+          <p class="hint" style="margin-top:0">Das Passwort steht lesbar im Code. Zeige ihn nur Menschen, denen du vertraust.</p>
+        </div>
+
+        <div class="pane" data-pane="pass" hidden>
+          <div class="field"><label for="p-name">Name</label>
+            <input type="text" id="p-name" dir="auto" maxlength="80" autocomplete="off"></div>
+          <div class="row-2">
+            <div class="field"><label for="p-birth">Geburtsdatum</label>
+              <input type="text" id="p-birth" class="ltr" maxlength="20" placeholder="01.01.1980" autocomplete="off"></div>
+            <div class="field"><label for="p-blood">Blutgruppe</label>
+              <input type="text" id="p-blood" class="ltr" maxlength="12" placeholder="A Rh+" autocomplete="off"></div>
+          </div>
+          <div class="field"><label for="p-allergy">Allergien</label>
+            <input type="text" id="p-allergy" dir="auto" maxlength="120" autocomplete="off"></div>
+          <div class="field"><label for="p-meds">Medikamente</label>
+            <input type="text" id="p-meds" dir="auto" maxlength="160" autocomplete="off"></div>
+          <div class="field"><label for="p-ill">Vorerkrankungen</label>
+            <input type="text" id="p-ill" dir="auto" maxlength="160" autocomplete="off"></div>
+          <div class="field"><label for="p-contact">Notfallkontakt (Name, Telefon)</label>
+            <input type="text" id="p-contact" dir="auto" maxlength="120" autocomplete="off"></div>
+          <p class="hint" style="margin-top:0">Die Beschriftungen im Code sind immer Deutsch, damit Rettungskräfte in Deutschland ihn lesen können. Zeige den Code nur, wenn du es willst: Er enthält Gesundheitsdaten.</p>
+        </div>
+
+        <div class="pane" data-pane="note" hidden>
+          <div class="field"><label for="n-title">Titel</label>
+            <input type="text" id="n-title" dir="auto" maxlength="80" autocomplete="off"></div>
+          <div class="field"><label for="n-text">Notiz</label>
+            <textarea id="n-text" dir="auto" maxlength="1200"></textarea></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="field" style="margin-bottom:0"><span class="label">Fehlerkorrektur</span>
+          <div class="seg ltr" data-local id="ec">
+            <button type="button" data-v="L" aria-pressed="false" aria-label="Niedrig (7 %)">L</button>
+            <button type="button" data-v="M" aria-pressed="true" aria-label="Mittel (15 %)">M</button>
+            <button type="button" data-v="Q" aria-pressed="false" aria-label="Hoch (25 %)">Q</button>
+            <button type="button" data-v="H" aria-pressed="false" aria-label="Sehr hoch (30 %)">H</button>
+          </div>
+          <p class="ec-note" id="ec-note"></p></div>
+      </section>
+    </div>
+
+    <div class="qr-side stack">
+      <section class="card">
+        <div class="qr-box" id="qr-box" role="img" aria-label="QR-Code"></div>
+        <p class="qr-info" id="qr-info" aria-live="polite"></p>
+        <div class="callout warn" id="qr-warn" hidden style="margin:14px 0 0" role="alert"></div>
+        <div class="qr-actions">
+          <button type="button" class="btn primary" id="dl-png">PNG speichern</button>
+          <button type="button" class="btn" id="dl-svg">SVG speichern</button>
+          <button type="button" class="btn" id="qr-print">Drucken</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card scan-card" style="margin-top:16px">
+    <h2 style="margin-top:0;font-size:1.2rem">QR-Code scannen</h2>
+    <p class="muted" id="scan-hint">Nutze die Kamera-App deines Handys, um QR-Codes zu lesen.</p>
+    <div class="btn-row" id="scan-bar" hidden>
+      <button type="button" class="btn" id="scan-start">QR-Code scannen</button>
+      <button type="button" class="btn" id="scan-stop" hidden>Kamera ausschalten</button>
+    </div>
+    <video id="scan-video" class="scan-video" playsinline muted hidden aria-label="Kamerabild"></video>
+    <p class="hint" id="scan-msg" aria-live="polite" hidden></p>
+    <div id="scan-out" hidden>
+      <pre class="scan-result" id="scan-text" data-notranslate dir="auto"></pre>
+      <div class="btn-row" style="margin-top:10px">
+        <button type="button" class="btn sm" id="scan-copy">Kopieren</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="callout info tips" style="margin-top:16px">
+    <strong>Tipps</strong>
+    <ul>
+      <li>Kurze Texte ergeben kleine, gut lesbare Codes. Ab etwa 150 Zeichen wird der Code dicht – dann groß anzeigen oder drucken.</li>
+      <li>Teste den Code, bevor du dich darauf verlässt: Scanne ihn mit einem zweiten Handy.</li>
+      <li>Mit Fehlerkorrektur H ist der Code auch bei Schmutz oder Knicken lesbar, wird aber größer.</li>
+      <li>Der Code wird nur auf diesem Gerät berechnet. Nichts wird gesendet oder gespeichert.</li>
+    </ul>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/qr-encoder.js"></script>
+<script src="../js/tool-qrcode.js"></script>
+</body>
+</html>

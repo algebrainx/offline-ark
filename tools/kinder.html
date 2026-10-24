@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kinderbereich – Offline-Ark</title>
+  <meta name="color-scheme" content="light dark">
+  <script src="../js/theme.js"></script>
+  <script src="../js/i18n.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    [hidden] { display: none !important; }
+    button.tile { font: inherit; text-align: start; cursor: pointer; width: 100%; }
+    .tiles.big { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .tiles.big .tile { min-height: 132px; }
+    .tiles.big .tile .name { font-size: 1.12rem; }
+
+    /* Zurück-Leiste: bleibt beim Scrollen sichtbar */
+    .kbar { position: sticky; top: 56px; z-index: 40; display: flex; align-items: center; gap: 12px; padding: 8px 0; background: var(--bg); }
+    .kbar .btn { min-height: 52px; font-size: 1.05rem; }
+    .kbar .vt { font-weight: 700; font-size: 1.15rem; overflow-wrap: anywhere; }
+
+    .kid { padding: 22px; }
+    .kid h2 { margin: 0 0 14px; font-size: 1.5rem; }
+    .kid .big { font-size: 1.3rem; line-height: 1.55; }
+    .kid ul.sent { list-style: none; padding: 0; margin: 0 0 8px; }
+    .kid ul.sent li { display: flex; gap: 12px; align-items: flex-start; font-size: 1.3rem; line-height: 1.5; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .kid ul.sent li:last-child { border-bottom: 0; }
+    .kid ul.sent .icon { margin-top: .22em; color: var(--accent); width: 1.3rem; height: 1.3rem; }
+    .kid ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 0 0 14px; }
+    .kid ol.steps li { counter-increment: s; position: relative; padding: 8px 0; padding-inline-start: 54px; min-height: 46px; font-size: 1.3rem; line-height: 1.5; }
+    .kid ol.steps li::before { content: counter(s); position: absolute; inset-inline-start: 0; top: 6px; width: 38px; height: 38px; border-radius: 50%;
+      background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 700; }
+    .kid .sub-h { font-weight: 700; font-size: 1.2rem; margin: 18px 0 4px; }
+    .kid .sub-h.no { color: var(--danger); }
+    .kid ul.sent.no .icon { color: var(--danger); }
+    .kid .actions { margin-top: 16px; }
+
+    .game { padding: 18px; }
+    .game .status { font-size: 1.25rem; font-weight: 650; text-align: center; margin: 4px 0 14px; min-height: 1.6em; }
+    .game .seg { margin-bottom: 14px; }
+    .game .seg button { min-height: 46px; font-size: 1rem; }
+    .game .go { margin-top: 16px; display: flex; justify-content: center; }
+    .game .go .btn { min-width: 220px; min-height: 56px; font-size: 1.15rem; }
+
+    /* Memory */
+    .mem-grid { display: grid; gap: 8px; max-width: 420px; margin: 0 auto; }
+    .mem { aspect-ratio: 1; min-height: 48px; border-radius: 14px; border: 2px solid var(--line); background: var(--accent); color: var(--on-accent); display: grid; place-items: center; cursor: pointer; padding: 0; }
+    .mem .icon { width: 56%; height: 56%; stroke-width: 1.8; }
+    .mem .face { display: none; }
+    .mem.up, .mem.done { background: var(--surface); color: var(--text); }
+    .mem.up .face, .mem.done .face { display: grid; place-items: center; width: 100%; height: 100%; }
+    .mem.up .back, .mem.done .back { display: none; }
+    .mem.done { border-color: var(--ok); }
+
+    /* Tic-Tac-Toe */
+    .ttt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: min(100%, 330px); margin: 0 auto; direction: ltr; }
+    .ttt button { aspect-ratio: 1; min-height: 64px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface-2); color: var(--text); display: grid; place-items: center; cursor: pointer; padding: 0; }
+    .ttt button svg { width: 62%; height: 62%; fill: none; stroke: currentColor; stroke-width: 9; stroke-linecap: round; }
+    .ttt .x { color: var(--accent); }
+    .ttt .win { border-color: var(--ok); background: var(--surface); }
+
+    /* Buchstabenraten */
+    .lives { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+    .lives .icon { width: 30px; height: 30px; color: var(--danger); }
+    .lives .icon.off { opacity: .22; }
+    .slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 10px 0 18px; }
+    .slot { width: 44px; height: 56px; border-bottom: 4px solid var(--text); display: grid; place-items: center; font-size: 2rem; font-weight: 700; }
+    .keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; max-width: 460px; margin: 0 auto; }
+    .keys button { min-height: 48px; border-radius: 12px; border: 0; background: var(--surface-2); color: var(--text); font: 650 1.15rem var(--font); cursor: pointer; padding: 0; }
+    .keys button.ok { background: var(--ok); color: var(--surface); opacity: .9; }
+    .keys button.bad { background: var(--surface); color: var(--text-2); text-decoration: line-through; opacity: .6; }
+
+    /* Malen */
+    .swatches { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 12px; }
+    .swatch { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--line); cursor: pointer; padding: 0; }
+    .swatch[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent); }
+    .canvas-wrap { border-radius: 14px; overflow: hidden; border: 2px solid var(--line); line-height: 0; }
+    .canvas-wrap canvas { width: 100%; display: block; touch-action: none; background: #fff; cursor: crosshair; }
+    .paint-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 14px; }
+
+    /* Zahl raten */
+    .guess-row { display: flex; align-items: stretch; justify-content: center; gap: 8px; margin: 8px 0 12px; direction: ltr; }
+    .guess-row button { width: 60px; min-height: 60px; border-radius: 14px; border: 0; background: var(--surface-2); color: var(--accent); font: 500 2rem var(--font); cursor: pointer; }
+    .guess-row input { width: 110px; min-height: 60px; text-align: center; font-size: 2rem; font-weight: 700; }
+
+    /* Notruf-Rollenspiel */
+    .rp-q { font-size: 1.3rem; line-height: 1.5; font-weight: 600; margin-bottom: 14px; }
+    .rp-opts { display: grid; gap: 10px; }
+    .rp-opts .btn { min-height: 56px; height: auto; padding: 12px 18px; font-size: 1.1rem; justify-content: flex-start; text-align: start; border-radius: 16px; }
+    .rp-opts .btn.tried { opacity: .55; }
+    .rp-opts .btn.right { outline: 3px solid var(--ok); }
+    .rp-fb { font-size: 1.15rem; margin: 14px 0 0; min-height: 3em; }
+    .rp-prog { color: var(--text-2); font-size: .95rem; margin-bottom: 6px; }
+  </style>
+</head>
+<body data-root="../" data-page="tool">
+<main class="container">
+  <header class="page-head">
+    <h1>Kinderbereich</h1>
+    <p class="lead">Einfache Erklärungen für Kinder und Offline-Spiele gegen Langeweile.</p>
+  </header>
+
+  <div class="stack">
+    <div class="kbar" id="kbar" hidden>
+      <button type="button" class="btn" id="backBtn">← Zurück</button>
+      <span class="vt" id="viewTitle"></span>
+    </div>
+
+    <div class="seg" data-local id="tabs" role="group" aria-label="Bereich">
+      <button type="button" data-v="explain" aria-pressed="true">Erklärt</button>
+      <button type="button" data-v="games" aria-pressed="false">Spiele</button>
+    </div>
+
+    <section id="vExplain"><div class="tiles big" id="explainTiles"></div></section>
+    <section id="vGames" hidden><div class="tiles big" id="gameTiles"></div></section>
+    <section class="card kid" id="vCard" hidden></section>
+    <section class="card game" id="vGame" hidden></section>
+  </div>
+</main>
+<script src="../js/icons.js"></script>
+<script src="../js/common.js"></script>
+<script src="../data/kinder.js"></script>
+<script src="../js/kinder-core.js"></script>
+<script src="../js/tool-kinder.js"></script>
+</body>
+</html>
