@@ -222,10 +222,10 @@ OA.i18n.add({
     en: "Map and point data: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap contributors</a>, licence <a href=\"https://opendatacommons.org/licenses/odbl/1-0/\" target=\"_blank\" rel=\"noopener\">Open Database License (ODbL) 1.0</a>. Extract via <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a>.",
     es: "Datos de mapa y puntos: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">colaboradores de OpenStreetMap</a>, licencia <a href=\"https://opendatacommons.org/licenses/odbl/1-0/\" target=\"_blank\" rel=\"noopener\">Open Database License (ODbL) 1.0</a>. Extracto obtenido a través de <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a>.",
     ar: "بيانات الخريطة والنقاط: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">المساهمون في OpenStreetMap</a>، الرخصة <a href=\"https://opendatacommons.org/licenses/odbl/1-0/\" target=\"_blank\" rel=\"noopener\">Open Database License (ODbL) 1.0</a>. مقتطف عبر <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a>." },
-  "Umriss Deutschland, Länder, Seen, große Flüsse und Städte: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (gemeinfrei, <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">Nutzungsbedingungen</a>).": {
-    en: "Outline of Germany, states, lakes, major rivers and cities: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (public domain, <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">terms of use</a>).",
-    es: "Contorno de Alemania, estados federados, lagos, ríos principales y ciudades: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (dominio público, <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">condiciones de uso</a>).",
-    ar: "حدود ألمانيا والولايات والبحيرات والأنهار الكبرى والمدن: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (ملكية عامة، <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">شروط الاستخدام</a>)." },
+  "Weltkarte (Länder, Seen, Städte mit Namen in vier Sprachen) sowie Umriss Deutschland, Bundesländer und große Flüsse: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (gemeinfrei, <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">Nutzungsbedingungen</a>). Die Weltkarte ist stark vereinfacht; Grenzen und Küsten sind nur grob.": {
+    en: "World map (countries, lakes, cities with names in four languages) as well as the outline of Germany, the federal states and major rivers: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (public domain, <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">terms of use</a>). The world map is heavily simplified; borders and coasts are only approximate.",
+    es: "Mapa mundial (países, lagos, ciudades con nombres en cuatro idiomas), además del contorno de Alemania, los estados federados y los ríos principales: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (dominio público, <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">condiciones de uso</a>). El mapa mundial está muy simplificado; las fronteras y las costas son solo aproximadas.",
+    ar: "الخريطة العالمية (الدول والبحيرات والمدن بأسماء بأربع لغات) إضافةً إلى حدود ألمانيا والولايات والأنهار الكبرى: <a href=\"https://www.naturalearthdata.com/\" target=\"_blank\" rel=\"noopener\">Natural Earth</a> (ملكية عامة، <a href=\"https://www.naturalearthdata.com/about/terms-of-use/\" target=\"_blank\" rel=\"noopener\">شروط الاستخدام</a>). الخريطة العالمية مبسّطة جدًا؛ والحدود والسواحل تقريبية فقط." },
   "Die Daten können unvollständig oder veraltet sein. Verlasse dich im Notfall nicht allein auf diese Karte und rufe den Notruf 112.": {
     en: "The data may be incomplete or out of date. In an emergency, do not rely on this map alone, and call the emergency number 112.",
     es: "Los datos pueden estar incompletos o desactualizados. En una emergencia, no te fíes solo de este mapa y llama al número de emergencias 112.",
@@ -233,5 +233,60 @@ OA.i18n.add({
   "Eigene Punkte und Wegpunkte (aus „Koordinaten &amp; GPS“) stammen von dir und liegen nur auf diesem Gerät.": {
     en: "Your own points and waypoints (from “Coordinates &amp; GPS”) come from you and are stored on this device only.",
     es: "Tus puntos propios y puntos de ruta (de «Coordenadas y GPS») proceden de ti y solo están en este dispositivo.",
-    ar: "نقاطك الخاصة ونقاط المسار (من «الإحداثيات وGPS») من إدخالك أنت وهي محفوظة على هذا الجهاز فقط." }
+    ar: "نقاطك الخاصة ونقاط المسار (من «الإحداثيات وGPS») من إدخالك أنت وهي محفوظة على هذا الجهاز فقط." },
+
+  /* Weltkarte */
+  "Weltkarte (grob) und genaue Karte von Baden-Württemberg mit Krankenhäusern, Apotheken, Wasserstellen und eigenen Punkten.": {
+    en: "Rough world map and a detailed map of Baden-Württemberg with hospitals, pharmacies, water points and your own points.",
+    es: "Mapa mundial aproximado y mapa detallado de Baden-Wurtemberg con hospitales, farmacias, puntos de agua y tus propios puntos.",
+    ar: "خريطة عالمية تقريبية وخريطة مفصّلة لولاية بادن فورتمبيرغ، مع المستشفيات والصيدليات ونقاط المياه ونقاطك الخاصة." },
+  "Kartenausschnitt wählen": { en: "Choose map view", es: "Elegir vista del mapa", ar: "اختيار عرض الخريطة" },
+  "Welt": { en: "World", es: "Mundo", ar: "العالم" },
+  "Baden-Württemberg": { en: "Baden-Württemberg", es: "Baden-Wurtemberg", ar: "بادن فورتمبيرغ" },
+  "Zu meiner Position": { en: "Go to my position", es: "Ir a mi posición", ar: "الانتقال إلى موقعي" },
+  "Lade Weltkarte …": { en: "Loading world map …", es: "Cargando mapa mundial …", ar: "جارٍ تحميل الخريطة العالمية …" },
+  "Weltkarte konnte nicht geladen werden.": { en: "The world map could not be loaded.", es: "No se pudo cargar el mapa mundial.", ar: "تعذّر تحميل الخريطة العالمية." },
+  "Stadt": { en: "City", es: "Ciudad", ar: "مدينة" },
+  "Hauptstadt": { en: "Capital", es: "Capital", ar: "عاصمة" },
+  "Land: {0}": { en: "Country: {0}", es: "País: {0}", ar: "الدولة: {0}" },
+  "Weltkarte (grob): Natural Earth, abgerufen am {0}": { en: "World map (rough): Natural Earth, retrieved on {0}", es: "Mapa mundial (aproximado): Natural Earth, obtenido el {0}", ar: "الخريطة العالمية (تقريبية): Natural Earth، تاريخ الجلب {0}" },
+  "Weltkarte (grob): Natural Earth, wird erst beim Herauszoomen oder über „Welt“ geladen": {
+    en: "World map (rough): Natural Earth, loaded only when you zoom out or use “World”",
+    es: "Mapa mundial (aproximado): Natural Earth, se carga solo al alejar el zoom o con «Mundo»",
+    ar: "الخريطة العالمية (تقريبية): Natural Earth، تُحمَّل فقط عند التصغير أو عبر «العالم»" },
+
+  "Weltweit nutzen": { en: "Use worldwide", es: "Usar en todo el mundo", ar: "الاستخدام حول العالم" },
+  "Eingebaut ist eine <strong>grobe Weltkarte</strong> mit Ländern, Seen und großen Städten, beschriftet in der Sprache der Seite. Sie wird erst geladen, wenn du herauszoomst oder auf „Welt“ tippst.": {
+    en: "A <strong>rough world map</strong> with countries, lakes and large cities is built in, labelled in the language of the page. It only loads when you zoom out or tap “World”.",
+    es: "Incluye un <strong>mapa mundial aproximado</strong> con países, lagos y grandes ciudades, rotulado en el idioma de la página. Solo se carga cuando alejas el zoom o tocas «Mundo».",
+    ar: "تتضمّن الصفحة <strong>خريطة عالمية تقريبية</strong> للدول والبحيرات والمدن الكبرى، بأسماء بلغة الصفحة. لا تُحمَّل إلا عند التصغير أو عند الضغط على «العالم»." },
+  "<strong>Genaue Karten und Punkte</strong> (Krankenhäuser, Apotheken, Wasserstellen …) gibt es nur für Baden-Württemberg. Überall auf der Erde funktionieren deine eigenen Punkte, deine Wegpunkte und deine Position. Entfernung und Richtung stimmen weltweit.": {
+    en: "<strong>Detailed maps and points</strong> (hospitals, pharmacies, water points …) exist only for Baden-Württemberg. Your own points, your waypoints and your position work anywhere on Earth. Distance and direction are correct worldwide.",
+    es: "Los <strong>mapas detallados y los puntos</strong> (hospitales, farmacias, puntos de agua …) solo existen para Baden-Wurtemberg. Tus puntos, tus puntos de ruta y tu posición funcionan en cualquier lugar de la Tierra. La distancia y la dirección son correctas en todo el mundo.",
+    ar: "<strong>الخرائط التفصيلية والنقاط</strong> (المستشفيات والصيدليات ونقاط المياه …) متوفرة لولاية بادن فورتمبيرغ فقط. أما نقاطك الخاصة ونقاط المسار وموقعك فتعمل في أي مكان على الأرض. والمسافة والاتجاه صحيحان في العالم كله." },
+  "Weitere Regionen ergänzt du am Computer: Lade bei <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a> den Auszug deines Landes oder Bundeslands (Datei .osm.pbf) und starte <code class=\"ltr\">node scripts/fetch-pois.js --pbf datei.osm.pbf --region \"Name\" --id xx</code>. Genaueres steht am Anfang der Skriptdatei. Die Daten der ganzen Erde (Planet-Datei) sind viele Dutzend Gigabyte groß und passen nicht in diese Seite.": {
+    en: "You add more regions on a computer: download the extract for your country or federal state (.osm.pbf file) from <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a> and run <code class=\"ltr\">node scripts/fetch-pois.js --pbf datei.osm.pbf --region \"Name\" --id xx</code>. More details are at the top of the script file. The data for the whole Earth (planet file) is many tens of gigabytes and does not fit into this page.",
+    es: "Las regiones adicionales se añaden desde un ordenador: descarga de <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a> el extracto de tu país o estado federado (archivo .osm.pbf) y ejecuta <code class=\"ltr\">node scripts/fetch-pois.js --pbf datei.osm.pbf --region \"Name\" --id xx</code>. Encontrarás más detalles al principio del archivo del script. Los datos de toda la Tierra (archivo planet) ocupan muchas decenas de gigabytes y no caben en esta página.",
+    ar: "تضيف مناطق أخرى من خلال حاسوب: نزّل من <a href=\"https://download.geofabrik.de/\" target=\"_blank\" rel=\"noopener\">Geofabrik</a> ملف منطقة بلدك أو ولايتك (ملف .osm.pbf) ثم شغّل <code class=\"ltr\">node scripts/fetch-pois.js --pbf datei.osm.pbf --region \"Name\" --id xx</code>. تجد تفاصيل أكثر في بداية ملف السكربت. بيانات الأرض كلها (ملف planet) تبلغ عشرات الغيغابايت ولا تتسع لها هذه الصفحة." },
+  "Straßenkarten für beliebige Orte bekommst du mit eigenen Kacheln im Ordner <code class=\"ltr\">library/maps</code> (siehe „Eigene Kacheln hinzufügen“).": {
+    en: "You get road maps for any place with your own tiles in the folder <code class=\"ltr\">library/maps</code> (see “Add your own tiles”).",
+    es: "Para tener mapas de carreteras de cualquier lugar, usa teselas propias en la carpeta <code class=\"ltr\">library/maps</code> (ver «Añadir teselas propias»).",
+    ar: "للحصول على خرائط الطرق لأي مكان استخدم بلاطات خاصة في المجلد <code class=\"ltr\">library/maps</code> (انظر «إضافة بلاطات خاصة»)." },
+
+  /* Bundesländer (Beschriftung auf der Karte) */
+  "Bayern":  { en: "Bavaria", es: "Baviera", ar: "بافاريا" },
+  "Berlin": { en: "Berlin", es: "Berlín", ar: "برلين" },
+  "Brandenburg": { en: "Brandenburg", es: "Brandeburgo", ar: "براندنبورغ" },
+  "Freie Hansestadt Bremen": { en: "Free Hanseatic City of Bremen", es: "Ciudad Libre Hanseática de Bremen", ar: "مدينة بريمن الحرة" },
+  "Hamburg": { en: "Hamburg", es: "Hamburgo", ar: "هامبورغ" },
+  "Hessen": { en: "Hesse", es: "Hesse", ar: "هيسن" },
+  "Mecklenburg-Vorpommern": { en: "Mecklenburg-Western Pomerania", es: "Mecklemburgo-Pomerania Occidental", ar: "مكلنبورغ-فوربومرن" },
+  "Niedersachsen": { en: "Lower Saxony", es: "Baja Sajonia", ar: "سكسونيا السفلى" },
+  "Nordrhein-Westfalen": { en: "North Rhine-Westphalia", es: "Renania del Norte-Westfalia", ar: "شمال الراين-فيستفاليا" },
+  "Rheinland-Pfalz": { en: "Rhineland-Palatinate", es: "Renania-Palatinado", ar: "راينلاند-بفالتس" },
+  "Saarland": { en: "Saarland", es: "Sarre", ar: "سارلاند" },
+  "Sachsen": { en: "Saxony", es: "Sajonia", ar: "سكسونيا" },
+  "Sachsen-Anhalt": { en: "Saxony-Anhalt", es: "Sajonia-Anhalt", ar: "سكسونيا-أنهالت" },
+  "Schleswig-Holstein": { en: "Schleswig-Holstein", es: "Schleswig-Holstein", ar: "شليسفيغ-هولشتاين" },
+  "Thüringen": { en: "Thuringia", es: "Turingia", ar: "تورينغن" }
 });

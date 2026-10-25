@@ -51,7 +51,7 @@ Everything is available in all four languages: all tools, all knowledge pages, s
 | **In an emergency** | Emergency assistant (decision tree "What happened?") · Resuscitation rhythm (100–120/min, with sound) · Power outage plan (hour 1 to week 1) |
 | **Supplies** | Water needs · Emergency supplies (based on BBK) · Purify water · Power & battery |
 | **Calculate & time** | Units · Calculator · Stopwatch, timer, countdown |
-| **Navigation** | Compass · Sun & daylight · Coordinates & GPS (UTM) · **Offline map** (Baden-Württemberg: hospitals, pharmacies, defibrillators, fire stations, water points, your own points) |
+| **Navigation** | Compass · Sun & daylight · Coordinates & GPS (UTM) · **Offline map** (whole world as a coarse base map with country and city names in four languages; detailed points for Baden-Württemberg: hospitals, pharmacies, defibrillators, fire stations, water points; your own points; more regions via `scripts/fetch-pois.js`) |
 | **Signals & radio** | Morse code · SOS light · Radio cheat sheet (PMR446, Freenet, CB, Meshtastic) |
 | **Communicate** | Printable notices · QR code generator (offline) · Chat on the local network (mini server) · Print pack |
 | **Nature & identification** | Plants & mushrooms with dangerous look-alikes (photos) · Clouds & weather · Constellations · Animal tracks |

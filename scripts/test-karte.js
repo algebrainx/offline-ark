@@ -108,6 +108,100 @@ ok(K.coordText(48.831, 9.316) === '48.83100, 9.31600');
 })();
 function vm(code) { new Function(code)(); }       // Datei im globalen window-Kontext auswerten (window = global)
 
+/* ---------- Weltkarte: Daten, Namen, Geometrie, weltweite Entfernungen ---------- */
+(function () {
+  global.window = global;
+  const read = f => fs.readFileSync(path.join(ROOT, 'data', f), 'utf8');
+  const wTxt = read('karte-world.js'), cTxt = read('karte-world-cities.js');
+  const kb = (wTxt.length + cTxt.length) / 1024;
+  ok(kb < 2560, 'Weltdaten < 2,5 MB (' + Math.round(kb) + ' KB)');
+  vm(wTxt); vm(cTxt);
+  const W = window.OA_KARTE_WORLD, C = window.OA_KARTE_WORLD_CITIES;
+  ok(W && W.countries.length >= 190 && W.lakes.length > 20 && /Public Domain/.test(W.source) && /^\d{4}-\d\d-\d\d$/.test(W.stand), 'Weltdaten vorhanden mit Quelle und Stand');
+  const arabic = /[\u0600-\u06FF]/;
+  const decoded = [];
+  W.countries.forEach(c => {
+    ok(Array.isArray(c.n) && c.n.length === 4 && c.n.every(s => typeof s === 'string' && s.length > 0), 'Land ' + c.a + ': Namen in 4 Sprachen');
+    ok(arabic.test(c.n[3]) || c.n[3] === c.n[0], 'Land ' + c.a + ': arabischer Name oder Fallback');
+    ok(c.c[0] >= -180 && c.c[0] <= 180 && c.c[1] >= -90 && c.c[1] <= 90 && c.m >= 0 && c.m < 12, 'Land ' + c.a + ': Beschriftungspunkt');
+    c.p.forEach(po => po.forEach((ring, i) => {
+      ok(ring.length >= 6 && ring.length % 2 === 0, 'Ring mit mindestens 3 Punkten (' + c.n[0] + ')');
+      let x = 0, y = 0, prev = null;
+      for (let k = 0; k < ring.length; k += 2) {
+        x += ring[k]; y += ring[k + 1];
+        const lon = x / W.scale, lat = y / W.scale;
+        ok(lon >= -180 && lon <= 180 && lat >= -90 && lat <= 90, 'Koordinate im gültigen Bereich (' + c.n[0] + ')');
+        if (prev && !(Math.abs(lat) >= 85 && Math.abs(prev[1]) >= 85)) ok(Math.abs(lon - prev[0]) <= 180, 'kein Sprung über die Datumsgrenze (' + c.n[0] + ')');
+        prev = [lon, lat];
+      }
+      decoded.push({ iso: c.a, i, p: K.decodeLine(ring, W.scale) });
+    }));
+  });
+  ['DE', 'FR', 'US', 'RU', 'FJ', 'JP', 'AU', 'BR', 'EG', 'IN', 'CN', 'ZA', 'NZ', 'AQ'].forEach(iso => ok(W.countries.some(c => c.a === iso), 'Land ' + iso + ' vorhanden'));
+  const de = W.countries.find(c => c.a === 'DE'); ok(de.n[0] === 'Germany' && de.n[1] === 'Deutschland' && de.n[2] === 'Alemania' && de.n[3] === 'ألمانيا', 'Deutschland in 4 Sprachen');
+  ok(W.countries.filter(c => c.b).length >= 14 && W.base.includes('DE'), 'Länder der Detailkarte markiert');
+  W.lakes.forEach(r => ok(r.length >= 6, 'See-Ring'));
+
+  // Punkt-in-Land (wie in der Karte: im normierten Mercator-Raum, mit Löchern)
+  const countries = W.countries.map(c => ({ iso: c.a, polys: c.p.map(po => po.map(r => { const p = K.decodeLine(r, W.scale); let x0 = 2, y0 = 2, x1 = -1, y1 = -1; for (let i = 0; i < p.length; i += 2) { x0 = Math.min(x0, p[i]); x1 = Math.max(x1, p[i]); y0 = Math.min(y0, p[i + 1]); y1 = Math.max(y1, p[i + 1]); } return { p, b: [x0, y0, x1, y1] }; })) }));
+  const countryAt = (lat, lon) => { const q = K.norm(lat, K.wrapLon(lon)); const c = countries.find(c => c.polys.some(po => K.inPolygon(po, q.x, q.y))); return c ? c.iso : null; };
+  [[51.0, 10.0, 'DE'], [48.78, 9.18, 'DE'], [46.6, 2.5, 'FR'], [39.5, -98, 'US'], [64, -150, 'US'], [60, 100, 'RU'], [66, 170, 'RU'], [66, -172, 'RU'], [35.7, 139.7, 'JP'],
+    [-25, 134, 'AU'], [-10, -52, 'BR'], [26, 30, 'EG'], [22, 79, 'IN'], [35, 103, 'CN'], [-30, 25, 'ZA'], [-17.8, 178.0, 'FJ'], [-16.5, 179.3, 'FJ'], [-44, 170.5, 'NZ'], [-80, 0, 'AQ'],
+    [30, -40, null], [0, -140, null], [-17.8, 178.0 - 360, 'FJ']].forEach(([la, lo, iso]) => ok(countryAt(la, lo) === iso, 'Land bei ' + la + '/' + lo + ' = ' + iso + ' (war ' + countryAt(la, lo) + ')'));
+  ok(countryAt(-29.6, 28.2) === 'LS', 'Lesotho liegt im Loch von Südafrika');
+
+  // Städte
+  const cities = C.cities;
+  ok(cities.length >= 1000 && cities.length <= 1600, 'Städte: 1000–1600 (' + cities.length + ')');
+  let caps = 0, prevPop = Infinity, noAr = 0, noDe = 0, noEs = 0;
+  cities.forEach(c => {
+    ok(c.length === 8 && c[0] >= -90 && c[0] <= 90 && c[1] >= -180 && c[1] <= 180 && typeof c[4] === 'string' && c[4].length > 0, 'Stadt gültig: ' + c[4]);
+    ok(c[2] <= prevPop, 'nach Einwohnern absteigend sortiert'); prevPop = c[2];
+    caps += c[3]; if (!c[7]) noAr++; if (!c[5]) noDe++; if (!c[6]) noEs++;
+    ok(!c[7] || arabic.test(c[7]), 'arabischer Stadtname in arabischer Schrift: ' + c[4]);
+  });
+  ok(caps >= 190, 'Hauptstädte enthalten (' + caps + ')');
+  ok(noAr / cities.length < 0.02, 'Arabisch fast überall vorhanden, sonst Fallback auf Englisch (' + noAr + ' ohne)');
+  console.log('  Weltdaten: ' + Math.round(wTxt.length / 1024) + ' KB Länder/Seen + ' + Math.round(cTxt.length / 1024) + ' KB Städte; ' + W.countries.length + ' Länder, ' + W.lakes.length + ' Seen, ' + cities.length + ' Städte (davon ' + caps + ' Hauptstädte); ohne Eintrag de/es/ar (Fallback en): ' + noDe + '/' + noEs + '/' + noAr);
+  const nm = (en, i) => { const c = cities.find(x => x[4] === en); ok(!!c, 'Stadt ' + en); return c[i] || c[4]; };
+  ok(nm('Munich', 5) === 'München' && nm('Cologne', 5) === 'Köln' && nm('Tokyo', 5) === 'Tokio' && nm('Tokyo', 7) === 'طوكيو' && nm('Vienna', 6) === 'Viena' && nm('Berlin', 7) === 'برلين', 'bekannte Städtenamen je Sprache');
+  ok(cities.some(c => c[4] === 'Stuttgart') && cities.some(c => c[4] === 'Hamburg'), 'deutsche Großstädte');
+  ok(cities.filter(c => c[3] && c[2] > 0).length > 150, 'Hauptstädte mit Einwohnerzahl');
+
+  // Projektion und Anzeige über die ganze Welt
+  near(K.norm(85.0511287798, 0).y, 0, 1e-9, 'oberer Rand des Mercator-Quadrats'); near(K.norm(-85.0511287798, 0).y, 1, 1e-9, 'unterer Rand');
+  near(K.worldFitZoom(1000, 800), Math.log2(800 / 256), 1e-9, 'Zoom, bei dem die Welt ins Fenster passt'); ok(K.worldFitZoom(100, 100) === 0, 'Zoom nie unter 0');
+  const fb = K.fitBounds(47.537, 7.52, 49.805, 10.453, 390, 340, 0.92);
+  const a1 = K.toWorld(49.805, 7.52, fb.z), b1 = K.toWorld(47.537, 10.453, fb.z);
+  ok(b1.x - a1.x <= 390 * 0.92 + 0.01 && b1.y - a1.y <= 340 * 0.92 + 0.01 && (Math.abs(b1.x - a1.x - 390 * 0.92) < 0.5 || Math.abs(b1.y - a1.y - 340 * 0.92) < 0.5), 'BW passt formatfüllend ins Fenster (z=' + fb.z.toFixed(2) + ')');
+  near(fb.lat, 48.67, 0.1, 'Mitte von BW (Breite)'); near(fb.lon, 8.99, 0.1, 'Mitte von BW (Länge)');
+  ok(K.cityMinZoom(35000, 1) < K.cityMinZoom(3000, 0) && K.cityMinZoom(3000, 0) < K.cityMinZoom(500, 0) && K.cityMinZoom(500, 0) <= K.cityMinZoom(50, 0), 'größere Städte früher sichtbar');
+  ok(K.cityMinZoom(100, 1) < K.cityMinZoom(100, 0), 'Hauptstädte früher sichtbar');
+  ok(K.wrapLon(190) === -170 && K.wrapLon(-190) === 170 && K.wrapLon(180) === -180 && K.wrapLon(0) === 0 && K.wrapLon(540) === -180 && K.wrapLon(-179.5) === -179.5, 'Länge wird in [-180, 180) gebracht');
+
+  // Entfernung und Richtung weltweit (Kugelformel; Referenz: unabhängige Haversine-Rechnung bzw. pyproj/WGS84 mit 0,35 % Toleranz)
+  near(K.distance(52.52, 13.405, -33.8688, 151.2093) / 1000, 16094.5, 0.6, 'Berlin–Sydney (Kugel)');
+  near(K.distance(52.52, 13.405, -33.8688, 151.2093) / 1000, 16088.4, 16088.4 * 0.0035, 'Berlin–Sydney (WGS84)');
+  near(K.bearing(52.52, 13.405, -33.8688, 151.2093), 74.8, 0.6, 'Berlin→Sydney Peilung');
+  near(K.distance(40.7128, -74.006, 35.6762, 139.6503) / 1000, 10851.7, 0.6, 'New York–Tokio (Kugel)');
+  near(K.distance(40.7128, -74.006, 35.6762, 139.6503) / 1000, 10875.7, 10875.7 * 0.0035, 'New York–Tokio (WGS84)');
+  near(K.bearing(40.7128, -74.006, 35.6762, 139.6503), 333, 0.8, 'New York→Tokio Peilung (über den Pol)');
+  near(K.distance(0, 179.5, 0, -179.5) / 1000, 111.2, 0.1, 'Datumsgrenze am Äquator'); near(K.bearing(0, 179.5, 0, -179.5), 90, 1e-6, 'über die Datumsgrenze nach Osten');
+  near(K.bearing(0, -179.5, 0, 179.5), 270, 1e-6, 'über die Datumsgrenze nach Westen');
+  near(K.distance(60, 179, 60, -179) / 1000, 111.2, 0.2, 'Datumsgrenze bei 60° N');
+  near(K.distance(-36.85, 174.76, -18.14, 178.44) / 1000, 2111.4, 0.6, 'Auckland–Fidschi'); near(K.bearing(-36.85, 174.76, -18.14, 178.44), 10.9, 0.5);
+  near(K.distance(48.7758, 9.1829, -0.18, -78.47) / 1000, 9850.7, 0.6, 'Stuttgart–Quito (über den Äquator)');
+  near(K.distance(0, 0, 0, 180) / 1000, Math.PI * 6371.0088, 0.01, 'halber Erdumfang'); near(K.distance(90, 0, -90, 0) / 1000, Math.PI * 6371.0088, 0.01, 'Pol zu Pol');
+  const across = K.nearest([[0, -179.9, 'a', 'West'], [0, 170, 'a', 'Weit']], 0, 179.9, 1)[0];
+  ok(across.item[3] === 'West' && Math.abs(across.dist / 1000 - 22.2) < 0.1, 'nächster Punkt über die Datumsgrenze hinweg');
+  // Rundlauf der Projektion an Weltpunkten, auch jenseits der Datumsgrenze
+  for (const [lat, lon, z] of [[-33.87, 151.21, 2], [35.68, 139.65, 3.5], [-17.7, 178.1, 6], [64, -170, 1], [-75, 100, 0.4], [84, -30, 2]]) {
+    const w = K.toWorld(lat, lon, z), b = K.fromWorld(w.x, w.y, z); near(b.lat, lat, 1e-9, 'Rundlauf lat'); near(b.lon, lon, 1e-9, 'Rundlauf lon');
+  }
+  const w2 = K.fromWorld(K.worldSize(2) * 1.25, K.worldSize(2) * .5, 2); near(K.wrapLon(w2.lon), -90, 1e-9, 'eine Weltbreite weiter rechts = gleiche Länge');
+  near(K.metersPerPixel(0, 0) * 256 / 1000, 40075.017, 0.01, 'Weltumfang am Äquator');
+})();
+
 /* ---------- PBF-Leser: kleines, selbst gebautes Testarchiv ---------- */
 function varint(v) { const out = []; while (v >= 128) { out.push((v % 128) | 128); v = Math.floor(v / 128); } out.push(v); return Buffer.from(out); }
 function zig(v) { return v < 0 ? -2 * v - 1 : 2 * v; }
@@ -197,6 +291,35 @@ function buildPbf() {
   const back = K.decodeLine(kc.deltaEncode(pts, 10000), 10000);
   pts.forEach((p, i) => { const u = K.unnorm(back[2 * i], back[2 * i + 1]); near(u.lon, p[0], 1e-9); near(u.lat, p[1], 1e-9); });
   const s = kc.simplify([[0, 0], [1, 0.0001], [2, 0], [3, 5]], 0.001); ok(s.length === 3, 'Douglas-Peucker');
+  // 5) Weltkarten-Skript: kleine Natural-Earth-Attrappe -> Länder, Seen, Städte mit Namen in 4 Sprachen; Sprung über die Datumsgrenze wird gemeldet
+  {
+    const { execFileSync } = require('child_process');
+    const ne = path.join(work, 'ne'), outW = path.join(work, 'outw'); fs.mkdirSync(ne, { recursive: true });
+    const sq = (x, y, d) => [[x, y], [x + d, y], [x + d, y + d], [x, y + d], [x, y]];
+    const props = { NAME_EN: 'Testland', NAME_DE: 'Testland-DE', NAME_ES: 'Testlandia', NAME_AR: 'تيست', ISO_A2_EH: 'TL', LABEL_X: 5, LABEL_Y: 5, MIN_LABEL: 3, POP_EST: 10 };
+    const gj = feats => JSON.stringify({ type: 'FeatureCollection', features: feats });
+    const countries = (ring) => gj([{ properties: props, geometry: { type: 'Polygon', coordinates: [ring, sq(2, 2, 1)] } },
+      { properties: Object.assign({}, props, { NAME_EN: 'Winzig', ISO_A2_EH: 'WZ', NAME_AR: null }), geometry: { type: 'MultiPolygon', coordinates: [[sq(50, 50, 0.01)], [sq(60, 60, 3)]] } }]);
+    fs.writeFileSync(path.join(ne, 'ne_50m_lakes.geojson'), gj([{ properties: {}, geometry: { type: 'Polygon', coordinates: [sq(20, 20, 1)] } }, { properties: {}, geometry: { type: 'Polygon', coordinates: [sq(30, 30, 0.01)] } }]));
+    fs.writeFileSync(path.join(ne, 'ne_10m_populated_places.geojson'), gj([
+      { properties: { NAME_EN: 'Hauptort', NAME_DE: 'Hauptort', NAME_ES: 'Capitalia', NAME_AR: 'عاصمة', POP_MAX: 1000, ADM0CAP: 1, FEATURECLA: 'Admin-0 capital' }, geometry: { type: 'Point', coordinates: [5.5, 6.5] } },
+      { properties: { NAME_EN: 'Großstadt', NAME_DE: 'Großstadt', NAME_ES: 'Grande', NAME_AR: 'كبيرة', POP_MAX: 900000, ADM0CAP: 0, FEATURECLA: 'Populated place' }, geometry: { type: 'Point', coordinates: [7.5, 8.5] } },
+      { properties: { NAME_EN: 'Dorf', NAME_DE: 'Dorf', NAME_ES: 'Aldea', NAME_AR: 'قرية', POP_MAX: 5000, ADM0CAP: 0, FEATURECLA: 'Populated place' }, geometry: { type: 'Point', coordinates: [9, 9] } }]));
+    const run = () => execFileSync(process.execPath, [path.join(__dirname, 'build-karte-world.js'), '--ne', ne], { env: Object.assign({}, process.env, { KARTE_DATA_DIR: outW }), stdio: 'pipe' });
+    fs.writeFileSync(path.join(ne, 'ne_50m_admin_0_countries.geojson'), countries(sq(0, 0, 10)));
+    run();
+    global.window = global; delete global.OA_KARTE_WORLD; delete global.OA_KARTE_WORLD_CITIES;
+    new Function(fs.readFileSync(path.join(outW, 'karte-world.js'), 'utf8'))(); new Function(fs.readFileSync(path.join(outW, 'karte-world-cities.js'), 'utf8'))();
+    const Wd = window.OA_KARTE_WORLD, Cd = window.OA_KARTE_WORLD_CITIES;
+    ok(Wd.countries.length === 2 && Wd.countries[0].a === 'TL' && Wd.countries[0].n.join('|') === 'Testland|Testland-DE|Testlandia|تيست', 'Skript: Länder mit 4 Namen');
+    ok(Wd.countries[0].p[0].length === 2 && Wd.countries[1].p.length === 1 && Wd.countries[1].n[3] === 'Winzig', 'Skript: Loch bleibt, winzige Insel entfällt, fehlender arabischer Name -> Englisch');
+    ok(Wd.lakes.length === 1, 'Skript: kleiner See entfällt');
+    ok(Cd.cities.length === 2 && Cd.cities[0][4] === 'Großstadt' && Cd.cities[1][3] === 1 && Cd.cities[1][5] === '' && Cd.cities[1][6] === 'Capitalia' && Cd.cities[1][7] === 'عاصمة', 'Skript: Städte (Hauptstadt immer, Dorf nicht), gleicher Name -> leer');
+    fs.writeFileSync(path.join(ne, 'ne_50m_admin_0_countries.geojson'), countries([[170, 0], [-170, 0], [-170, 10], [170, 10], [170, 0]]));
+    let jumped = false; try { run(); } catch (e) { jumped = /Datumsgrenze|Antimeridian/.test(String(e.stderr)); }
+    ok(jumped, 'Skript: Ring über die Datumsgrenze wird abgelehnt');
+  }
   fs.rmSync(work, { recursive: true, force: true });
+  try { fs.rmdirSync(path.join(ROOT, '_work_karte')); } catch (e) { /* nicht leer: enthält Natural-Earth-Downloads */ }
   console.log('Karte: alle ' + n + ' Prüfungen bestanden');
 })().catch(e => { console.error(e); process.exit(1); });

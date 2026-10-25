@@ -76,4 +76,21 @@ function bboxOf(rings) {
 }
 function intersects(a, b) { return !(a[2] < b[0] || a[0] > b[2] || a[3] < b[1] || a[1] > b[3]); }
 
-module.exports = { ROOT, DATA, simplify, deltaEncode, deltaDecode, writeData, bboxOf, intersects };
+/** Lädt eine https-Datei (mit Weiterleitungen) in eine Datei. */
+function download(url, file, redirects) {
+  const https = require('https');
+  return new Promise((resolve, reject) => {
+    https.get(url, { headers: { 'User-Agent': 'offline-ark-build-karte/1.0' } }, res => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && (redirects || 0) < 5) {
+        res.resume(); return resolve(download(res.headers.location, file, (redirects || 0) + 1));
+      }
+      if (res.statusCode !== 200) { res.resume(); return reject(new Error('HTTP ' + res.statusCode + ' ' + url)); }
+      const out = fs.createWriteStream(file);
+      res.pipe(out);
+      out.on('finish', () => out.close(resolve));
+      out.on('error', reject);
+    }).on('error', reject);
+  });
+}
+
+module.exports = { ROOT, DATA, simplify, deltaEncode, deltaDecode, writeData, bboxOf, intersects, download };

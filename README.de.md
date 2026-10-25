@@ -49,7 +49,7 @@ Alles gibt es in allen vier Sprachen: alle Werkzeuge, alle Wissensseiten, Suche,
 | **Im Ernstfall** | Notfall-Assistent (Entscheidungsbaum „Was ist passiert?“) · Wiederbelebungs-Takt (100–120/min, mit Ton) · Stromausfall-Plan (Stunde 1 bis Woche 1) |
 | **Versorgung** | Wasserbedarf · Notvorrat (nach BBK) · Wasser entkeimen · Strom & Akku |
 | **Rechnen & Zeit** | Einheiten · Taschenrechner · Stoppuhr, Timer, Countdown |
-| **Orientierung** | Kompass · Sonne & Tageslicht · Koordinaten & GPS (UTM) · **Offline-Karte** (Baden-Württemberg: Krankenhäuser, Apotheken, Defibrillatoren, Feuerwehr, Wasserstellen, eigene Punkte) |
+| **Orientierung** | Kompass · Sonne & Tageslicht · Koordinaten & GPS (UTM) · **Offline-Karte** (ganze Welt als grobe Grundkarte mit Länder- und Städtenamen in vier Sprachen; Detailpunkte für Baden-Württemberg: Krankenhäuser, Apotheken, Defibrillatoren, Feuerwehr, Wasserstellen; eigene Punkte; weitere Regionen per `scripts/fetch-pois.js`) |
 | **Signal & Funk** | Morse-Code · SOS-Licht · Funk-Spickzettel (PMR446, Freenet, CB, Meshtastic) |
 | **Mitteilen** | Aushänge zum Ausdrucken · QR-Code-Generator (offline) · Chat im lokalen Netz (Mini-Server) · Ausdruck-Paket |
 | **Natur & Bestimmen** | Pflanzen & Pilze mit gefährlichen Doppelgängern (Fotos) · Wolken & Wetter · Sternbilder · Tierspuren |

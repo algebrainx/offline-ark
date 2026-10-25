@@ -67,7 +67,7 @@
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
       if (filter && !filter(it)) continue;
-      var dy = it[0] - lat, dx = (it[1] - lon) * k, approx = dy * dy + dx * dx;
+      var dy = it[0] - lat, dx = (((it[1] - lon + 540) % 360 + 360) % 360 - 180) * k, approx = dy * dy + dx * dx;
       if (best.length === n && approx > best[n - 1].approx) continue;
       best.push({ item: it, approx: approx });
       best.sort(function (a, b) { return a.approx - b.approx; });
@@ -96,6 +96,46 @@
     return [Math.round(m / 1000), 'km'];
   }
 
+  /** Länge in den Bereich [-180, 180) bringen (Datumsgrenze). */
+  function wrapLon(lon) { return ((((lon + 180) % 360) + 360) % 360) - 180; }
+
+  /** Punkt-in-Ring (Strahlverfahren); ring = Float64Array [x0,y0,x1,y1,...] (Ring ist implizit geschlossen). */
+  function pointInRing(ring, x, y) {
+    var inside = false, n = ring.length;
+    for (var i = 0, j = n - 2; i < n; j = i, i += 2) {
+      var xi = ring[i], yi = ring[i + 1], xj = ring[j], yj = ring[j + 1];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  }
+  /** Punkt in Polygon mit Löchern: rings[0] = Außenring, danach Löcher; Einträge { p: Float64Array, b: [x0,y0,x1,y1] }. */
+  function inPolygon(rings, x, y) {
+    var o = rings[0];
+    if (x < o.b[0] || x > o.b[2] || y < o.b[1] || y > o.b[3] || !pointInRing(o.p, x, y)) return false;
+    for (var i = 1; i < rings.length; i++) {
+      var h = rings[i];
+      if (x >= h.b[0] && x <= h.b[2] && y >= h.b[1] && y <= h.b[3] && pointInRing(h.p, x, y)) return false;
+    }
+    return true;
+  }
+
+  /** Kleinste Zoomstufe, bei der die ganze Welt (±85°) in ein w × h großes Fenster passt. */
+  function worldFitZoom(w, h) { return Math.max(0, Math.log(Math.min(w, h) / TILE) / Math.LN2); }
+
+  /** Kartenmitte und Zoom, damit das Rechteck (s, w, n, e) in ein W × H großes Fenster passt (pad = Anteil, z. B. 0.9). */
+  function fitBounds(s, w, n, e, W, H, pad) {
+    var a = norm(n, w), b = norm(s, e), dx = Math.max(1e-9, b.x - a.x), dy = Math.max(1e-9, b.y - a.y);
+    var z = Math.min(Math.log((W * (pad || 1)) / (TILE * dx)), Math.log((H * (pad || 1)) / (TILE * dy))) / Math.LN2;
+    var c = unnorm((a.x + b.x) / 2, (a.y + b.y) / 2);
+    return { lat: c.lat, lon: c.lon, z: z };
+  }
+
+  /** Ab welcher Zoomstufe eine Stadt (Einwohner in Tausend) beschriftet wird; Hauptstädte etwas früher. */
+  function cityMinZoom(popK, capital) {
+    var t = popK >= 10000 ? 0.4 : popK >= 5000 ? 2 : popK >= 2500 ? 2.9 : popK >= 1200 ? 3.6 : popK >= 700 ? 4.3 : popK >= 450 ? 4.9 : 5.4;
+    return capital && t > 2.2 ? Math.max(2.2, t - 1) : t;
+  }
+
   /** Kachel-Pfad aus Muster mit {z}/{x}/{y} */
   function tilePath(pattern, z, x, y) { return pattern.replace('{z}', z).replace('{x}', x).replace('{y}', y); }
 
@@ -106,7 +146,8 @@
     TILE: TILE, MAX_LAT: MAX_LAT, R_EARTH: R_EARTH, clampLat: clampLat, worldSize: worldSize, norm: norm, unnorm: unnorm,
     toWorld: toWorld, fromWorld: fromWorld, metersPerPixel: metersPerPixel, distance: distance, bearing: bearing, dirIndex: dirIndex,
     niceScale: niceScale, lowerBound: lowerBound, inBounds: inBounds, nearest: nearest, decodeLine: decodeLine, distParts: distParts,
-    tilePath: tilePath, coordText: coordText
+    tilePath: tilePath, coordText: coordText, wrapLon: wrapLon, pointInRing: pointInRing, inPolygon: inPolygon,
+    worldFitZoom: worldFitZoom, fitBounds: fitBounds, cityMinZoom: cityMinZoom
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.OA_KARTE_CORE = api;

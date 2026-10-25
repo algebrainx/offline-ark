@@ -37,6 +37,9 @@
     de: ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'], en: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
     es: ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'], ar: null
   };
+  var WORLD_Z = 6;                                          // ab hier Detailkarte (Natural Earth 10m) statt Weltdaten (50m)
+  var NAME_IDX = { en: 0, de: 1, es: 2, ar: 3 }[OA.lang];   // Position der Sprache in den Namenslisten der Weltdaten
+  if (NAME_IDX === undefined) NAME_IDX = 1;
 
   /* ---------- Zustand ---------- */
   var saved = OA.store.get('karte', null) || {};
@@ -45,6 +48,8 @@
   var layersOn = saved.layers || { hospital: true, own: true, wp: true };
   var data = {};                 // Ebene -> { items, state: 'idle'|'loading'|'ok'|'error' }
   var geo = { ready: false, kreise: [], rivers: [], places: [], kreisNames: [], gem: [], gemLoaded: false, gemLoading: false };
+  // Weltdaten (lazy): Länder/Seen (geoReady) und Städte (citiesReady)
+  var world = { geoReady: false, citiesReady: false, state: '', cState: '', countries: [], rings: [], lakes: [], cities: [], stand: '', promise: null, cPromise: null };
   var pos = null;                // { lat, lon, acc }
   var sel = null;                // angetippter Punkt oder gewähltes Objekt
   var ownPoints = OA.store.get('karte_punkte', []);
@@ -57,7 +62,10 @@
   var W = 300, H = 300, DPR = 1, dirty = true, C = {}, hits = [];
 
   /* ---------- Hilfen ---------- */
-  function clampZ(z) { return Math.max(CFG.minZoom, Math.min(CFG.maxZoom, z)); }
+  function minZ() { return Math.max(CFG.minZoom || 0, K.worldFitZoom(W, H)); }       // ganz herausgezoomt passt die Welt gerade ins Fenster
+  function clampZ(z) { return Math.max(minZ(), Math.min(CFG.maxZoom, z)); }
+  function inBase(lat, lon) { return !!BASE && lon >= BASE.bbox[0] && lon <= BASE.bbox[2] && lat >= BASE.bbox[1] && lat <= BASE.bbox[3]; }
+  function wname(arr, off) { return arr[off + NAME_IDX] || arr[off]; }
   function fmtDist(m) {
     var p = K.distParts(m);
     return OA.fmt(p[0], p[1] === 'km' && p[0] < 10 ? 1 : 0) + ' ' + p[1];
@@ -136,6 +144,73 @@
       });
       geo.gemLoaded = true; geo.gemLoading = false; dirty = true;
     });
+  }
+
+  /* ---------- Weltdaten (lazy): Länder, Seen, Städte ---------- */
+  function boxHit(a, b) { return !(a[2] < b[0] || a[0] > b[2] || a[3] < b[1] || a[1] > b[3]); }
+  var baseBox = null;      // Grundkarte (Natural Earth 10m) als normiertes Rechteck: dort ersetzt sie die groben Weltdaten ab WORLD_Z
+  if (BASE) { var bt = K.norm(BASE.bbox[3], BASE.bbox[0]), bb0 = K.norm(BASE.bbox[1], BASE.bbox[2]); baseBox = [bt.x, bt.y, bb0.x, bb0.y]; }
+  function buildWorld() {
+    var D = window.OA_KARTE_WORLD;
+    if (!D || !D.countries) throw new Error('world');
+    D.countries.forEach(function (c, ci) {
+      var polys = [], main = null, mainArea = -1;
+      c.p.forEach(function (po) {
+        var rings = po.map(function (r, k) {
+          var l = mkLine(r, D.scale);
+          l.de = c.a === 'DE'; l.base = !!(c.b && baseBox && boxHit(l.b, baseBox));
+          world.rings.push(l);
+          return l;
+        });
+        var ob = rings[0].b, area = (ob[2] - ob[0]) * (ob[3] - ob[1]);
+        if (area > mainArea) { mainArea = area; main = ob; }
+        polys.push(rings);
+      });
+      world.countries.push({ iso: c.a, n: c.n, c: c.c, m: c.m, polys: polys, main: main });
+    });
+    D.lakes.forEach(function (r) { var l = mkLine(r, D.scale); l.base = !!(baseBox && boxHit(l.b, baseBox)); world.lakes.push(l); });
+    world.stand = D.stand || '';
+    world.geoReady = true;
+  }
+  function buildCities() {
+    var D = window.OA_KARTE_WORLD_CITIES;
+    if (!D || !D.cities) throw new Error('cities');
+    world.cities = D.cities;
+    if (!world.stand) world.stand = D.stand || '';
+    // Orte der Grundkarte, die als Weltstadt vorkommen, nicht doppelt zeichnen (die Weltdaten haben die Namen in der Sprache der Seite)
+    base.places.forEach(function (p) {
+      p.skip = D.cities.some(function (c) { return Math.abs(c[0] - p.lat) < .1 && Math.abs(c[1] - p.lon) < .1 * (1 / Math.max(.2, Math.cos(p.lat * Math.PI / 180))); });
+    });
+    world.citiesReady = true;
+  }
+  function ensureCities(force) {
+    if (world.cState === 'loading' || world.cState === 'ok' || (world.cState === 'error' && !force)) return world.cPromise;
+    world.cState = 'loading'; dirty = true;
+    world.cPromise = loadScript('data/karte-world-cities.js').then(function () { buildCities(); world.cState = 'ok'; }).catch(function () { world.cState = 'error'; })
+      .then(function () { dirty = true; renderStand(); });
+    return world.cPromise;
+  }
+  function ensureWorld(force) {
+    if (world.state === 'loading' || world.state === 'ok' || (world.state === 'error' && !force)) return world.promise;
+    world.state = 'loading'; dirty = true;
+    world.promise = Promise.all([loadScript('data/karte-world.js').then(function () { buildWorld(); }), ensureCities(force)]).then(function () { world.state = 'ok'; })
+      .catch(function () { world.state = 'error'; setStatus(OA.t('Weltkarte konnte nicht geladen werden.')); })
+      .then(function () { dirty = true; renderStand(); });
+    return world.promise;
+  }
+  // Weltdaten laden, sobald sie gebraucht werden: weit herausgezoomt oder außerhalb der Grundkarte
+  function checkWorld() {
+    if (view.z < WORLD_Z || !inBase(view.lat, view.lon)) ensureWorld();
+    else if (OA.lang !== 'de' && !inRegion(view.lat, view.lon)) ensureCities();
+  }
+  function countryAt(lat, lon) {
+    if (!world.geoReady) return null;
+    var n = K.norm(lat, K.wrapLon(lon));
+    for (var i = 0; i < world.countries.length; i++) {
+      var c = world.countries[i];
+      for (var j = 0; j < c.polys.length; j++) if (K.inPolygon(c.polys[j], n.x, n.y)) return c;
+    }
+    return null;
   }
 
   /* ---------- Punktdaten (POI) lazy laden ---------- */
@@ -227,18 +302,34 @@
     opts = opts || {};
     var S = K.worldSize(view.z), c = K.norm(view.lat, view.lon), cx = c.x * S, cy = c.y * S;
     var nx0 = (cx - W / 2) / S, nx1 = (cx + W / 2) / S, ny0 = (cy - H / 2) / S, ny1 = (cy + H / 2) / S;
-    function vis(b) { return !(b[2] < nx0 || b[0] > nx1 || b[3] < ny0 || b[1] > ny1); }
+    var skipPx = view.z < 3 ? 1 : .6;      // Punkte, die näher als so viele Pixel am vorigen liegen, werden übersprungen
+    var kx = 0;           // Versatz in Weltbreiten (Weltkarte wird links/rechts wiederholt, wenn sie schmaler als das Fenster ist oder die Datumsgrenze im Bild liegt)
+    function vis(b) { return !(b[2] + kx < nx0 || b[0] + kx > nx1 || b[3] < ny0 || b[1] > ny1); }
     function sx(n) { return n * S - cx + W / 2; }
     function sy(n) { return n * S - cy + H / 2; }
+    function sxw(n) { var d = n - c.x; return sx(d > .5 ? n - 1 : d < -.5 ? n + 1 : n); }      // nächste Kopie zur Kartenmitte
     function trace(l, close) {
-      var p = l.p, n = p.length, x = sx(p[0]), y = sy(p[1]), lx = x, ly = y;
+      var p = l.p, n = p.length, ox = kx * S - cx + W / 2, x = p[0] * S + ox, y = sy(p[1]), lx = x, ly = y;
       g.moveTo(x, y);
       for (var i = 2; i < n; i += 2) {
-        x = p[i] * S - cx + W / 2; y = p[i + 1] * S - cy + H / 2;
-        if (i < n - 2 && Math.abs(x - lx) < .6 && Math.abs(y - ly) < .6) continue;
+        x = p[i] * S + ox; y = p[i + 1] * S - cy + H / 2;
+        if (i < n - 2 && Math.abs(x - lx) < skipPx && Math.abs(y - ly) < skipPx) continue;
         g.lineTo(x, y); lx = x; ly = y;
       }
       if (close) g.closePath();
+    }
+    // Umriss ohne die Schnittkanten an der Datumsgrenze und am Südrand (dort ist der Ring nur technisch geschlossen)
+    function traceEdge(l) {
+      var p = l.p, n = p.length, ox = kx * S - cx + W / 2, E = 1e-6, px = p[0], py = p[1], lx = px * S + ox, ly = sy(py);
+      g.moveTo(lx, ly);
+      for (var i = 2; i <= n; i += 2) {
+        var j = i < n ? i : 0, qx = p[j], qy = p[j + 1], x = qx * S + ox, y = qy * S - cy + H / 2;
+        var edge = (qx < E && px < E) || (qx > 1 - E && px > 1 - E) || (qy > 1 - E && py > 1 - E) || (qy < E && py < E);
+        if (edge) g.moveTo(x, y);
+        else if (i >= n - 2 || Math.abs(x - lx) >= skipPx || Math.abs(y - ly) >= skipPx) g.lineTo(x, y);
+        else { px = qx; py = qy; continue; }
+        lx = x; ly = y; px = qx; py = qy;
+      }
     }
     function polys(list, fill, stroke, lw) {
       g.beginPath();
@@ -259,21 +350,45 @@
 
     var tilesDrawn = false;
     if (T.on && !opts.noTiles) tilesDrawn = drawTiles(g, S, cx, cy);
-    var z = view.z;
+    var z = view.z, detail = !world.geoReady || z >= WORLD_Z;       // Detailkarte (10m) statt Weltdaten (50m)
     if (!tilesDrawn) {
-      polys(base.nb, C.surface2, C.line, 1);
-      polys(base.land, C.surface, C.text2, 1);
-      g.globalAlpha = .35; g.fillStyle = C.accent; g.beginPath();
-      for (var li = 0; li < base.lakes.length; li++) if (vis(base.lakes[li].b)) trace(base.lakes[li], true);
-      g.fill('evenodd'); g.globalAlpha = 1;
+      if (world.geoReady) drawWorld();
+      if (detail) {
+        polys(base.nb, C.surface2, C.line, 1);
+        polys(base.land, C.surface, C.text2, 1);
+        g.globalAlpha = .35; g.fillStyle = C.accent; g.beginPath();
+        for (var li = 0; li < base.lakes.length; li++) if (vis(base.lakes[li].b)) trace(base.lakes[li], true);
+        g.fill('evenodd'); g.globalAlpha = 1;
+      }
+    }
+    // Weltdaten: Länder und Seen, wiederholt über die Datumsgrenze; im Gebiet der Detailkarte nur bis WORLD_Z
+    function drawWorld() {
+      var rings = world.rings, lakes = world.lakes, skipBase = z >= WORLD_Z, i, r;
+      function show(r) { return vis(r.b) && ((r.b[2] - r.b[0]) * S >= 1.2 || (r.b[3] - r.b[1]) * S >= 1.2) && !(skipBase && r.base); }      // Ringe unter ca. 1 Pixel Größe weglassen
+      for (var k = Math.floor(nx0); k <= Math.floor(nx1); k++) {
+        kx = k;
+        g.beginPath();
+        for (i = 0; i < rings.length; i++) { r = rings[i]; if (!r.de && show(r)) trace(r, true); }
+        g.fillStyle = C.surface2; g.fill('evenodd');
+        g.beginPath();
+        for (i = 0; i < rings.length; i++) { r = rings[i]; if (r.de && show(r)) trace(r, true); }
+        g.fillStyle = C.surface; g.fill('evenodd');
+        g.beginPath();
+        for (i = 0; i < lakes.length; i++) { r = lakes[i]; if (show(r)) trace(r, true); }
+        g.globalAlpha = .35; g.fillStyle = C.accent; g.fill('evenodd');
+        g.beginPath();
+        for (i = 0; i < rings.length; i++) { r = rings[i]; if (show(r)) traceEdge(r); }
+        g.globalAlpha = .55; g.strokeStyle = C.text2; g.lineWidth = z < 3 ? .7 : 1; g.stroke(); g.globalAlpha = 1;
+      }
+      kx = 0;
     }
     // Flüsse
     var riverList = geo.ready && z >= 7 ? geo.rivers : [];
-    strokes(base.rivers, C.accent, Math.max(1, Math.min(3, (z - 3) * .35)), .75);
+    if (z >= 5.5) strokes(base.rivers, C.accent, Math.max(1, Math.min(3, (z - 3) * .35)), .75);
     if (riverList.length) strokes(riverList, C.accent, Math.max(.8, Math.min(2.4, (z - 6) * .3)), .8);
     // Grenzen: Länder (Natural Earth), im geladenen Gebiet ab Zoom 9 die genaueren Landkreis-/Gemeindegrenzen
     var stateLines = [];
-    base.states.forEach(function (s) { s.r.forEach(function (r) { stateLines.push(r); }); });
+    if (z >= 4.8) base.states.forEach(function (s) { s.r.forEach(function (r) { stateLines.push(r); }); });
     strokes(stateLines, C.text2, z < 9 ? 1.2 : .8, z < 9 ? .8 : .4);
     if (geo.ready && z >= 8.3) strokes(geo.kreise, C.text2, z < 10 ? 1 : 1.5, .75);
     if (geo.gemLoaded && z >= 10.3) strokes(geo.gem, C.text2, .8, .45);
@@ -281,9 +396,10 @@
 
     // Beschriftungen mit einfacher Kollisionsprüfung
     var boxes = [];
-    function label(text, x, y, size, color, italic, bold) {
+    function label(text, x, y, size, color, italic, bold, maxW) {
       g.font = (italic ? 'italic ' : '') + (bold ? '700 ' : '500 ') + size + 'px ' + C.font;
       var w = g.measureText(text).width, bx = x - w / 2 - 2, by = y - size / 2 - 1, bw = w + 4, bh = size + 2;
+      if (maxW && w > maxW) return false;
       if (bx > W || bx + bw < 0 || by > H || by + bh < 0) return false;
       for (var i = 0; i < boxes.length; i++) { var b = boxes[i]; if (bx < b[0] + b[2] && bx + bw > b[0] && by < b[1] + b[3] && by + bh > b[1]) return false; }
       boxes.push([bx, by, bw, bh]);
@@ -292,9 +408,44 @@
       g.fillStyle = color; g.fillText(text, x, y);
       return true;
     }
-    function pt(lat, lon) { var n = K.norm(lat, lon); return [sx(n.x), sy(n.y)]; }
+    function pt(lat, lon) { var n = K.norm(lat, lon); return [sxw(n.x), sy(n.y)]; }
 
-    if (z < 9) base.states.forEach(function (s) { var p = pt(s.c[1], s.c[0]); label(s.n.toUpperCase(), p[0], p[1], 10, C.text2, false, true); });
+    // Weltkarte: Ländernamen (nach Wichtigkeit, passend zur Sprache) und Städte (nach Einwohnerzahl)
+    var cityHits = [];
+    function drawCountryLabels() {
+      if (!world.geoReady || z >= 7.5) return;
+      for (var k = Math.floor(nx0); k <= Math.floor(nx1); k++) {
+        for (var i = 0; i < world.countries.length; i++) {
+          var ct = world.countries[i];
+          if (z < ct.m - 1.3 || (ct.iso === 'DE' && z >= 5.2)) continue;
+          var n = K.norm(ct.c[1], ct.c[0]), x = sx(n.x + k), y = sy(n.y);
+          if (x < -60 || x > W + 60 || y < -10 || y > H + 10) continue;
+          var txt = wname(ct.n, 0);
+          label(OA.lang === 'ar' ? txt : txt.toUpperCase(), x, y, z < 3 ? 10 : 11, C.text2, false, true, (ct.main[2] - ct.main[0]) * S * 1.5);
+        }
+      }
+    }
+    function drawCities() {
+      if (!world.citiesReady) return;
+      var hide = geo.ready && z >= 7, list = world.cities;
+      for (var k = Math.floor(nx0); k <= Math.floor(nx1); k++) {
+        for (var i = 0; i < list.length; i++) {
+          var c0 = list[i], popK = c0[2];
+          if (z < K.cityMinZoom(popK, c0[3]) || (hide && inRegion(c0[0], c0[1]))) continue;
+          var n = K.norm(c0[0], c0[1]), x = sx(n.x + k), y = sy(n.y);
+          if (x < -60 || x > W + 60 || y < -20 || y > H + 20) continue;
+          var size = popK >= 5000 ? 13 : popK >= 1000 ? 12 : 11.5;
+          if (!label(wname(c0, 4), x, y - size * .9, size, C.text, false, popK >= 2500)) continue;
+          g.lineWidth = 1.6; g.strokeStyle = C.text; g.fillStyle = c0[3] ? C.surface : C.text;
+          g.beginPath(); g.arc(x, y, c0[3] ? 3.4 : 2.4, 0, 7); g.fill(); if (c0[3]) g.stroke();
+          cityHits.push({ x: x, y: y, r: 12, ref: { kind: 'city', item: c0 } });
+        }
+      }
+    }
+
+    if (z < 4.2) drawCountryLabels();
+    drawCities();                                                       // Städte vor den Bundesländern: so bleiben gleichnamige Stadtstaaten als Stadt antippbar
+    if (z >= 5 && z < 9) base.states.forEach(function (s) { var p = pt(s.c[1], s.c[0]); label(OA.t(s.n).toUpperCase(), p[0], p[1], 10, C.text2, false, true); });
     if (geo.ready && z >= 8.3 && z < 11) geo.kreisNames.forEach(function (k) { var p = pt(k.lat, k.lon); label(k.name, p[0], p[1], 11, C.text2, true); });
     // Orte
     var placeDots = [];
@@ -314,6 +465,7 @@
       label(p.name, d[0], d[1] - big * .9, big, C.text, false, p.kind === 'c');
     });
     base.places.forEach(function (p) {
+      if (p.skip && world.citiesReady) return;                       // steht schon als Weltstadt (mit übersetztem Namen) auf der Karte
       if (geo.ready && z >= 7 && inRegion(p.lat, p.lon)) return;      // dort kommen die OSM-Orte
       var need = p.pop >= 1000000 ? 4 : p.pop >= 300000 ? 5.5 : 6.5;
       if (z < need || (!p.de && z > 8)) return;
@@ -321,6 +473,7 @@
       g.fillStyle = C.text; g.beginPath(); g.arc(q[0], q[1], 3, 0, 7); g.fill();
       label(p.name, q[0], q[1] - 12, p.pop >= 500000 ? 13 : 11.5, C.text, false, p.pop >= 500000);
     });
+    if (z >= 4.2) drawCountryLabels();
     // Flussnamen
     if (z >= 9.5 && geo.ready) {
       var seen = {};
@@ -343,13 +496,13 @@
     var bb = bounds();
     var cell = z < 14 ? 22 : 0;
     function enqueue(spec, lat, lon, ref) {
-      var n = K.norm(lat, lon), x = sx(n.x), y = sy(n.y);
+      var n = K.norm(lat, lon), x = sxw(n.x), y = sy(n.y);
       if (x < -20 || x > W + 20 || y < -20 || y > H + 20) return;
       if (cell) { var key = Math.floor(x / cell) * 10000 + Math.floor(y / cell); if (grid[key]) return; grid[key] = 1; }
       drawQueue.push([x, y, spec, ref]);
     }
     function cellBypass(spec, lat, lon, ref) {            // eigene Punkte werden nie ausgedünnt
-      var n = K.norm(lat, lon), x = sx(n.x), y = sy(n.y);
+      var n = K.norm(lat, lon), x = sxw(n.x), y = sy(n.y);
       if (x < -20 || x > W + 20 || y < -20 || y > H + 20) return;
       drawQueue.push([x, y, spec, ref, 1]);
     }
@@ -368,17 +521,18 @@
       hits.push({ x: q[0], y: q[1], r: 14, ref: q[3] });
     }
     hits.reverse();
+    hits = hits.concat(cityHits);
 
     // angetippte Stelle
     if (sel && !opts.noSel) {
-      var sn = K.norm(sel.lat, sel.lon), ssx = sx(sn.x), ssy = sy(sn.y);
+      var sn = K.norm(sel.lat, sel.lon), ssx = sxw(sn.x), ssy = sy(sn.y);
       g.strokeStyle = C.text; g.lineWidth = 2; g.beginPath(); g.arc(ssx, ssy, 14, 0, 7); g.stroke();
       g.strokeStyle = C.surface; g.lineWidth = 4; g.beginPath(); g.moveTo(ssx - 22, ssy); g.lineTo(ssx - 8, ssy); g.moveTo(ssx + 8, ssy); g.lineTo(ssx + 22, ssy); g.moveTo(ssx, ssy - 22); g.lineTo(ssx, ssy - 8); g.moveTo(ssx, ssy + 8); g.lineTo(ssx, ssy + 22); g.stroke();
       g.strokeStyle = C.text; g.lineWidth = 2; g.stroke();
     }
     // eigene Position + Genauigkeitskreis
     if (pos) {
-      var pn = K.norm(pos.lat, pos.lon), px = sx(pn.x), py = sy(pn.y), ar = pos.acc / K.metersPerPixel(pos.lat, z);
+      var pn = K.norm(pos.lat, pos.lon), px = sxw(pn.x), py = sy(pn.y), ar = pos.acc / K.metersPerPixel(pos.lat, z);
       if (ar > 6) { g.globalAlpha = .15; g.fillStyle = C.accent; g.beginPath(); g.arc(px, py, ar, 0, 7); g.fill(); g.globalAlpha = .6; g.strokeStyle = C.accent; g.lineWidth = 1; g.stroke(); g.globalAlpha = 1; }
       g.fillStyle = C.surface; g.beginPath(); g.arc(px, py, 9, 0, 7); g.fill();
       g.fillStyle = C.accent; g.beginPath(); g.arc(px, py, 6.5, 0, 7); g.fill();
@@ -407,7 +561,9 @@
     if ($('#attrib').textContent !== a) $('#attrib').textContent = a;
     var hint = '';
     var anyPoi = POI_LAYERS.some(function (c) { return layersOn[c]; });
-    if (anyPoi && !inRegion(view.lat, view.lon)) hint = OA.t('Für diesen Ausschnitt gibt es keine Punkte-Daten (nur Baden-Württemberg).');
+    if (world.state === 'loading') hint = OA.t('Lade Weltkarte …');
+    else if (anyPoi && view.z < 5 && !inRegion(view.lat, view.lon)) hint = '';        // Weltansicht: kein Hinweis nötig
+    else if (anyPoi && !inRegion(view.lat, view.lon)) hint = OA.t('Für diesen Ausschnitt gibt es keine Punkte-Daten (nur Baden-Württemberg).');
     else if (anyPoi && view.z < 6.5) hint = OA.t('Näher heranzoomen, um Punkte zu sehen.');
     else if (anyPoi) {
       var minZ = 99;
@@ -422,9 +578,10 @@
   /* ---------- Ansicht ändern ---------- */
   var moveTimer = 0;
   function setView(lat, lon, z) {
-    view.lat = Math.max(-80, Math.min(80, lat)); view.lon = ((lon + 540) % 360) - 180; view.z = clampZ(z);
+    view.lat = Math.max(-85, Math.min(85, lat)); view.lon = K.wrapLon(lon); view.z = clampZ(z);
     dirty = true;
     if (view.z >= 10.3) loadGemeinden();
+    checkWorld();
     clearTimeout(moveTimer);
     moveTimer = setTimeout(function () { saveState(); if (!pos) updateNearby(); updatePformCoord(); }, 300);
   }
@@ -441,7 +598,8 @@
   }
   function screenToLL(px, py) {
     var S = K.worldSize(view.z), c = K.norm(view.lat, view.lon);
-    return K.fromWorld(c.x * S + (px - W / 2), c.y * S + (py - H / 2), view.z);
+    var ll = K.fromWorld(c.x * S + (px - W / 2), c.y * S + (py - H / 2), view.z);
+    return { lat: ll.lat, lon: K.wrapLon(ll.lon) };
   }
 
   /* ---------- Eingabe: Maus, Touch, Tastatur ---------- */
@@ -502,6 +660,18 @@
   $('#zin').addEventListener('click', function () { setView(view.lat, view.lon, Math.round(view.z) + 1); });
   $('#zout').addEventListener('click', function () { setView(view.lat, view.lon, Math.round(view.z) - 1); });
 
+  /* ---------- Schnellwahl: Welt, Baden-Württemberg, eigene Position ---------- */
+  function showWorld() { ensureWorld(true); setView(0, 10, K.worldFitZoom(W, H)); }
+  function showRegion() {
+    var r = REGIONS.filter(function (x) { return x.id === 'bw'; })[0] || REGIONS[0];
+    if (!r || !r.bbox) { setView(CFG.view.lat, CFG.view.lon, CFG.view.zoom); return; }
+    var f = K.fitBounds(r.bbox[0], r.bbox[1], r.bbox[2], r.bbox[3], W, H, .92);
+    setView(f.lat, f.lon, f.z);
+  }
+  $('#vWorld').addEventListener('click', showWorld);
+  $('#vRegion').addEventListener('click', showRegion);
+  $('#vPos').addEventListener('click', function () { if (pos) setView(pos.lat, pos.lon, Math.max(view.z, 14)); });
+
   function onTap(x, y) {
     if (dirty) { dirty = false; render(ctx); }       // Trefferliste muss zur aktuellen Ansicht passen
     var best = null, bd = 1e9;
@@ -522,20 +692,30 @@
     var it = ref.item;
     if (ref.kind === 'poi') select({ lat: it[0], lon: it[1], kind: 'poi', type: it[2], name: it[3] });
     else if (ref.kind === 'own') select({ lat: it.lat, lon: it.lon, kind: 'own', own: it });
+    else if (ref.kind === 'city') select({ lat: it[0], lon: it[1], kind: 'city', name: wname(it, 4), capital: !!it[3] });
     else select({ lat: it.lat, lon: it.lon, kind: 'wp', name: it.name });
   }
   function select(s) {
     sel = s; dirty = true;
     var card = $('#sel'); card.hidden = false;
-    var kind, title = '', note = '';
+    var kind, title = '', note = '', plain = false;
     if (s.kind === 'poi') { var T0 = TYPES[s.type]; kind = OA.t(T0.name); title = s.name || ''; if (T0.hint === 'water') note = OA.t('Trinkbarkeit unbekannt: Wasser vor dem Trinken aufbereiten (siehe „Wasser entkeimen“).'); else note = OA.t('Daten aus OpenStreetMap, können veraltet sein. Im Notfall: 112.'); }
     else if (s.kind === 'own') { kind = OA.t(OWN_TYPES[s.own.type] ? OWN_TYPES[s.own.type].name : 'Sonstiges'); title = s.own.name; note = s.own.note || ''; }
     else if (s.kind === 'wp') { kind = OA.t('Wegpunkt'); title = s.name || ''; }
-    else kind = OA.t('Angetippter Punkt');
+    else if (s.kind === 'city') {
+      kind = OA.t(s.capital ? 'Hauptstadt' : 'Stadt'); title = s.name;
+      var cc = countryAt(s.lat, s.lon); if (cc) note = OA.t('Land: {0}', [wname(cc.n, 0)]);
+      plain = true;
+    } else {
+      kind = OA.t('Angetippter Punkt');
+      var ct = countryAt(s.lat, s.lon); if (ct) title = wname(ct.n, 0);
+      // Weltdaten noch nicht geladen: nachladen und danach das Land anzeigen (nur außerhalb der Detailkarte oder weit herausgezoomt)
+      if (!world.geoReady && (view.z < 10 || !inRegion(s.lat, s.lon))) ensureWorld().then(function () { if (sel === s && world.geoReady) select(s); });
+    }
     $('#selKind').textContent = kind;
     var tEl = $('#selTitle'); tEl.innerHTML = '<span data-notranslate>' + OA.esc(title) + '</span>'; tEl.hidden = !title;
     var nEl = $('#selNote'); nEl.hidden = !note;
-    nEl.innerHTML = s.kind === 'own' ? '<span data-notranslate>' + OA.esc(note) + '</span>' : OA.esc(note);
+    nEl.innerHTML = s.kind === 'own' || plain ? '<span data-notranslate>' + OA.esc(note) + '</span>' : OA.esc(note);
     $('#selCoord').textContent = hemi(s.lat, s.lon);
     updateSelDist();
     $('#selEdit').hidden = $('#selDel').hidden = s.kind !== 'own';
@@ -577,6 +757,7 @@
     navigator.geolocation.getCurrentPosition(function (p) {
       locating = false; $('#locate').disabled = false;
       pos = { lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy || 0 };
+      $('#vPos').hidden = false;
       setStatus(p.coords.accuracy > 100
         ? OA.t('Position gefunden, aber ungenau (±{0} m). Ins Freie gehen und erneut versuchen.', [OA.fmt(p.coords.accuracy, 0)])
         : OA.t('Position gefunden (Genauigkeit ±{0} m).', [OA.fmt(p.coords.accuracy, 0)]));
@@ -830,12 +1011,18 @@
   /* ---------- Stand der Daten ---------- */
   function renderStand() {
     var el = $('#dataStand');
-    if (!REGIONS.length) { el.textContent = OA.t('Keine Punkte-Daten vorhanden.'); return; }
+    var wl = world.geoReady && world.stand
+      ? OA.t('Weltkarte (grob): Natural Earth, abgerufen am {0}', [fmtDate(world.stand)])
+      : OA.t('Weltkarte (grob): Natural Earth, wird erst beim Herauszoomen oder über „Welt“ geladen');
+    if (!REGIONS.length) { el.innerHTML = '<div>' + OA.esc(OA.t('Keine Punkte-Daten vorhanden.')) + '</div><div>' + OA.esc(wl) + '</div>'; return; }
     el.innerHTML = REGIONS.map(function (r) {
-      var d = new Date(r.stand + 'T12:00:00'), ds = isNaN(d) ? r.stand : d.toLocaleDateString(OA.locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
       var n = 0; Object.keys(r.counts || {}).forEach(function (k) { n += r.counts[k]; });
-      return '<div>' + OA.esc(OA.t('Stand der Daten: {0} (abgerufen am {1}), {2} Punkte', [r.name, ds, OA.fmt(n, 0)])) + '</div>';
-    }).join('');
+      return '<div>' + OA.esc(OA.t('Stand der Daten: {0} (abgerufen am {1}), {2} Punkte', [OA.t(r.name), fmtDate(r.stand), OA.fmt(n, 0)])) + '</div>';
+    }).join('') + '<div>' + OA.esc(wl) + '</div>';
+  }
+  function fmtDate(s) {
+    var d = new Date(s + 'T12:00:00');
+    return isNaN(d) ? s : d.toLocaleDateString(OA.locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
   /* ---------- Größe, Schleife, Start ---------- */
@@ -844,6 +1031,7 @@
     W = Math.max(100, Math.round(r.width)); H = Math.max(100, Math.round(r.height));
     DPR = Math.min(3, window.devicePixelRatio || 1);
     canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+    if (view.z < minZ()) view.z = minZ();
     dirty = true;
   }
   if (window.ResizeObserver) new ResizeObserver(resize).observe(box); else window.addEventListener('resize', resize);
@@ -862,9 +1050,10 @@
   readWaypoints(); refreshColors(); resize(); syncChips(); renderOwn(); renderStand(); buildLegend();
   POI_LAYERS.forEach(function (l) { if (layersOn[l]) ensureLayer(l); });
   loadGeo().then(function () { if (view.z >= 10.3) loadGemeinden(); });
+  checkWorld();
   updateNearby();
   requestAnimationFrame(frame);
 
   // Für Tests im Browser
-  window.OA_KARTE_DEBUG = { renderTime: function () { var t = performance.now(); render(ctx); return performance.now() - t; }, view: function () { return view; }, setView: setView, data: data, geo: geo, state: function () { return { pos: pos, sel: sel, layersOn: layersOn, tiles: T }; }, setPos: function (p) { pos = p; dirty = true; updateNearby(); updateSelDist(); } };
+  window.OA_KARTE_DEBUG = { renderTime: function () { var t = performance.now(); render(ctx); return performance.now() - t; }, view: function () { return view; }, setView: setView, data: data, geo: geo, world: world, showWorld: showWorld, showRegion: showRegion, countryAt: countryAt, minZ: minZ, state: function () { return { pos: pos, sel: sel, layersOn: layersOn, tiles: T }; }, setPos: function (p) { pos = p; dirty = true; updateNearby(); updateSelDist(); } };
 })();

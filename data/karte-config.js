@@ -9,7 +9,7 @@
  * Fehlen Kacheln, fällt die Karte leise auf die Vektorkarte zurück. */
 window.OA_KARTE_CONFIG = {
   view: { lat: 48.83, lon: 9.32, zoom: 10 },          // Standardansicht: Waiblingen / Stuttgart
-  minZoom: 4,
+  minZoom: 0,                                         // untere Grenze; die Karte begrenzt zusätzlich so, dass die ganze Welt gerade ins Fenster passt
   maxZoom: 19,
   tiles: {
     enabled: false,

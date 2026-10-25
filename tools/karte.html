@@ -86,7 +86,7 @@
 <main class="container">
   <header class="page-head">
     <h1>Offline-Karte</h1>
-    <p class="lead">Karte von Baden-Württemberg mit Krankenhäusern, Apotheken, Wasserstellen und eigenen Punkten.</p>
+    <p class="lead">Weltkarte (grob) und genaue Karte von Baden-Württemberg mit Krankenhäusern, Apotheken, Wasserstellen und eigenen Punkten.</p>
   </header>
 
   <div class="stack">
@@ -114,6 +114,12 @@
         <div class="attrib" id="attrib"></div>
       </div>
     </section>
+
+    <div class="btn-row no-print" id="viewbar" role="group" aria-label="Kartenausschnitt wählen">
+      <button type="button" class="btn sm" id="vWorld">Welt</button>
+      <button type="button" class="btn sm" id="vRegion">Baden-Württemberg</button>
+      <button type="button" class="btn sm" id="vPos" hidden>Zu meiner Position</button>
+    </div>
 
     <div class="btn-row no-print">
       <button type="button" class="btn primary" id="locate">Meine Position</button>
@@ -203,6 +209,18 @@
         <div><div class="legend" id="legend"></div></div>
       </details>
 
+      <details id="worldBox">
+        <summary>Weltweit nutzen</summary>
+        <div>
+          <ul class="plain">
+            <li data-t="">Eingebaut ist eine <strong>grobe Weltkarte</strong> mit Ländern, Seen und großen Städten, beschriftet in der Sprache der Seite. Sie wird erst geladen, wenn du herauszoomst oder auf „Welt“ tippst.</li>
+            <li data-t=""><strong>Genaue Karten und Punkte</strong> (Krankenhäuser, Apotheken, Wasserstellen …) gibt es nur für Baden-Württemberg. Überall auf der Erde funktionieren deine eigenen Punkte, deine Wegpunkte und deine Position. Entfernung und Richtung stimmen weltweit.</li>
+            <li data-t="">Weitere Regionen ergänzt du am Computer: Lade bei <a href="https://download.geofabrik.de/" target="_blank" rel="noopener">Geofabrik</a> den Auszug deines Landes oder Bundeslands (Datei .osm.pbf) und starte <code class="ltr">node scripts/fetch-pois.js --pbf datei.osm.pbf --region "Name" --id xx</code>. Genaueres steht am Anfang der Skriptdatei. Die Daten der ganzen Erde (Planet-Datei) sind viele Dutzend Gigabyte groß und passen nicht in diese Seite.</li>
+            <li data-t="">Straßenkarten für beliebige Orte bekommst du mit eigenen Kacheln im Ordner <code class="ltr">library/maps</code> (siehe „Eigene Kacheln hinzufügen“).</li>
+          </ul>
+        </div>
+      </details>
+
       <details>
         <summary>Eigene Kacheln hinzufügen (Raster-Hintergrund)</summary>
         <div>
@@ -228,7 +246,7 @@
       <div class="small" id="dataStand"></div>
       <ul class="plain">
         <li data-t="">Karten- und Punktdaten: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-Mitwirkende</a>, Lizenz <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">Open Database License (ODbL) 1.0</a>. Auszug über <a href="https://download.geofabrik.de/" target="_blank" rel="noopener">Geofabrik</a>.</li>
-        <li data-t="">Umriss Deutschland, Länder, Seen, große Flüsse und Städte: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (gemeinfrei, <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener">Nutzungsbedingungen</a>).</li>
+        <li data-t="">Weltkarte (Länder, Seen, Städte mit Namen in vier Sprachen) sowie Umriss Deutschland, Bundesländer und große Flüsse: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (gemeinfrei, <a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener">Nutzungsbedingungen</a>). Die Weltkarte ist stark vereinfacht; Grenzen und Küsten sind nur grob.</li>
         <li>Die Daten können unvollständig oder veraltet sein. Verlasse dich im Notfall nicht allein auf diese Karte und rufe den Notruf 112.</li>
         <li data-t="">Eigene Punkte und Wegpunkte (aus „Koordinaten &amp; GPS“) stammen von dir und liegen nur auf diesem Gerät.</li>
       </ul>

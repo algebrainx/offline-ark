@@ -10,7 +10,7 @@
 'use strict';
 
 /* <generated> */
-const VERSION = '7c0014ede7';
+const VERSION = 'eaba39125b';
 const ASSETS = [
 "css/style.css",
 "data/ablaufplan.js",
@@ -70,6 +70,8 @@ const ASSETS = [
 "data/karte-poi-bw-pharmacy.js",
 "data/karte-poi-bw-water.js",
 "data/karte-regions.js",
+"data/karte-world-cities.js",
+"data/karte-world.js",
 "data/kinder.js",
 "data/knoten-szenen.js",
 "data/knoten.js",
