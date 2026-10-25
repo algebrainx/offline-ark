@@ -10,7 +10,7 @@
 'use strict';
 
 /* <generated> */
-const VERSION = 'ead38a6ae4';
+const VERSION = '7c0014ede7';
 const ASSETS = [
 "css/style.css",
 "data/ablaufplan.js",

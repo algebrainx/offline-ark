@@ -19,11 +19,6 @@ title: المصادر والتراخيص
 - **ATP 3-50.21 Survival** (الجيش الأمريكي، سبتمبر 2018): [صفحة المصدر](https://archive.org/details/survival-atp-3-50-21). ملك عام، ملاحظة «Distribution restriction: Approved for public release; distribution is unlimited».
 - **FM 24-18 Tactical Single-Channel Radio Communications Techniques** (الجيش الأمريكي، 30 سبتمبر 1987): [صفحة المصدر](https://archive.org/details/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni). ملك عام، ملاحظة «Distribution restriction: Approved for public release; distribution is unlimited».
 
-## المصدران الأوّلان
-
-- **ligi/SurvivalManual** (GitHub، GPL-3.0). تطبيق مبني على دليل الجيش الأمريكي FM 3-05.70. لم ننسخ النصوص من المستودع، لأن GPL-3.0 لا تتوافق مع موقع كامل مرخّص بترخيص MIT. الدليل الأصلي عمل حكومي أمريكي؛ لكن ملف PDF لإصدار 2002 يحمل ملاحظة توزيع، ولهذا السبب ليس موجودًا هنا في المكتبة.
-- **PR0M3TH3AN/Survival-Data** (GitHub). المستودع ليس فيه ملف ترخيص. وبدون ترخيص لا يجوز نقل المحتوى. لم ننسخ شيئًا.
-
 ## Wikipedia وWikibooks وWikivoyage
 
 المحتوى موجود غالبًا بترخيص CC BY-SA. نحن لا ننقل نصوصًا حرفيًا، بل نذكر Wikipedia فقط كمصدر للحقائق التي نعيد صياغتها بكلماتنا الخاصة.

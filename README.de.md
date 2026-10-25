@@ -197,7 +197,6 @@ Offline-Ark **ersetzt keine Ausbildung**. Besuche einen Erste-Hilfe-Kurs. Im Not
 - **Fremde Inhalte** behalten ihre Lizenz. Jede Wissensseite nennt unten ihre Quellen mit Link und Lizenz, zentral gesammelt auf der Seite *Quellen & Lizenzen* (`knowledge/quellen.html`).
 - Genutzt werden u. a. Empfehlungen von BBK, DRK, Umweltbundesamt, Deutschem Rat für Wiederbelebung, WHO, CDC, FEMA/ready.gov, Bundesnetzagentur und Wikipedia (CC BY-SA). Offizielle Texte sind **nicht kopiert**, sondern in eigenen Worten zusammengefasst.
 - Gemeinfreie PDFs in der Bibliothek (US-Regierungswerke, unverändert): *FM 4-25.11 First Aid*, *FM 21-10 Field Hygiene and Sanitation*, *ATP 3-50.21 Survival* und *FM 24-18 Tactical Single-Channel Radio Communications Techniques* (alle US-Armee, Vermerk „Approved for public release“) sowie *Are You Ready?* und *Be Prepared for Any Hazard* (FEMA/ready.gov, unverändert weitergeben erlaubt). Einzelheiten stehen auf der Seite *Quellen & Lizenzen*.
-- Die Startquellen [ligi/SurvivalManual](https://github.com/ligi/SurvivalManual) (GPL-3.0) und [PR0M3TH3AN/Survival-Data](https://github.com/PR0M3TH3AN/Survival-Data) (ohne Lizenzdatei) wurden als Themenanregung gelesen, aber **nicht kopiert**.
 
 ## Mithelfen
 

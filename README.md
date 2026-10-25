@@ -196,7 +196,6 @@ Offline-Ark **does not replace training**. Take a first-aid course. In an emerge
 - Used, among others: recommendations from BBK, DRK, Federal Environment Agency, German Resuscitation Council, WHO, CDC, FEMA/ready.gov, Federal Network Agency and Wikipedia (CC BY-SA). Official texts are **not copied**, but summarised in our own words.
 - Public-domain PDFs in the library (US government works, unchanged): *FM 4-25.11 First Aid*, *FM 21-10 Field Hygiene and Sanitation*, *ATP 3-50.21 Survival* and *FM 24-18 Tactical Single-Channel Radio Communications Techniques* (all US Army, marked "Approved for public release") as well as *Are You Ready?* and *Be Prepared for Any Hazard* (FEMA/ready.gov, passing on unchanged is allowed). Details are on the *Sources & Licenses* page.
 - Maps and points of interest: © OpenStreetMap contributors (ODbL), outlines from Natural Earth (public domain). Photos: Wikimedia Commons (CC0, public domain, CC BY, CC BY-SA), credits under each photo and in `library/images/ATTRIBUTION.md`.
-- The starting sources [ligi/SurvivalManual](https://github.com/ligi/SurvivalManual) (GPL-3.0) and [PR0M3TH3AN/Survival-Data](https://github.com/PR0M3TH3AN/Survival-Data) (no license file) were read as inspiration for topics, but **not copied**.
 
 ## Contributing
 

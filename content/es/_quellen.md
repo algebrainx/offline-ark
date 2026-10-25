@@ -19,11 +19,6 @@ Los PDF de la [Biblioteca](../library/index.html) son obras del gobierno de EE. 
 - **ATP 3-50.21 Survival** (Ejército de EE. UU., septiembre de 2018): [página de origen](https://archive.org/details/survival-atp-3-50-21). Dominio público, aviso «Distribution restriction: Approved for public release; distribution is unlimited».
 - **FM 24-18 Tactical Single-Channel Radio Communications Techniques** (Ejército de EE. UU., 30 de septiembre de 1987): [página de origen](https://archive.org/details/milmanual-fm-24-18-tactical-single-channel-radio-communications-techni). Dominio público, aviso «Distribution restriction: Approved for public release; distribution is unlimited».
 
-## Las dos fuentes iniciales
-
-- **ligi/SurvivalManual** (GitHub, GPL-3.0). Una aplicación basada en el manual del ejército de EE. UU. FM 3-05.70. No hemos copiado los textos del repositorio, porque la GPL-3.0 no encaja con un sitio completo con licencia MIT. El manual en que se basa es una obra del gobierno de EE. UU.; pero para la edición de 2002 el PDF lleva una nota de distribución, por eso no está aquí en la biblioteca.
-- **PR0M3TH3AN/Survival-Data** (GitHub). El repositorio no tiene archivo de licencia. Sin licencia no se pueden reutilizar los contenidos. No hemos copiado nada.
-
 ## Wikipedia, Wikibooks, Wikivoyage
 
 Los contenidos suelen estar bajo CC BY-SA. No reproducimos textos literalmente, sino que citamos Wikipedia solo como fuente de hechos que reformulamos con palabras propias.
